@@ -8,11 +8,11 @@ import (
 )
 
 type TransformService struct {
-	db_repo  *db.DBRepository
+	db_repo  db.DBRepo
 	reshaper Reshaper
 }
 
-func NewTransformService(db_repo *db.DBRepository) *TransformService {
+func NewTransformService(db_repo db.DBRepo) *TransformService {
 	return &TransformService{
 		db_repo:  db_repo,
 		reshaper: *NewReshaper(db_repo),

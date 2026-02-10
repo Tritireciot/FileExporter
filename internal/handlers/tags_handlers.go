@@ -8,10 +8,10 @@ import (
 )
 
 type TagsHandler struct {
-	repo *db.DBRepository
+	repo db.DBRepo
 }
 
-func NewTagsHandler(repo *db.DBRepository) *TagsHandler {
+func NewTagsHandler(repo db.DBRepo) *TagsHandler {
 	return &TagsHandler{repo: repo}
 }
 

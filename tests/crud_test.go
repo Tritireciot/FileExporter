@@ -40,7 +40,7 @@ func TestMain(m *testing.M) {
 
 func TestAddTemplate(t *testing.T) {
 	err := test_db_repo.AddTemplate(test_context, &test_template)
-	if err != nil {
+	if err != nil || test_template.ID <= 0 {
 		t.Errorf("Can't add Template: %s", err.Error())
 	}
 }
@@ -50,7 +50,7 @@ func TestAddTag(t *testing.T) {
 		test_context,
 		&test_tag,
 	)
-	if err != nil {
+	if err != nil || test_tag.ID <= 0 {
 		t.Errorf("Can't add Tag: %s", err.Error())
 	}
 }
@@ -186,11 +186,6 @@ func TestDeleteElementByName(t *testing.T) {
 
 func TestDeleteTagByID(t *testing.T) {
 	test_db_repo.AddTag(test_context, &test_tag)
-	test_db_repo.GetElement(
-		test_context,
-		&test_tag,
-		db.Columns.Name,
-	)
 
 	err := test_db_repo.DeleteElement(
 		test_context,
@@ -212,11 +207,6 @@ func TestDeleteTagByID(t *testing.T) {
 
 func TestDeleteTemplateByID(t *testing.T) {
 	test_db_repo.AddTemplate(test_context, &test_template)
-	test_db_repo.GetElement(
-		test_context,
-		&test_template,
-		db.Columns.Name,
-	)
 	err := test_db_repo.DeleteElement(
 		test_context,
 		&test_template,

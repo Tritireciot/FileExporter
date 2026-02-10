@@ -15,7 +15,7 @@ type ShortElement struct {
 }
 
 func (repository *DBRepository) GetAllElements(ctx context.Context, element DBModel) (*[]ShortElement, error) {
-	query, _, err:= repository.psql.Select(Columns.ID, Columns.Name).From(element.GetTable()).ToSql()
+	query, _, err := repository.psql.Select(Columns.ID, Columns.Name).From(element.GetTable()).ToSql()
 	if err != nil {
 		return nil, err
 	}
@@ -44,8 +44,7 @@ func (repository *DBRepository) GetElement(
 	element DBModel,
 	column string,
 ) error {
-	
-	
+
 	var field any
 
 	if column == Columns.Name {
@@ -63,7 +62,7 @@ func (repository *DBRepository) GetElement(
 
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return ErrTemplateNotFound
+			return ErrElementNotFound
 		}
 		return err
 	}
@@ -101,12 +100,12 @@ func (repository *DBRepository) DeleteElement(
 
 func (repository *DBRepository) AddTemplate(ctx context.Context, template *Template) error {
 	query, args, err := repository.psql.Insert(Tables.Templates).
-	Columns(Columns.Name, Columns.Content).
-	Values(template.Name, template.Content).Suffix(
+		Columns(Columns.Name, Columns.Content).
+		Values(template.Name, template.Content).Suffix(
 		fmt.Sprintf(`
 			ON CONFLICT (%s) DO UPDATE
 			SET %s = EXCLUDED.%s
-			`, 
+			`,
 			Columns.Name,
 			Columns.Content, Columns.Content,
 		),
@@ -120,15 +119,15 @@ func (repository *DBRepository) AddTemplate(ctx context.Context, template *Templ
 
 func (repository *DBRepository) AddTag(ctx context.Context, tag *Tag) error {
 	query, args, err := repository.psql.Insert(Tables.Tags).
-	Columns(Columns.Name, Columns.Description, Columns.Subsystem, Columns.Alias).
-	Values(tag.Name, tag.Description, tag.Subsystem, tag.Alias).Suffix(
+		Columns(Columns.Name, Columns.Description, Columns.Subsystem, Columns.Alias).
+		Values(tag.Name, tag.Description, tag.Subsystem, tag.Alias).Suffix(
 		fmt.Sprintf(`
 			ON CONFLICT (%s) DO UPDATE
 			SET 
 				%s = EXCLUDED.%s,
 				%s = EXCLUDED.%s,
 				%s = EXCLUDED.%s
-			`, 
+			`,
 			Columns.Name,
 			Columns.Description, Columns.Description,
 			Columns.Subsystem, Columns.Subsystem,
@@ -139,7 +138,7 @@ func (repository *DBRepository) AddTag(ctx context.Context, tag *Tag) error {
 		return err
 	}
 
-	_, err = repository.pool.Exec(ctx, query, args...)
+	err = repository.pool.QueryRow(ctx, query, args...).Scan(&tag.ID)
 	return err
 }
 

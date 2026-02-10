@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func getAlias(ctx context.Context, db_repo *db.DBRepository, tag_name string) string {
+func getAlias(ctx context.Context, db_repo db.DBRepo, tag_name string) string {
 	tag := db.Tag{Name: tag_name}
 	err := db_repo.GetElement(ctx, &tag, db.Columns.Name)
 	if err != nil {

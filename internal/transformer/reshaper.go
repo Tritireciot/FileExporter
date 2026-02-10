@@ -8,12 +8,12 @@ import (
 )
 
 type Reshaper struct {
-	db_repo          *db.DBRepository
+	db_repo          db.DBRepo
 	tagPattern       *regexp.Regexp
 	tagRepeatPattern [2]*regexp.Regexp
 }
 
-func NewReshaper(db_repo *db.DBRepository) *Reshaper {
+func NewReshaper(db_repo db.DBRepo) *Reshaper {
 	return &Reshaper{
 		db_repo:    db_repo,
 		tagPattern: regexp.MustCompile(`#([A-Za-z]+)\.([A-Za-z]+)#`),

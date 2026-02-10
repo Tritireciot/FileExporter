@@ -8,10 +8,10 @@ import (
 )
 
 type TemplateHandler struct {
-	repo *db.DBRepository
+	repo db.DBRepo
 }
 
-func NewTemplateHandler(repo *db.DBRepository) *TemplateHandler {
+func NewTemplateHandler(repo db.DBRepo) *TemplateHandler {
 	return &TemplateHandler{repo: repo}
 }
 
@@ -38,7 +38,7 @@ func (handler *TemplateHandler) GetTemplate(writer http.ResponseWriter, request 
 	template := db.Template{ID: template_id}
 	err := handler.repo.GetElement(ctx, &template, db.Columns.ID)
 	if err != nil {
-		if errors.Is(err, db.ErrTemplateNotFound) {
+		if errors.Is(err, db.ErrElementNotFound) {
 			notFoundError(writer)
 			return
 		}
