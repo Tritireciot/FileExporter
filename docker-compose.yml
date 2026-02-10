@@ -1,0 +1,40 @@
+services:
+  backend:
+    container_name: backend
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    restart: always
+    env_file: ".env"
+    volumes:
+      - ./templates:/app/templates
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+    networks:
+      - app
+
+
+  db:
+    image: postgres:12
+    container_name: backend-db
+    restart: always
+    environment:
+      POSTGRES_DB: backend-db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - app
+
+
+volumes:
+  pg_data:
+    name: pg_data
+  templates_data:
+    name: templates_data
+
+networks:
+  app:

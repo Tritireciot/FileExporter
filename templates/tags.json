@@ -1,0 +1,175 @@
+[
+    {
+        "name": "#RunDown.ID#",
+        "description": "ID выпуска",
+        "subsystem": "ALL"
+    },
+    {
+        "name": "#RunDown.Name#",
+        "description": "Название выпуска",
+        "subsystem": "ALL"
+    },
+    {
+        "name": "#RunDown.AirDate#",
+        "description": "Дата планового эфира выпуска",
+        "subsystem": "ALL"
+    },
+    {
+        "name": "#RunDown.AirTime#",
+        "description": "Время планового эфира выпуска",
+        "subsystem": "ALL"
+    },
+    {
+        "name": "#RunDown.DurationPlan#",
+        "description": "Плановая длительность выпуска",
+        "subsystem": "ALL"
+    },
+    {
+        "name": "#RunDown.DurationFact#",
+        "description": "Фактическая длительность выпуска",
+        "subsystem": "ALL"
+    },
+    {
+        "name": "#RunDown.SumDurationPlan#",
+        "description": "Суммарная плановая длительность выпуска",
+        "subsystem": "ALL"
+    },
+    {
+        "name": "#RunDown.Author#",
+        "description": "Автор выпуска",
+        "subsystem": "ALL"
+    },
+    {
+        "name": "#RunDown.State#",
+        "description": "Статус выпуска",
+        "subsystem": "ALL"
+    },
+
+    {
+        "name": "#Story.Pos#",
+        "description": "Номер события в выпуске",
+        "subsystem": "ALL"
+    },
+    {
+        "name": "#Story.ID#",
+        "description": "ID события",
+        "subsystem": "ALL"
+    },
+    {
+        "name": "#Story.Name#",
+        "description": "Название события",
+        "subsystem": "ALL"
+    },
+    {
+        "name": "#Story.Type#",
+        "description": "Название типа события",
+        "subsystem": "ALL"
+    },
+    {
+        "name": "#Story.Source#",
+        "description": "Источник события (только при печати из выпуска)",
+        "subsystem": "ALL"
+    },
+    {
+        "name": "#Story.Presenter#",
+        "description": "Начитка события",
+        "subsystem": "ALL"
+    },
+    {
+        "name": "#Story.Author#",
+        "description": "Автор события",
+        "subsystem": "ALL"
+    },
+    {
+        "name": "#Story.VideoEditor#",
+        "description": "Монтажер события",
+        "subsystem": "ALL"
+    },
+    {
+        "name": "#Story.Version#",
+        "description": "Текущая версия события",
+        "subsystem": "ALL"
+    },
+    {
+        "name": "#Story.DurationPlan#",
+        "description": "Плановый хронометраж события",
+        "subsystem": "ALL"
+    },
+    {
+        "name": "#Story.DurationFact#",
+        "description": "Фактический хронометраж события",
+        "subsystem": "ALL"
+    },
+    {
+        "name": "#Story.StartPlan#",
+        "description": "Смещение от начала выпуска по плановой длительности",
+        "subsystem": "ALL"
+    },
+    {
+        "name": "#Story.StartFact#",
+        "description": "Смещение от начала выпуска по фактической длительности",
+        "subsystem": "ALL"
+    },
+    {
+        "name": "#Story.Skip#",
+        "description": "Состояние пропуска (если пропущено, выведет слово «Пропущено», иначе - пусто)",
+        "subsystem": "ALL"
+    },
+    {
+        "name": "#Story.State#",
+        "description": "Статус события",
+        "subsystem": "ALL"
+    },
+    {
+        "name": "#Story.VideoState#",
+        "description": "Видео статус события",
+        "subsystem": "ALL"
+    },
+    {
+        "name": "#Story.Text#",
+        "description": "Текст события",
+        "subsystem": "ALL"
+    },
+
+    {
+        "name": "#Media.Pos#",
+        "description": "Номер контента по порядку в событии",
+        "subsystem": "Media"
+    },
+    {
+        "name": "#Media.ID#",
+        "description": "ID клипа/графики",
+        "subsystem": "Media"
+    },
+    {
+        "name": "#Media.Name#",
+        "description": "Название клипа/графики",
+        "subsystem": "Media"
+    },
+    {
+        "name": "#Media.Start#",
+        "description": "Смещение от начала события клипа/графики",
+        "subsystem": "Media"
+    },
+    {
+        "name": "#Media.Duration#",
+        "description": "Длительность клипа/графики",
+        "subsystem": "Media"
+    },
+    {
+        "name": "#Media.Params#",
+        "description": "Параметры (для графики выводятся значения параметров через косую черту)",
+        "subsystem": "Media"
+    },
+
+    {
+        "name": "#Repeat#Story#",
+        "description": "Блок данных события, выводимый для каждого события в списке",
+        "subsystem": "ALL"
+    },
+    {
+        "name": "#Repeat#Media#",
+        "description": "Блок данных медиа, выводимый для каждого клипа/графики в списке",
+        "subsystem": "ALL"
+    }
+]
