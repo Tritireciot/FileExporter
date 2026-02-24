@@ -2,174 +2,208 @@
     {
         "name": "#RunDown.ID#",
         "description": "ID выпуска",
-        "subsystem": "ALL"
+        "subsystem": "ALL",
+        "alias": "rundown_id"
     },
     {
         "name": "#RunDown.Name#",
         "description": "Название выпуска",
-        "subsystem": "ALL"
+        "subsystem": "ALL",
+        "alias": "rundown.title"
     },
     {
         "name": "#RunDown.AirDate#",
         "description": "Дата планового эфира выпуска",
-        "subsystem": "ALL"
+        "subsystem": "ALL",
+        "alias": "rundown.air_date"
     },
     {
         "name": "#RunDown.AirTime#",
         "description": "Время планового эфира выпуска",
-        "subsystem": "ALL"
+        "subsystem": "ALL",
+        "alias": "rundown.air_date"
     },
     {
         "name": "#RunDown.DurationPlan#",
         "description": "Плановая длительность выпуска",
-        "subsystem": "ALL"
+        "subsystem": "ALL",
+        "alias": "rundown.duration"
     },
     {
         "name": "#RunDown.DurationFact#",
         "description": "Фактическая длительность выпуска",
-        "subsystem": "ALL"
+        "subsystem": "ALL",
+        "alias": "rundown.content.sum(story.story.fact_duration)"
     },
     {
         "name": "#RunDown.SumDurationPlan#",
         "description": "Суммарная плановая длительность выпуска",
-        "subsystem": "ALL"
+        "subsystem": "ALL",
+        "alias": "rundown.content.sum(story.story.plan_durat)"
     },
     {
         "name": "#RunDown.Author#",
         "description": "Автор выпуска",
-        "subsystem": "ALL"
+        "subsystem": "ALL",
+        "alias": "rundown.author"
     },
     {
         "name": "#RunDown.State#",
         "description": "Статус выпуска",
-        "subsystem": "ALL"
+        "subsystem": "ALL",
+        "alias": "command"
     },
 
     {
         "name": "#Story.Pos#",
         "description": "Номер события в выпуске",
-        "subsystem": "ALL"
+        "subsystem": "ALL",
+        "alias": "rundown.content[].pos"
     },
     {
         "name": "#Story.ID#",
         "description": "ID события",
-        "subsystem": "ALL"
+        "subsystem": "ALL",
+        "alias": "rundown.content[].story.id"
     },
     {
         "name": "#Story.Name#",
         "description": "Название события",
-        "subsystem": "ALL"
+        "subsystem": "ALL",
+        "alias": "rundown.content[].story.name"
     },
     {
         "name": "#Story.Type#",
         "description": "Название типа события",
-        "subsystem": "ALL"
+        "subsystem": "ALL",
+        "alias": "rundown.content[].story.type"
     },
     {
         "name": "#Story.Source#",
         "description": "Источник события (только при печати из выпуска)",
-        "subsystem": "ALL"
+        "subsystem": "ALL",
+        "alias": "rundown.content[].story.source"
     },
     {
         "name": "#Story.Presenter#",
         "description": "Начитка события",
-        "subsystem": "ALL"
+        "subsystem": "ALL",
+        "alias": "rundown.content[].story.presenter"
     },
     {
         "name": "#Story.Author#",
         "description": "Автор события",
-        "subsystem": "ALL"
+        "subsystem": "ALL",
+        "alias": "rundown.content[].story.author"
     },
     {
         "name": "#Story.VideoEditor#",
         "description": "Монтажер события",
-        "subsystem": "ALL"
+        "subsystem": "ALL",
+        "alias": "rundown.content[].story.video_editor"
     },
     {
         "name": "#Story.Version#",
         "description": "Текущая версия события",
-        "subsystem": "ALL"
+        "subsystem": "ALL",
+        "alias": "rundown.content[].story.version"
     },
     {
         "name": "#Story.DurationPlan#",
         "description": "Плановый хронометраж события",
-        "subsystem": "ALL"
+        "subsystem": "ALL",
+        "alias": "rundown.content[].story.plan_durat"
     },
     {
         "name": "#Story.DurationFact#",
         "description": "Фактический хронометраж события",
-        "subsystem": "ALL"
+        "subsystem": "ALL",
+        "alias": "rundown.content[].story.fact_duration"
     },
     {
         "name": "#Story.StartPlan#",
         "description": "Смещение от начала выпуска по плановой длительности",
-        "subsystem": "ALL"
+        "subsystem": "ALL",
+        "alias": "calc_story_start_plan"
     },
     {
         "name": "#Story.StartFact#",
         "description": "Смещение от начала выпуска по фактической длительности",
-        "subsystem": "ALL"
+        "subsystem": "ALL",
+        "alias": "calc_story_start_fact"
     },
     {
         "name": "#Story.Skip#",
         "description": "Состояние пропуска (если пропущено, выведет слово «Пропущено», иначе - пусто)",
-        "subsystem": "ALL"
+        "subsystem": "ALL",
+        "alias": "rundown.content[].skip_flag"
     },
     {
         "name": "#Story.State#",
         "description": "Статус события",
-        "subsystem": "ALL"
+        "subsystem": "ALL",
+        "alias": "rundown.content[].story.status"
     },
     {
         "name": "#Story.VideoState#",
         "description": "Видео статус события",
-        "subsystem": "ALL"
+        "subsystem": "ALL",
+        "alias": "rundown.content[].story.status_video"
     },
     {
         "name": "#Story.Text#",
         "description": "Текст события",
-        "subsystem": "ALL"
+        "subsystem": "ALL",
+        "alias": "rundown.content[].story.text.text"
     },
 
     {
         "name": "#Media.Pos#",
         "description": "Номер контента по порядку в событии",
-        "subsystem": "Media"
+        "subsystem": "Media",
+        "alias": "rundown.content[].story.media_content[].index"
     },
     {
         "name": "#Media.ID#",
         "description": "ID клипа/графики",
-        "subsystem": "Media"
+        "subsystem": "Media",
+        "alias": "rundown.content[].story.media_content[].asset_id"
     },
     {
         "name": "#Media.Name#",
         "description": "Название клипа/графики",
-        "subsystem": "Media"
+        "subsystem": "Media",
+        "alias": "rundown.content[].story.media_content[].name"
     },
     {
         "name": "#Media.Start#",
         "description": "Смещение от начала события клипа/графики",
-        "subsystem": "Media"
+        "subsystem": "Media",
+        "alias": "rundown.content[].story.media_content[].mark_in"
     },
     {
         "name": "#Media.Duration#",
         "description": "Длительность клипа/графики",
-        "subsystem": "Media"
+        "subsystem": "Media",
+        "alias": "rundown.content[].story.media_content[].duration"
     },
     {
         "name": "#Media.Params#",
         "description": "Параметры (для графики выводятся значения параметров через косую черту)",
-        "subsystem": "Media"
+        "subsystem": "Media",
+        "alias": "rundown.content[].story.media_content[].params"
     },
 
     {
         "name": "#Repeat#Story#",
         "description": "Блок данных события, выводимый для каждого события в списке",
-        "subsystem": "ALL"
+        "subsystem": "ALL",
+        "alias": "rundown.content[]"
     },
     {
         "name": "#Repeat#Media#",
         "description": "Блок данных медиа, выводимый для каждого клипа/графики в списке",
-        "subsystem": "ALL"
+        "subsystem": "ALL",
+        "alias": "rundown.content[].story.media_content[]"
     }
 ]

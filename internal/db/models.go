@@ -9,4 +9,5 @@ type Tag struct {
 	Name string `json:"name"`
 	Description string `json:"description"`
 	Subsystem string `json:"subsystem"`
+	Alias string `json:"alias"`
 }

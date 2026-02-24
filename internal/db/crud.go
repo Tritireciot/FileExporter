@@ -97,20 +97,22 @@ func (repository *DBRepository) AddTemplate(ctx context.Context, template *Templ
 
 func (repository *DBRepository) AddTag(ctx context.Context, tag *Tag) error {
 	query := fmt.Sprintf(
-			`INSERT INTO %s (%s, %s, %s)
-			VALUES ($1, $2, $3)
+			`INSERT INTO %s (%s, %s, %s, %s)
+			VALUES ($1, $2, $3, $4)
 			ON CONFLICT (%s) DO UPDATE
 			SET 
 				%s = EXCLUDED.%s,
+				%s = EXCLUDED.%s,
 				%s = EXCLUDED.%s;
 			`,
-			Tables.Tags, Columns.Name, Columns.Description, Columns.Subsystem, 
+			Tables.Tags, Columns.Name, Columns.Description, Columns.Subsystem, Columns.Alias, 
 			Columns.Name,
 			Columns.Description, Columns.Description,
 			Columns.Subsystem, Columns.Subsystem,
+			Columns.Alias, Columns.Alias,
 
 	)
-	_, err := repository.pool.Exec(ctx, query, tag.Name, tag.Description, tag.Subsystem)
+	_, err := repository.pool.Exec(ctx, query, tag.Name, tag.Description, tag.Subsystem, tag.Alias)
 	return err
 }
 
@@ -119,13 +121,15 @@ func (repository *DBRepository) createTagsTables(ctx context.Context) error {
 		%s SERIAL PRIMARY KEY,
 		%s TEXT NOT NULL UNIQUE,
 		%s TEXT NOT NULL,
+		%s TEXT NOT NULL,
 		%s TEXT NOT NULL);
 	`, 
 	Tables.Tags, 
 	Columns.ID, 
 	Columns.Name, 
 	Columns.Description, 
-	Columns.Subsystem)
+	Columns.Subsystem,
+	Columns.Alias)
 	_, err := repository.pool.Exec(ctx, query)
 	return err
 }
