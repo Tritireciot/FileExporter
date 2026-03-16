@@ -41,7 +41,8 @@ func (service *TransformService) RenderTemplate(ctx context.Context, template_na
 		return "", err
 	}
 
-	var requiredTags map[string]string
+	requiredTags := map[string]string{}
+
 	formatted_template := service.reshaper.TransformTemplate(template_.Content, &requiredTags)
 	err = collectAliases(ctx, service.db_repo, &requiredTags)
 	if err != nil {

@@ -191,7 +191,13 @@
         "name": "#Media.Params#",
         "description": "Параметры (для графики выводятся значения параметров через косую черту)",
         "subsystem": "Media",
-        "alias": "rundown.content.%d.story.media_content.%d.params"
+        "alias": "rundown.content.%d.story.media_content.%d.params все шесть через пробел"
+    },
+    {
+        "name": "#Media.Type#",
+        "description": "Параметры (для графики выводятся значения параметров через косую черту)",
+        "subsystem": "Media",
+        "alias": "rundown.content.%d.story.media_content.%d.type"
     },
     {
         "name": "#Repeat#Story#",

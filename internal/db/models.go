@@ -1,13 +1,11 @@
 package db
 
-type ColumnsType interface {
-	*int, *string, *string, *string, *string | *int, *string, *string // TODO тут исправить как надо с интерфейсами
-}
+
 
 type DBModel interface {
 	getTable() string
 	getName() string
-	getColumns() 
+	getColumns() []any
 }
 
 type Template struct {
@@ -24,8 +22,10 @@ func (template *Template) getName() string {
 	return template.Name
 }
 
-func (template *Template) getColumns() (*int, *string, *string) {
-	return &template.ID,  &template.Name, &template.Content
+func (template *Template) getColumns() []any {
+	return []any{
+		&template.ID,  &template.Name, &template.Content,
+	}
 }
 
 type Tag struct {
@@ -44,6 +44,8 @@ func (tag *Tag) getName() string {
 	return tag.Name
 }
 
-func (tag *Tag) getColumns() (*int, *string, *string, *string, *string) {
-	return &tag.ID,  &tag.Name, &tag.Description, &tag.Subsystem, &tag.Alias
+func (tag *Tag) getColumns() []any {
+	return []any{
+		&tag.ID,  &tag.Name, &tag.Description, &tag.Subsystem, &tag.Alias,
+	}
 }

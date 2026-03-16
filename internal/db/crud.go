@@ -48,7 +48,7 @@ func (repository *DBRepository) GetElementByName(
 
 	err := repository.pool.
 		QueryRow(ctx, query, element.getName()).
-		Scan(element)
+		Scan(element.getColumns()...)
 	
 	fmt.Println(element.getName())
 	if err != nil {
