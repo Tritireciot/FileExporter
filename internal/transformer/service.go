@@ -8,16 +8,14 @@ import (
 )
 
 type TransformService struct {
-	db_repo *db.DBRepository
-	template_cache *Cache
-	reshaper Reshaper
+	db_repo        *db.DBRepository
+	reshaper       Reshaper
 }
 
-func NewTransformService(db_repo *db.DBRepository, ) *TransformService {
+func NewTransformService(db_repo *db.DBRepository) *TransformService {
 	return &TransformService{
-		db_repo: db_repo,
-		template_cache: NewCache(),
-		reshaper: *NewReshaper(),
+		db_repo:        db_repo,
+		reshaper:       *NewReshaper(),
 	}
 }
 
@@ -25,8 +23,6 @@ func (service *TransformService) SaveTemplate(ctx context.Context, template *db.
 	if err := service.db_repo.AddTemplate(ctx, template); err != nil {
 		return err
 	}
-
-	service.template_cache.Delete(template.Name)
 	return nil
 }
 
@@ -37,28 +33,29 @@ func execute(template_ *template.Template, data map[string]any) (string, error) 
 
 }
 
-func (service *TransformService) RenderTemplate(ctx context.Context, template_name string, data map[string]any) (string, error) {
-	if form_template, ok := service.template_cache.Get(template_name); ok {
-
-		return execute(form_template, data)
-	}
-
-
-	template_, err := service.db_repo.GetTemplateByName(ctx, template_name)
+func (service *TransformService) RenderTemplate(ctx context.Context, template_name string, raw_data map[string]any) (string, error) {
+	template_ := &db.Template{Name: template_name}
+	err := service.db_repo.GetElementByName(ctx, template_)
 
 	if err != nil {
 		return "", err
 	}
 
-
-	formatted_template := service.reshaper.TransformTemplate(template_.Content)
+	var requiredTags map[string]string
+	formatted_template := service.reshaper.TransformTemplate(template_.Content, &requiredTags)
+	err = collectAliases(ctx, service.db_repo, &requiredTags)
+	if err != nil {
+		return "", err
+	}
 
 	form_template, err := template.New(template_name).Parse(formatted_template)
 
 	if err != nil {
 		return "", err
 	}
-	service.template_cache.Set(template_name, form_template)
+	
+
+	data := raw_data // TODO: remove
 
 	return execute(form_template, data)
 }

@@ -18,7 +18,7 @@ func NewTagsHandler(repo *db.DBRepository) *TagsHandler {
 func (handler *TagsHandler) GetAllTags(writer http.ResponseWriter, request *http.Request){
 	
 	ctx := request.Context()
-	tags_list, err := handler.repo.GetAllElements(ctx, db.Tables.Tags)
+	tags_list, err := handler.repo.GetAllElements(ctx, &db.Tag{})
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusBadRequest)
 		return
@@ -57,7 +57,7 @@ func (handler *TagsHandler) DeleteTag(writer http.ResponseWriter, request *http.
 
 	ctx := request.Context()
 
-	err := handler.repo.DeleteElement(ctx, tag_name, db.Tables.Tags)
+	err := handler.repo.DeleteElement(ctx, &db.Tag{Name: tag_name})
 	if err != nil {
 		if errors.Is(err, db.ErrElementNotFound) {
 			http.Error(writer, "tag not found", http.StatusNotFound)

@@ -8,10 +8,10 @@ import (
 	"github.com/jackc/pgx/v4"
 )
 
-func (repository *DBRepository) GetAllElements(ctx context.Context, table_name string) (*[]string, error) {
+func (repository *DBRepository) GetAllElements(ctx context.Context, element DBModel) (*[]string, error) {
 	query := fmt.Sprintf(
-		"SELECT %s FROM %s", 
-		Columns.Name, table_name,
+		"SELECT %s FROM %s",
+		Columns.Name, element.getTable(),
 	)
 
 	var elements []string
@@ -34,38 +34,36 @@ func (repository *DBRepository) GetAllElements(ctx context.Context, table_name s
 	return &elements, nil
 }
 
-func (repository *DBRepository) GetTemplateByName(
+func (repository *DBRepository) GetElementByName(
 	ctx context.Context,
-	templateName string,
-) (*Template, error) {
+	element DBModel,
+) error {
 
 	query := fmt.Sprintf(
-		"SELECT %s FROM %s WHERE %s = $1", 
-		Columns.Content, Tables.Templates, Columns.Name,
+		"SELECT * FROM %s WHERE %s = $1",
+		element.getTable(), Columns.Name,
 	)
 
-	template := &Template{Name: templateName}
-
 	err := repository.pool.
-		QueryRow(ctx, query, templateName).
-		Scan(&template.Content)
+		QueryRow(ctx, query, element.getName()).
+		Scan(element)
 
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, ErrTemplateNotFound
+			return ErrTemplateNotFound
 		}
-		return nil, err
+		return err
 	}
 
-	return template, nil
+	return nil
 }
 
-func (repository *DBRepository) DeleteElement(ctx context.Context, element_name string, table_name string) error {
+func (repository *DBRepository) DeleteElement(ctx context.Context, element DBModel) error {
 	query := fmt.Sprintf(
-		"DELETE FROM %s WHERE %s = $1", 
-		table_name, Columns.Name,
+		"DELETE FROM %s WHERE %s = $1",
+		element.getTable(), Columns.Name,
 	)
-	cmd, err := repository.pool.Exec(ctx, query, element_name)
+	cmd, err := repository.pool.Exec(ctx, query, element.getName())
 
 	if err != nil {
 		return err
@@ -80,24 +78,22 @@ func (repository *DBRepository) DeleteElement(ctx context.Context, element_name 
 
 func (repository *DBRepository) AddTemplate(ctx context.Context, template *Template) error {
 	query := fmt.Sprintf(
-			`INSERT INTO %s (%s, %s)
+		`INSERT INTO %s (%s, %s)
 			VALUES ($1, $2)
 			ON CONFLICT (%s) DO UPDATE
 			SET %s = EXCLUDED.%s;
 			`,
-			Tables.Templates, Columns.Name, Columns.Content, 
-			Columns.Name, 
-			Columns.Content, Columns.Content,
+		Tables.Templates, Columns.Name, Columns.Content,
+		Columns.Name,
+		Columns.Content, Columns.Content,
 	)
 	_, err := repository.pool.Exec(ctx, query, template.Name, template.Content)
 	return err
 }
 
-
-
 func (repository *DBRepository) AddTag(ctx context.Context, tag *Tag) error {
 	query := fmt.Sprintf(
-			`INSERT INTO %s (%s, %s, %s, %s)
+		`INSERT INTO %s (%s, %s, %s, %s)
 			VALUES ($1, $2, $3, $4)
 			ON CONFLICT (%s) DO UPDATE
 			SET 
@@ -105,12 +101,11 @@ func (repository *DBRepository) AddTag(ctx context.Context, tag *Tag) error {
 				%s = EXCLUDED.%s,
 				%s = EXCLUDED.%s;
 			`,
-			Tables.Tags, Columns.Name, Columns.Description, Columns.Subsystem, Columns.Alias, 
-			Columns.Name,
-			Columns.Description, Columns.Description,
-			Columns.Subsystem, Columns.Subsystem,
-			Columns.Alias, Columns.Alias,
-
+		Tables.Tags, Columns.Name, Columns.Description, Columns.Subsystem, Columns.Alias,
+		Columns.Name,
+		Columns.Description, Columns.Description,
+		Columns.Subsystem, Columns.Subsystem,
+		Columns.Alias, Columns.Alias,
 	)
 	_, err := repository.pool.Exec(ctx, query, tag.Name, tag.Description, tag.Subsystem, tag.Alias)
 	return err
@@ -123,27 +118,27 @@ func (repository *DBRepository) createTagsTables(ctx context.Context) error {
 		%s TEXT NOT NULL,
 		%s TEXT NOT NULL,
 		%s TEXT NOT NULL);
-	`, 
-	Tables.Tags, 
-	Columns.ID, 
-	Columns.Name, 
-	Columns.Description, 
-	Columns.Subsystem,
-	Columns.Alias)
+	`,
+		Tables.Tags,
+		Columns.ID,
+		Columns.Name,
+		Columns.Description,
+		Columns.Subsystem,
+		Columns.Alias)
 	_, err := repository.pool.Exec(ctx, query)
 	return err
 }
 
-func (repository *DBRepository) createTemaplatesTables(ctx context.Context) error {
+func (repository *DBRepository) createTemplatesTables(ctx context.Context) error {
 	query := fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s (
 		%s SERIAL PRIMARY KEY,
 		%s TEXT NOT NULL UNIQUE,
 		%s TEXT NOT NULL);
-	`, 
-	Tables.Templates, 
-	Columns.ID, 
-	Columns.Name, 
-	Columns.Content)
+	`,
+		Tables.Templates,
+		Columns.ID,
+		Columns.Name,
+		Columns.Content)
 	_, err := repository.pool.Exec(ctx, query)
 	return err
 }

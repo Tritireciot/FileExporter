@@ -2,15 +2,15 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
-	"fmt"
 	"time"
 
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
-func SetupDB(ctx context.Context, db_url string, logger *log.Logger) (*DBRepository, error){
+func SetupDB(ctx context.Context, db_url string, logger *log.Logger) (*DBRepository, error) {
 	dbpool, err := pgxpool.Connect(ctx, db_url)
 	repo := NewRepository(dbpool, logger)
 	if err != nil {
@@ -40,7 +40,7 @@ func SetupDB(ctx context.Context, db_url string, logger *log.Logger) (*DBReposit
 		}
 	}
 	logger.Println("DB READY")
-	
+
 	return repo, nil
 }
 
@@ -62,12 +62,12 @@ func (repository *DBRepository) createFilledTables(ctx context.Context) error {
 	}
 	repository.logger.Println("Created Tag Table")
 
-	if err := repository.createTemaplatesTables(ctx); err != nil {
+	if err := repository.createTemplatesTables(ctx); err != nil {
 		repository.pool.Close()
 		return err
 	}
 	repository.logger.Println("Created Template Table")
-	
+
 	if err := repository.fillTemplatesTable(ctx, os.Getenv("TEMPlATES_PATH")); err != nil {
 		repository.pool.Close()
 		return err

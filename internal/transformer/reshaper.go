@@ -30,10 +30,10 @@ func contains(slice []string, element string) bool {
     return false
 }
 
-func (reshaper *Reshaper) changeBaseTags(template_content string, repeats []string) string {
+func (reshaper *Reshaper) changeBaseTags(template_content string, repeats []string, requiredTags map[string]string) string {
 	return reshaper.tagPattern.ReplaceAllStringFunc(template_content, func(tag string) string {
 		match_tag := reshaper.tagPattern.FindStringSubmatch(tag)
-		
+		requiredTags[match_tag[0]] = ""
 		entity, field := match_tag[1], match_tag[2]
 		if contains(repeats, entity) {
 			return fmt.Sprintf("{{ $%s.%s }}", entity, field)
@@ -57,9 +57,9 @@ func (reshaper *Reshaper) changeRepeatTags(template_content string, repeats []st
 
 }
 
-func (reshaper *Reshaper) TransformTemplate(template_content string) string {
+func (reshaper *Reshaper) TransformTemplate(template_content string, requiredTags *map[string]string) string {
 	var repeats []string
 	repeats, template_content = reshaper.changeRepeatTags(template_content, repeats)
-	template_content = reshaper.changeBaseTags(template_content, repeats)
+	template_content = reshaper.changeBaseTags(template_content, repeats, *requiredTags)
 	return template_content
 }
