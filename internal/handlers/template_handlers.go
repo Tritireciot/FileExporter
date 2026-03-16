@@ -35,7 +35,7 @@ func (handler *TemplateHandler) GetTemplate(writer http.ResponseWriter, request 
 		return
 	}
 	ctx := request.Context()
-	var template db.Template
+	template := db.Template{Name: name}
 	err := handler.repo.GetElementByName(ctx, &template)
 	if err != nil {
 		if errors.Is(err, db.ErrTemplateNotFound) {

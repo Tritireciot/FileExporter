@@ -44,10 +44,13 @@ func (repository *DBRepository) GetElementByName(
 		element.getTable(), Columns.Name,
 	)
 
+	fmt.Println(query)
+
 	err := repository.pool.
 		QueryRow(ctx, query, element.getName()).
 		Scan(element)
-
+	
+	fmt.Println(element.getName())
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return ErrTemplateNotFound
