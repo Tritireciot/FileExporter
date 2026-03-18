@@ -1,0 +1,1556 @@
+{
+    "rundown_id": 2,
+    "studio_id": 1,
+    "rundown": {
+        "content": [
+            {
+                "obj_id": 281,
+                "type_name": "story",
+                "name": "Приветствие",
+                "pos": 1,
+                "skip_flag": 0,
+                "start_type": 0,
+                "note": "",
+                "story": {
+                    "id": 281,
+                    "name": "Приветствие",
+                    "type": "СТУДИЯ",
+                    "version": 4,
+                    "presenter": 5,
+                    "plan_durat": 375,
+                    "text_duration": 475,
+                    "comments_duration": 0,
+                    "comments_prompter_duration": 0,
+                    "gap_duration": 0,
+                    "video_duration": 0,
+                    "graphics_duration": 0,
+                    "fact_duration": 375,
+                    "status": "",
+                    "status_video": "",
+                    "text": {
+                        "text_xml": "<NewsStoryContent maxBlockID=\"2\" durText=\"475\" durComment=\"0\" durCommentPrompt=\"0\" durGAP=\"0\" durVideo=\"0\" durGraphics=\"0\">\n    <Block ID=\"1\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"78\" TextRealLen=\"52\">Здравствуйте в эфире новости с Василисой Прекрасной.</Content>\n        </Contents>\n    </Block>\n    <Block ID=\"2\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"397\" TextRealLen=\"265\">ита эстонской журналистки Светланы Бурцевой, сотрудничавшей с рядом российских СМИ, подала кассационную жалобу в Государственный суд Эстонии (высшая судебная инстанция) по делу о госизмене и нарушении санкционного режима ЕС. Об этом сообщил портал национального гос</Content>\n        </Contents>\n    </Block>\n</NewsStoryContent>\n",
+                        "text": "Здравствуйте в эфире новости с Василисой Прекрасной.\nита эстонской журналистки Светланы Бурцевой, сотрудничавшей с рядом российских СМИ, подала кассационную жалобу в Государственный суд Эстонии (высшая судебная инстанция) по делу о госизмене и нарушении санкционного режима ЕС. Об этом сообщил портал национального гос",
+                        "blocks": [
+                            {
+                                "block_id": 1,
+                                "content_data": [
+                                    {
+                                        "text": "Здравствуйте в эфире новости с Василисой Прекрасной.",
+                                        "duration": 78,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            },
+                            {
+                                "block_id": 2,
+                                "content_data": [
+                                    {
+                                        "text": "ита эстонской журналистки Светланы Бурцевой, сотрудничавшей с рядом российских СМИ, подала кассационную жалобу в Государственный суд Эстонии (высшая судебная инстанция) по делу о госизмене и нарушении санкционного режима ЕС. Об этом сообщил портал национального гос",
+                                        "duration": 397,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            }
+                        ]
+                    }
+                },
+                "snd_prompt": 0,
+                "content": null
+            },
+            {
+                "obj_id": 2,
+                "type_name": "story",
+                "name": "",
+                "pos": 2,
+                "skip_flag": 0,
+                "start_type": 0,
+                "note": "",
+                "story": {
+                    "id": 2,
+                    "name": "ШПИГЕЛЬ",
+                    "type": "БЗ",
+                    "version": 32,
+                    "presenter": 5,
+                    "plan_durat": 90000,
+                    "text_duration": 1468,
+                    "comments_duration": 116,
+                    "comments_prompter_duration": 31,
+                    "gap_duration": 0,
+                    "video_duration": 0,
+                    "graphics_duration": 0,
+                    "fact_duration": 1468,
+                    "status": "ИСПРАВИТЬ",
+                    "status_video": "ГОТОВО",
+                    "text": {
+                        "text_xml": "<NewsStoryContent maxBlockID=\"33\" durText=\"1468\" durComment=\"116\" durCommentPrompt=\"31\" durGAP=\"0\" durVideo=\"0\" durGraphics=\"0\">\n    <Block ID=\"2\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"316\" TextRealLen=\"211\">- Владимир Путин после гибели президента Раиси поговорил по телефону с вице-президентом Ирана. В стране пятидневнй траур. Тела погибших уже доставлены в Тибриз. Иран поднял черный флаг над мавзолеем имама РезЫ. </Content>\n        </Contents>\n    </Block>\n    <Block ID=\"14\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"126\" TextRealLen=\"84\">// Авиакатастрофа в Иране - на первых страницах мировых СМИ. Какие версии и реакция?</Content>\n        </Contents>\n    </Block>\n    <Block ID=\"24\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"0\" TextRealLen=\"0\"></Content>\n        </Contents>\n    </Block>\n    <Block ID=\"28\">\n        <Contents>\n            <Content TypeID=\"5\" Duration=\"250\" TextRealLen=\"0\">Комментарий к резерву времени</Content>\n        </Contents>\n    </Block>\n    <Block ID=\"33\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"0\" TextRealLen=\"0\"></Content>\n        </Contents>\n    </Block>\n    <Block ID=\"32\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"103\" TextRealLen=\"69\">- Российские войска взяли Белогоровку и заняли более выгодные рубежи </Content>\n        </Contents>\n    </Block>\n    <Block ID=\"15\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"4\" TextRealLen=\"3\">// </Content>\n            <Content TypeID=\"2\" Duration=\"6\" TextRealLen=\"4\">ЛАЙФ</Content>\n            <Content TypeID=\"0\" Duration=\"114\" TextRealLen=\"76\"> ВСУ ударили по Юбилейному французскими ракетами. 12 пострадавших </Content>\n        </Contents>\n    </Block>\n    <Block ID=\"16\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"156\" TextRealLen=\"104\">// И сегодня два года со дня освобождения Мариуполя от нацбатальонов и 1234</Content>\n        </Contents>\n    </Block>\n    <Block ID=\"5\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"60\" TextRealLen=\"40\">иностранных наемников 1 Новое правка</Content>\n        </Contents>\n    </Block>\n    <Block ID=\"6\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"33\" TextRealLen=\"22\">123</Content>\n        </Contents>\n    </Block>\n    <Block ID=\"7\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"208\" TextRealLen=\"139\">- Развитие курорта «Эльбрус», IT-парка в Нальчике и другие инвестпроекты Кабардино-Балкарии -   12цобсудили на встрече в Кремле. </Content>\n        </Contents>\n    </Block>\n    <Block ID=\"17\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"7\" TextRealLen=\"5\">ЛАЙФ </Content>\n            <Content TypeID=\"1\" Duration=\"13\" TextRealLen=\"9\">ВВП фразу</Content>\n        </Contents>\n    </Block>\n    <Block ID=\"8\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"0\" TextRealLen=\"0\"></Content>\n        </Contents>\n    </Block>\n    <Block ID=\"9\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"3\" TextRealLen=\"2\">- </Content>\n            <Content TypeID=\"2\" Duration=\"6\" TextRealLen=\"4\">ЛАЙФ</Content>\n            <Content TypeID=\"0\" Duration=\"1\" TextRealLen=\"1\"> </Content>\n            <Content TypeID=\"1\" Duration=\"10\" TextRealLen=\"7\">СВОБОДу</Content>\n            <Content TypeID=\"0\" Duration=\"166\" TextRealLen=\"111\"> В аэропорту Кишинёва задержаны пассажиры, у которых в паспорте штамп о недавнем пересечении российской границы</Content>\n        </Contents>\n    </Block>\n    <Block ID=\"10\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"0\" TextRealLen=\"0\"></Content>\n        </Contents>\n    </Block>\n    <Block ID=\"11\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"114\" TextRealLen=\"76\">- В Новосибирске сильнейший ливень с градом, улицы затопило, машины поплыли.</Content>\n        </Contents>\n    </Block>\n    <Block ID=\"12\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"0\" TextRealLen=\"0\"></Content>\n        </Contents>\n    </Block>\n    <Block ID=\"13\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"3\" TextRealLen=\"2\">- </Content>\n            <Content TypeID=\"1\" Duration=\"6\" TextRealLen=\"4\">ЛАЙФ</Content>\n            <Content TypeID=\"0\" Duration=\"49\" TextRealLen=\"33\"> А в Калининграде сдали еще один </Content>\n            <Content TypeID=\"1\" Duration=\"87\" TextRealLen=\"58\">дом для офицеров Балтфлота. 120-ть квартир</Content>\n            <Content TypeID=\"0\" Duration=\"3\" TextRealLen=\"2\">, </Content>\n            <Content TypeID=\"2\" Duration=\"19\" TextRealLen=\"13\">ремонт сделан</Content>\n        </Contents>\n    </Block>\n    <Block ID=\"19\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"0\" TextRealLen=\"0\"></Content>\n        </Contents>\n    </Block>\n    <Block ID=\"18\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"1\" TextRealLen=\"1\">￼</Content>\n        </Contents>\n    </Block>\n    <Block ID=\"20\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"1\" TextRealLen=\"1\">￼</Content>\n        </Contents>\n    </Block>\n    <Block ID=\"22\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"0\" TextRealLen=\"0\"></Content>\n        </Contents>\n    </Block>\n</NewsStoryContent>\n",
+                        "text": "- Владимир Путин после гибели президента Раиси поговорил по телефону с вице-президентом Ирана. В стране пятидневнй траур. Тела погибших уже доставлены в Тибриз. Иран поднял черный флаг над мавзолеем имама РезЫ. \n// Авиакатастрофа в Иране - на первых страницах мировых СМИ. Какие версии и реакция?\n\n￼\n\n- Российские войска взяли Белогоровку и заняли более выгодные рубежи \n// ЛАЙФ ВСУ ударили по Юбилейному французскими ракетами. 12 пострадавших \n// И сегодня два года со дня освобождения Мариуполя от нацбатальонов и 1234\nиностранных наемников 1 Новое правка\n123\n- Развитие курорта «Эльбрус», IT-парка в Нальчике и другие инвестпроекты Кабардино-Балкарии -   12цобсудили на встрече в Кремле. \nЛАЙФ ВВП фразу\n\n- ЛАЙФ СВОБОДу В аэропорту Кишинёва задержаны пассажиры, у которых в паспорте штамп о недавнем пересечении российской границы\n\n- В Новосибирске сильнейший ливень с градом, улицы затопило, машины поплыли.\n\n- ЛАЙФ А в Калининграде сдали еще один дом для офицеров Балтфлота. 120-ть квартир, ремонт сделан\n\n￼\n￼\n",
+                        "blocks": [
+                            {
+                                "block_id": 2,
+                                "content_data": [
+                                    {
+                                        "text": "- Владимир Путин после гибели президента Раиси поговорил по телефону с вице-президентом Ирана. В стране пятидневнй траур. Тела погибших уже доставлены в Тибриз. Иран поднял черный флаг над мавзолеем имама РезЫ. ",
+                                        "duration": 316,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            },
+                            {
+                                "block_id": 14,
+                                "content_data": [
+                                    {
+                                        "text": "// Авиакатастрофа в Иране - на первых страницах мировых СМИ. Какие версии и реакция?",
+                                        "duration": 126,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            },
+                            {
+                                "block_id": 24,
+                                "content_data": [
+                                    {
+                                        "text": "",
+                                        "duration": 0,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            },
+                            {
+                                "block_id": 28,
+                                "content_data": [
+                                    {
+                                        "text": "Комментарий к резерву времени",
+                                        "duration": 250,
+                                        "content_type": 5
+                                    }
+                                ],
+                                "pos": 0
+                            },
+                            {
+                                "block_id": 33,
+                                "content_data": [
+                                    {
+                                        "text": "",
+                                        "duration": 0,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            },
+                            {
+                                "block_id": 32,
+                                "content_data": [
+                                    {
+                                        "text": "- Российские войска взяли Белогоровку и заняли более выгодные рубежи ",
+                                        "duration": 103,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            },
+                            {
+                                "block_id": 15,
+                                "content_data": [
+                                    {
+                                        "text": "// ",
+                                        "duration": 4,
+                                        "content_type": 0
+                                    },
+                                    {
+                                        "text": "ЛАЙФ",
+                                        "duration": 6,
+                                        "content_type": 2
+                                    },
+                                    {
+                                        "text": " ВСУ ударили по Юбилейному французскими ракетами. 12 пострадавших ",
+                                        "duration": 114,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            },
+                            {
+                                "block_id": 16,
+                                "content_data": [
+                                    {
+                                        "text": "// И сегодня два года со дня освобождения Мариуполя от нацбатальонов и 1234",
+                                        "duration": 156,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            },
+                            {
+                                "block_id": 5,
+                                "content_data": [
+                                    {
+                                        "text": "иностранных наемников 1 Новое правка",
+                                        "duration": 60,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            },
+                            {
+                                "block_id": 6,
+                                "content_data": [
+                                    {
+                                        "text": "123",
+                                        "duration": 33,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            },
+                            {
+                                "block_id": 7,
+                                "content_data": [
+                                    {
+                                        "text": "- Развитие курорта «Эльбрус», IT-парка в Нальчике и другие инвестпроекты Кабардино-Балкарии -   12цобсудили на встрече в Кремле. ",
+                                        "duration": 208,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            },
+                            {
+                                "block_id": 17,
+                                "content_data": [
+                                    {
+                                        "text": "ЛАЙФ ",
+                                        "duration": 7,
+                                        "content_type": 0
+                                    },
+                                    {
+                                        "text": "ВВП фразу",
+                                        "duration": 13,
+                                        "content_type": 1
+                                    }
+                                ],
+                                "pos": 0
+                            },
+                            {
+                                "block_id": 8,
+                                "content_data": [
+                                    {
+                                        "text": "",
+                                        "duration": 0,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            },
+                            {
+                                "block_id": 9,
+                                "content_data": [
+                                    {
+                                        "text": "- ",
+                                        "duration": 3,
+                                        "content_type": 0
+                                    },
+                                    {
+                                        "text": "ЛАЙФ",
+                                        "duration": 6,
+                                        "content_type": 2
+                                    },
+                                    {
+                                        "text": " ",
+                                        "duration": 1,
+                                        "content_type": 0
+                                    },
+                                    {
+                                        "text": "СВОБОДу",
+                                        "duration": 10,
+                                        "content_type": 1
+                                    },
+                                    {
+                                        "text": " В аэропорту Кишинёва задержаны пассажиры, у которых в паспорте штамп о недавнем пересечении российской границы",
+                                        "duration": 166,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            },
+                            {
+                                "block_id": 10,
+                                "content_data": [
+                                    {
+                                        "text": "",
+                                        "duration": 0,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            },
+                            {
+                                "block_id": 11,
+                                "content_data": [
+                                    {
+                                        "text": "- В Новосибирске сильнейший ливень с градом, улицы затопило, машины поплыли.",
+                                        "duration": 114,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            },
+                            {
+                                "block_id": 12,
+                                "content_data": [
+                                    {
+                                        "text": "",
+                                        "duration": 0,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            },
+                            {
+                                "block_id": 13,
+                                "content_data": [
+                                    {
+                                        "text": "- ",
+                                        "duration": 3,
+                                        "content_type": 0
+                                    },
+                                    {
+                                        "text": "ЛАЙФ",
+                                        "duration": 6,
+                                        "content_type": 1
+                                    },
+                                    {
+                                        "text": " А в Калининграде сдали еще один ",
+                                        "duration": 49,
+                                        "content_type": 0
+                                    },
+                                    {
+                                        "text": "дом для офицеров Балтфлота. 120-ть квартир",
+                                        "duration": 87,
+                                        "content_type": 1
+                                    },
+                                    {
+                                        "text": ", ",
+                                        "duration": 3,
+                                        "content_type": 0
+                                    },
+                                    {
+                                        "text": "ремонт сделан",
+                                        "duration": 19,
+                                        "content_type": 2
+                                    }
+                                ],
+                                "pos": 0
+                            },
+                            {
+                                "block_id": 19,
+                                "content_data": [
+                                    {
+                                        "text": "",
+                                        "duration": 0,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            },
+                            {
+                                "block_id": 18,
+                                "content_data": [
+                                    {
+                                        "text": "￼",
+                                        "duration": 1,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            },
+                            {
+                                "block_id": 20,
+                                "content_data": [
+                                    {
+                                        "text": "￼",
+                                        "duration": 1,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            },
+                            {
+                                "block_id": 22,
+                                "content_data": [
+                                    {
+                                        "text": "",
+                                        "duration": 0,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            }
+                        ]
+                    }
+                },
+                "snd_prompt": 1,
+                "content": null
+            },
+            {
+                "obj_id": 3,
+                "type_name": "separator",
+                "name": "",
+                "pos": 0,
+                "skip_flag": 0,
+                "start_type": 0,
+                "note": "",
+                "story": null,
+                "snd_prompt": 0,
+                "content": null
+            },
+            {
+                "obj_id": 3,
+                "type_name": "story",
+                "name": "",
+                "pos": 3,
+                "skip_flag": 0,
+                "start_type": 1,
+                "note": "",
+                "story": {
+                    "id": 3,
+                    "name": "Иран+поговорил",
+                    "type": "ВМЗ",
+                    "version": 1,
+                    "presenter": 5,
+                    "plan_durat": 1000,
+                    "text_duration": 1003,
+                    "comments_duration": 0,
+                    "comments_prompter_duration": 0,
+                    "gap_duration": 0,
+                    "video_duration": 0,
+                    "graphics_duration": 0,
+                    "fact_duration": 1000,
+                    "status": "В РАБОТЕ",
+                    "status_video": "НОВЫЙ",
+                    "text": {
+                        "text_xml": "<NewsStoryContent maxBlockID=\"4\" durText=\"1003\" durComment=\"0\" durCommentPrompt=\"0\" durGAP=\"0\" durVideo=\"0\" durGraphics=\"0\">\n    <Block ID=\"2\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"150\" TextRealLen=\"100\">Владимир Путин поговорил по телефону с исполняющим обязанности президента Ирана Мохаммадом Мохбером.</Content>\n        </Contents>\n    </Block>\n    <Block ID=\"3\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"553\" TextRealLen=\"369\">Российский лидер выразил глубочайшие соболезнования руководству республики и народу в связи с трагической гибелью главы государства, сообщила пресс-служба Кремля. Москва и Тегеран настроены и в дальнейшем укреплять всестороннее сотрудничество. Мохбер отметил в свою очередь, что взаимодействие Владимир Путина и Эбрахима Раиси позволило изменить расстановку сил в мире.</Content>\n        </Contents>\n    </Block>\n    <Block ID=\"4\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"300\" TextRealLen=\"200\">В Иране объявлен 5-ти дневный траур. Похороны президента Ирана, главы МИД и других иранских чиновников, которые погибли в результате крушения вертолета пройдут завтра. Продолжит Александр Билибов.</Content>\n        </Contents>\n    </Block>\n</NewsStoryContent>\n",
+                        "text": "Владимир Путин поговорил по телефону с исполняющим обязанности президента Ирана Мохаммадом Мохбером.\nРоссийский лидер выразил глубочайшие соболезнования руководству республики и народу в связи с трагической гибелью главы государства, сообщила пресс-служба Кремля. Москва и Тегеран настроены и в дальнейшем укреплять всестороннее сотрудничество. Мохбер отметил в свою очередь, что взаимодействие Владимир Путина и Эбрахима Раиси позволило изменить расстановку сил в мире.\nВ Иране объявлен 5-ти дневный траур. Похороны президента Ирана, главы МИД и других иранских чиновников, которые погибли в результате крушения вертолета пройдут завтра. Продолжит Александр Билибов.",
+                        "blocks": [
+                            {
+                                "block_id": 2,
+                                "content_data": [
+                                    {
+                                        "text": "Владимир Путин поговорил по телефону с исполняющим обязанности президента Ирана Мохаммадом Мохбером.",
+                                        "duration": 150,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            },
+                            {
+                                "block_id": 3,
+                                "content_data": [
+                                    {
+                                        "text": "Российский лидер выразил глубочайшие соболезнования руководству республики и народу в связи с трагической гибелью главы государства, сообщила пресс-служба Кремля. Москва и Тегеран настроены и в дальнейшем укреплять всестороннее сотрудничество. Мохбер отметил в свою очередь, что взаимодействие Владимир Путина и Эбрахима Раиси позволило изменить расстановку сил в мире.",
+                                        "duration": 553,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            },
+                            {
+                                "block_id": 4,
+                                "content_data": [
+                                    {
+                                        "text": "В Иране объявлен 5-ти дневный траур. Похороны президента Ирана, главы МИД и других иранских чиновников, которые погибли в результате крушения вертолета пройдут завтра. Продолжит Александр Билибов.",
+                                        "duration": 300,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            }
+                        ]
+                    }
+                },
+                "snd_prompt": 0,
+                "content": null
+            },
+            {
+                "obj_id": 4,
+                "type_name": "story",
+                "name": "",
+                "pos": 4,
+                "skip_flag": 0,
+                "start_type": 1,
+                "note": "",
+                "story": {
+                    "id": 4,
+                    "name": "14БИЛИБОВ",
+                    "type": "ВМЗ",
+                    "version": 1,
+                    "presenter": 0,
+                    "plan_durat": 1125,
+                    "text_duration": 1221,
+                    "comments_duration": 0,
+                    "comments_prompter_duration": 0,
+                    "gap_duration": 0,
+                    "video_duration": 0,
+                    "graphics_duration": 0,
+                    "fact_duration": 1125,
+                    "status": "ГОТОВО",
+                    "status_video": "НОВЫЙ",
+                    "text": {
+                        "text_xml": "<NewsStoryContent maxBlockID=\"2\" durText=\"1221\" durComment=\"0\" durCommentPrompt=\"0\" durGAP=\"0\" durVideo=\"0\" durGraphics=\"0\">\n    <Block ID=\"2\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"1221\" TextRealLen=\"814\">Это первые кадры с места крушения вертолета президента Иран Ибрагима Раиси. Поисково-спасательная операция продолжалась всю ночь, но только с рассветом спасателям удалось установить точное местоположение вертолета. Судя по этим кадрам воздушное суд рухнуло на крутой склон и загорелось – видно, что фюзеляж вертолета полностью выгорел. Среди официальных лиц, на борту, помимо президента Ирана, находился министр иностранных дел страны, губернатор иранской провинции Восточный Азербайджан и имам Тебриза. По предварительным данным никто из находившихся в вертолете - не выжил, об этом сообщило местное информагентство ИРНА, со ссылкой на руководителя иранского общества Красного полумесяца. ЦИТАТА: “Когда мы обнаружили местонахождение разбившегося вертолета президента, не было никаких признаков живых пассажиров.”</Content>\n        </Contents>\n    </Block>\n</NewsStoryContent>\n",
+                        "text": "Это первые кадры с места крушения вертолета президента Иран Ибрагима Раиси. Поисково-спасательная операция продолжалась всю ночь, но только с рассветом спасателям удалось установить точное местоположение вертолета. Судя по этим кадрам воздушное суд рухнуло на крутой склон и загорелось – видно, что фюзеляж вертолета полностью выгорел. Среди официальных лиц, на борту, помимо президента Ирана, находился министр иностранных дел страны, губернатор иранской провинции Восточный Азербайджан и имам Тебриза. По предварительным данным никто из находившихся в вертолете - не выжил, об этом сообщило местное информагентство ИРНА, со ссылкой на руководителя иранского общества Красного полумесяца. ЦИТАТА: “Когда мы обнаружили местонахождение разбившегося вертолета президента, не было никаких признаков живых пассажиров.”",
+                        "blocks": [
+                            {
+                                "block_id": 2,
+                                "content_data": [
+                                    {
+                                        "text": "Это первые кадры с места крушения вертолета президента Иран Ибрагима Раиси. Поисково-спасательная операция продолжалась всю ночь, но только с рассветом спасателям удалось установить точное местоположение вертолета. Судя по этим кадрам воздушное суд рухнуло на крутой склон и загорелось – видно, что фюзеляж вертолета полностью выгорел. Среди официальных лиц, на борту, помимо президента Ирана, находился министр иностранных дел страны, губернатор иранской провинции Восточный Азербайджан и имам Тебриза. По предварительным данным никто из находившихся в вертолете - не выжил, об этом сообщило местное информагентство ИРНА, со ссылкой на руководителя иранского общества Красного полумесяца. ЦИТАТА: “Когда мы обнаружили местонахождение разбившегося вертолета президента, не было никаких признаков живых пассажиров.”",
+                                        "duration": 1221,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            }
+                        ]
+                    }
+                },
+                "snd_prompt": 0,
+                "content": null
+            },
+            {
+                "obj_id": 27,
+                "type_name": "separator",
+                "name": "",
+                "pos": 0,
+                "skip_flag": 0,
+                "start_type": 0,
+                "note": "",
+                "story": null,
+                "snd_prompt": 0,
+                "content": null
+            },
+            {
+                "obj_id": 21,
+                "type_name": "story",
+                "name": "ПРЯМо",
+                "pos": 5,
+                "skip_flag": 0,
+                "start_type": 0,
+                "note": "",
+                "story": {
+                    "id": 21,
+                    "name": "ПРЯМО",
+                    "type": "ВМЗ",
+                    "version": 0,
+                    "presenter": 0,
+                    "plan_durat": 0,
+                    "text_duration": 0,
+                    "comments_duration": 0,
+                    "comments_prompter_duration": 0,
+                    "gap_duration": 0,
+                    "video_duration": 0,
+                    "graphics_duration": 0,
+                    "fact_duration": 0,
+                    "status": "",
+                    "status_video": "",
+                    "text": {
+                        "text_xml": "",
+                        "text": "",
+                        "blocks": null
+                    }
+                },
+                "snd_prompt": 0,
+                "content": null
+            },
+            {
+                "obj_id": 20,
+                "type_name": "separator",
+                "name": "",
+                "pos": 0,
+                "skip_flag": 0,
+                "start_type": 0,
+                "note": "",
+                "story": null,
+                "snd_prompt": 0,
+                "content": null
+            },
+            {
+                "obj_id": 9,
+                "type_name": "rubric",
+                "name": "",
+                "pos": 0,
+                "skip_flag": 0,
+                "start_type": 0,
+                "note": "",
+                "story": null,
+                "snd_prompt": 0,
+                "content": [
+                    {
+                        "obj_id": 5,
+                        "type_name": "story",
+                        "name": "",
+                        "pos": 6,
+                        "skip_flag": 0,
+                        "start_type": 1,
+                        "note": "",
+                        "story": {
+                            "id": 5,
+                            "name": "с Коковым",
+                            "type": "БЗ",
+                            "version": 1,
+                            "presenter": 5,
+                            "plan_durat": 325,
+                            "text_duration": 418,
+                            "comments_duration": 0,
+                            "comments_prompter_duration": 0,
+                            "gap_duration": 0,
+                            "video_duration": 0,
+                            "graphics_duration": 0,
+                            "fact_duration": 743,
+                            "status": "ОТКЛОНИТЬ",
+                            "status_video": "",
+                            "text": {
+                                "text_xml": "<NewsStoryContent maxBlockID=\"3\" durText=\"418\" durComment=\"0\" durCommentPrompt=\"0\" durGAP=\"0\" durVideo=\"0\" durGraphics=\"0\">\n    <Block ID=\"2\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"168\" TextRealLen=\"112\">Главные инвестиционные проекты, реализуемые в Кабардино-Балкарии, президент обсудил сегодня с главой республики.</Content>\n        </Contents>\n    </Block>\n    <Block ID=\"3\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"250\" TextRealLen=\"167\">На встрече в Кремле с Казбеком Коковым - Владимир Путин подчеркнул необходимость держать под постоянным контролем строительство и ремонт важнейших социальных объектов.</Content>\n        </Contents>\n    </Block>\n</NewsStoryContent>\n",
+                                "text": "Главные инвестиционные проекты, реализуемые в Кабардино-Балкарии, президент обсудил сегодня с главой республики.\nНа встрече в Кремле с Казбеком Коковым - Владимир Путин подчеркнул необходимость держать под постоянным контролем строительство и ремонт важнейших социальных объектов.",
+                                "blocks": [
+                                    {
+                                        "block_id": 2,
+                                        "content_data": [
+                                            {
+                                                "text": "Главные инвестиционные проекты, реализуемые в Кабардино-Балкарии, президент обсудил сегодня с главой республики.",
+                                                "duration": 168,
+                                                "content_type": 0
+                                            }
+                                        ],
+                                        "pos": 0
+                                    },
+                                    {
+                                        "block_id": 3,
+                                        "content_data": [
+                                            {
+                                                "text": "На встрече в Кремле с Казбеком Коковым - Владимир Путин подчеркнул необходимость держать под постоянным контролем строительство и ремонт важнейших социальных объектов.",
+                                                "duration": 250,
+                                                "content_type": 0
+                                            }
+                                        ],
+                                        "pos": 0
+                                    }
+                                ]
+                            }
+                        },
+                        "snd_prompt": 1,
+                        "content": null
+                    },
+                    {
+                        "obj_id": 7,
+                        "type_name": "story",
+                        "name": "",
+                        "pos": 7,
+                        "skip_flag": 0,
+                        "start_type": 1,
+                        "note": "",
+                        "story": {
+                            "id": 7,
+                            "name": "ВВП+КОКОВ",
+                            "type": "ВМЗ",
+                            "version": 1,
+                            "presenter": 0,
+                            "plan_durat": 1500,
+                            "text_duration": 1468,
+                            "comments_duration": 0,
+                            "comments_prompter_duration": 0,
+                            "gap_duration": 0,
+                            "video_duration": 0,
+                            "graphics_duration": 0,
+                            "fact_duration": 1500,
+                            "status": "ИСПРАВИТЬ",
+                            "status_video": "ГОТОВО",
+                            "text": {
+                                "text_xml": "<NewsStoryContent maxBlockID=\"7\" durText=\"1468\" durComment=\"0\" durCommentPrompt=\"0\" durGAP=\"0\" durVideo=\"0\" durGraphics=\"0\">\n    <Block ID=\"3\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"9\" TextRealLen=\"6\">ПУТИН:</Content>\n        </Contents>\n    </Block>\n    <Block ID=\"4\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"168\" TextRealLen=\"112\">я посмотрел у вас, там и в вот эта зона «Эльбрус» развивается потихонечку. И IT парк развивается в Нальчике, да?</Content>\n        </Contents>\n    </Block>\n    <Block ID=\"5\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"9\" TextRealLen=\"6\">КОКОВ:</Content>\n        </Contents>\n    </Block>\n    <Block ID=\"6\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"636\" TextRealLen=\"424\">Балкарской Республики, у нас есть прорывные проекты, которые утверждены правительством Российской Федерации. Это и развитие курортов в …..»Эльбрус». Сегодня на 24-26 год планируется вложить бюджетных средств 14,5 миллиардов рублей, эти все деньги идут на инфраструктурные решения, именно расширение зоны катания В.Путин: Нужно, конечно, обратить внимание дополнительно на состояние</Content>\n        </Contents>\n    </Block>\n    <Block ID=\"7\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"646\" TextRealLen=\"431\">детских садов, школ, ремонты своевременные, К.Коков: Буквально несколько слов, что касается детсадов. . Мы даже в этом году уже за счёт своих собственных средств два крупных детских сада ремонтируем. Кроме этого через программу комплексного развития сельских территорий, она тоже эффективна, два детских сада мы отремонтировали. А , так вообще с 18-го грода мы ввели 55 новых зданий дошкольного образования</Content>\n        </Contents>\n    </Block>\n</NewsStoryContent>\n",
+                                "text": "ПУТИН:\nя посмотрел у вас, там и в вот эта зона «Эльбрус» развивается потихонечку. И IT парк развивается в Нальчике, да?\nКОКОВ:\nБалкарской Республики, у нас есть прорывные проекты, которые утверждены правительством Российской Федерации. Это и развитие курортов в …..»Эльбрус». Сегодня на 24-26 год планируется вложить бюджетных средств 14,5 миллиардов рублей, эти все деньги идут на инфраструктурные решения, именно расширение зоны катания В.Путин: Нужно, конечно, обратить внимание дополнительно на состояние\nдетских садов, школ, ремонты своевременные, К.Коков: Буквально несколько слов, что касается детсадов. . Мы даже в этом году уже за счёт своих собственных средств два крупных детских сада ремонтируем. Кроме этого через программу комплексного развития сельских территорий, она тоже эффективна, два детских сада мы отремонтировали. А , так вообще с 18-го грода мы ввели 55 новых зданий дошкольного образования",
+                                "blocks": [
+                                    {
+                                        "block_id": 3,
+                                        "content_data": [
+                                            {
+                                                "text": "ПУТИН:",
+                                                "duration": 9,
+                                                "content_type": 0
+                                            }
+                                        ],
+                                        "pos": 0
+                                    },
+                                    {
+                                        "block_id": 4,
+                                        "content_data": [
+                                            {
+                                                "text": "я посмотрел у вас, там и в вот эта зона «Эльбрус» развивается потихонечку. И IT парк развивается в Нальчике, да?",
+                                                "duration": 168,
+                                                "content_type": 0
+                                            }
+                                        ],
+                                        "pos": 0
+                                    },
+                                    {
+                                        "block_id": 5,
+                                        "content_data": [
+                                            {
+                                                "text": "КОКОВ:",
+                                                "duration": 9,
+                                                "content_type": 0
+                                            }
+                                        ],
+                                        "pos": 0
+                                    },
+                                    {
+                                        "block_id": 6,
+                                        "content_data": [
+                                            {
+                                                "text": "Балкарской Республики, у нас есть прорывные проекты, которые утверждены правительством Российской Федерации. Это и развитие курортов в …..»Эльбрус». Сегодня на 24-26 год планируется вложить бюджетных средств 14,5 миллиардов рублей, эти все деньги идут на инфраструктурные решения, именно расширение зоны катания В.Путин: Нужно, конечно, обратить внимание дополнительно на состояние",
+                                                "duration": 636,
+                                                "content_type": 0
+                                            }
+                                        ],
+                                        "pos": 0
+                                    },
+                                    {
+                                        "block_id": 7,
+                                        "content_data": [
+                                            {
+                                                "text": "детских садов, школ, ремонты своевременные, К.Коков: Буквально несколько слов, что касается детсадов. . Мы даже в этом году уже за счёт своих собственных средств два крупных детских сада ремонтируем. Кроме этого через программу комплексного развития сельских территорий, она тоже эффективна, два детских сада мы отремонтировали. А , так вообще с 18-го грода мы ввели 55 новых зданий дошкольного образования",
+                                                "duration": 646,
+                                                "content_type": 0
+                                            }
+                                        ],
+                                        "pos": 0
+                                    }
+                                ]
+                            }
+                        },
+                        "snd_prompt": 0,
+                        "content": null
+                    },
+                    {
+                        "obj_id": 3,
+                        "type_name": "",
+                        "name": "НЕПОГОДА",
+                        "pos": 0,
+                        "skip_flag": 0,
+                        "start_type": 0,
+                        "note": "",
+                        "story": null,
+                        "snd_prompt": 0,
+                        "content": [
+                            {
+                                "obj_id": 17,
+                                "type_name": "story",
+                                "name": "",
+                                "pos": 8,
+                                "skip_flag": 0,
+                                "start_type": 0,
+                                "note": "",
+                                "story": {
+                                    "id": 17,
+                                    "name": "непогоды",
+                                    "type": "ПОГОДА",
+                                    "version": 1,
+                                    "presenter": 0,
+                                    "plan_durat": 1125,
+                                    "text_duration": 1223,
+                                    "comments_duration": 0,
+                                    "comments_prompter_duration": 0,
+                                    "gap_duration": 0,
+                                    "video_duration": 0,
+                                    "graphics_duration": 0,
+                                    "fact_duration": 1125,
+                                    "status": "ГОТОВО",
+                                    "status_video": "",
+                                    "text": {
+                                        "text_xml": "<NewsStoryContent maxBlockID=\"6\" durText=\"1223\" durComment=\"0\" durCommentPrompt=\"0\" durGAP=\"0\" durVideo=\"0\" durGraphics=\"0\">\n    <Block ID=\"3\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"69\" TextRealLen=\"46\">В Якутии сегодня ввели режим ЧС из-за паводка.</Content>\n        </Contents>\n    </Block>\n    <Block ID=\"4\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"568\" TextRealLen=\"379\">В зоне бедствия - 3 района и несколько десятков сёл. В пункты временного размещения эвакуированы 500 человек. В региональных аэропортах ЗырЯнка и Средне-колЫмск подтоплены взлётно-посадочные полосы - &quot;Полярные авиалинии&quot; организуют стыковочные рейсы. Сотрудники МЧС укрепляют защитные насыпи. Материальную помощь в ближайшее время получат более 2 тысяч человек.</Content>\n        </Contents>\n    </Block>\n    <Block ID=\"5\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"475\" TextRealLen=\"317\">А это кадры из Новосибирска, на который обрушился сильнейший шторм с градом. Ливень затопил дороги, машины поплыли. Ливнёвки с таким объёмом воды сразу не справились. Сильный ветер - срывал крыши со зданий, валил остановки, столбы, деревья и рекламные конструкции. На одной из улиц - обрушилась часть подпорной стены.</Content>\n        </Contents>\n    </Block>\n    <Block ID=\"6\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"111\" TextRealLen=\"74\">Но после разгула стихия, погода порадовала горожан величественной радугой.</Content>\n        </Contents>\n    </Block>\n</NewsStoryContent>\n",
+                                        "text": "В Якутии сегодня ввели режим ЧС из-за паводка.\nВ зоне бедствия - 3 района и несколько десятков сёл. В пункты временного размещения эвакуированы 500 человек. В региональных аэропортах ЗырЯнка и Средне-колЫмск подтоплены взлётно-посадочные полосы - \"Полярные авиалинии\" организуют стыковочные рейсы. Сотрудники МЧС укрепляют защитные насыпи. Материальную помощь в ближайшее время получат более 2 тысяч человек.\nА это кадры из Новосибирска, на который обрушился сильнейший шторм с градом. Ливень затопил дороги, машины поплыли. Ливнёвки с таким объёмом воды сразу не справились. Сильный ветер - срывал крыши со зданий, валил остановки, столбы, деревья и рекламные конструкции. На одной из улиц - обрушилась часть подпорной стены.\nНо после разгула стихия, погода порадовала горожан величественной радугой.",
+                                        "blocks": [
+                                            {
+                                                "block_id": 3,
+                                                "content_data": [
+                                                    {
+                                                        "text": "В Якутии сегодня ввели режим ЧС из-за паводка.",
+                                                        "duration": 69,
+                                                        "content_type": 0
+                                                    }
+                                                ],
+                                                "pos": 0
+                                            },
+                                            {
+                                                "block_id": 4,
+                                                "content_data": [
+                                                    {
+                                                        "text": "В зоне бедствия - 3 района и несколько десятков сёл. В пункты временного размещения эвакуированы 500 человек. В региональных аэропортах ЗырЯнка и Средне-колЫмск подтоплены взлётно-посадочные полосы - \"Полярные авиалинии\" организуют стыковочные рейсы. Сотрудники МЧС укрепляют защитные насыпи. Материальную помощь в ближайшее время получат более 2 тысяч человек.",
+                                                        "duration": 568,
+                                                        "content_type": 0
+                                                    }
+                                                ],
+                                                "pos": 0
+                                            },
+                                            {
+                                                "block_id": 5,
+                                                "content_data": [
+                                                    {
+                                                        "text": "А это кадры из Новосибирска, на который обрушился сильнейший шторм с градом. Ливень затопил дороги, машины поплыли. Ливнёвки с таким объёмом воды сразу не справились. Сильный ветер - срывал крыши со зданий, валил остановки, столбы, деревья и рекламные конструкции. На одной из улиц - обрушилась часть подпорной стены.",
+                                                        "duration": 475,
+                                                        "content_type": 0
+                                                    }
+                                                ],
+                                                "pos": 0
+                                            },
+                                            {
+                                                "block_id": 6,
+                                                "content_data": [
+                                                    {
+                                                        "text": "Но после разгула стихия, погода порадовала горожан величественной радугой.",
+                                                        "duration": 111,
+                                                        "content_type": 0
+                                                    }
+                                                ],
+                                                "pos": 0
+                                            }
+                                        ]
+                                    }
+                                },
+                                "snd_prompt": 0,
+                                "content": null
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "obj_id": 8,
+                "type_name": "story",
+                "name": "",
+                "pos": 9,
+                "skip_flag": 0,
+                "start_type": 1,
+                "note": "",
+                "story": {
+                    "id": 8,
+                    "name": "Путин си",
+                    "type": "СТУДИЯ",
+                    "version": 1,
+                    "presenter": 5,
+                    "plan_durat": 500,
+                    "text_duration": 617,
+                    "comments_duration": 0,
+                    "comments_prompter_duration": 0,
+                    "gap_duration": 0,
+                    "video_duration": 0,
+                    "graphics_duration": 0,
+                    "fact_duration": 617,
+                    "status": "ГОТОВО",
+                    "status_video": "НОВЫЙ",
+                    "text": {
+                        "text_xml": "<NewsStoryContent maxBlockID=\"4\" durText=\"617\" durComment=\"0\" durCommentPrompt=\"0\" durGAP=\"0\" durVideo=\"0\" durGraphics=\"0\">\n    <Block ID=\"1\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"0\" TextRealLen=\"0\"></Content>\n        </Contents>\n    </Block>\n    <Block ID=\"2\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"166\" TextRealLen=\"111\">И сегодня же Владимир Путин поблагодарил Си Цзиньпина за теплый прием в Китае во время государственного визита.</Content>\n        </Contents>\n    </Block>\n    <Block ID=\"3\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"451\" TextRealLen=\"301\">В телеграмме, опубликованной на сайте Кремля, российский лидер отметил, что эта поездка оставила светлые и незабываемые впечатления. Путин убежден, что состоявшиеся обстоятельные переговоры будут способствовать дальнейшему укреплению отношений и стратегического взаимодействия между Москвой и Пекином.</Content>\n        </Contents>\n    </Block>\n    <Block ID=\"4\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"0\" TextRealLen=\"0\"></Content>\n        </Contents>\n    </Block>\n</NewsStoryContent>\n",
+                        "text": "\nИ сегодня же Владимир Путин поблагодарил Си Цзиньпина за теплый прием в Китае во время государственного визита.\nВ телеграмме, опубликованной на сайте Кремля, российский лидер отметил, что эта поездка оставила светлые и незабываемые впечатления. Путин убежден, что состоявшиеся обстоятельные переговоры будут способствовать дальнейшему укреплению отношений и стратегического взаимодействия между Москвой и Пекином.\n",
+                        "blocks": [
+                            {
+                                "block_id": 1,
+                                "content_data": [
+                                    {
+                                        "text": "",
+                                        "duration": 0,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            },
+                            {
+                                "block_id": 2,
+                                "content_data": [
+                                    {
+                                        "text": "И сегодня же Владимир Путин поблагодарил Си Цзиньпина за теплый прием в Китае во время государственного визита.",
+                                        "duration": 166,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            },
+                            {
+                                "block_id": 3,
+                                "content_data": [
+                                    {
+                                        "text": "В телеграмме, опубликованной на сайте Кремля, российский лидер отметил, что эта поездка оставила светлые и незабываемые впечатления. Путин убежден, что состоявшиеся обстоятельные переговоры будут способствовать дальнейшему укреплению отношений и стратегического взаимодействия между Москвой и Пекином.",
+                                        "duration": 451,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            },
+                            {
+                                "block_id": 4,
+                                "content_data": [
+                                    {
+                                        "text": "",
+                                        "duration": 0,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            }
+                        ]
+                    }
+                },
+                "snd_prompt": 0,
+                "content": null
+            },
+            {
+                "obj_id": 331,
+                "type_name": "story",
+                "name": "1111",
+                "pos": 10,
+                "skip_flag": 0,
+                "start_type": 1,
+                "note": "",
+                "story": {
+                    "id": 331,
+                    "name": "1111",
+                    "type": "РЕКЛАМА",
+                    "version": 1,
+                    "presenter": 5,
+                    "plan_durat": 0,
+                    "text_duration": 6,
+                    "comments_duration": 0,
+                    "comments_prompter_duration": 0,
+                    "gap_duration": 0,
+                    "video_duration": 0,
+                    "graphics_duration": 0,
+                    "fact_duration": 0,
+                    "status": "",
+                    "status_video": "",
+                    "text": {
+                        "text_xml": "<NewsStoryContent maxBlockID=\"1\" durText=\"6\" durComment=\"0\" durCommentPrompt=\"0\" durGAP=\"0\" durVideo=\"0\" durGraphics=\"0\">\n    <Block ID=\"1\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"6\" TextRealLen=\"4\">ыывв</Content>\n        </Contents>\n    </Block>\n</NewsStoryContent>\n",
+                        "text": "ыывв",
+                        "blocks": [
+                            {
+                                "block_id": 1,
+                                "content_data": [
+                                    {
+                                        "text": "ыывв",
+                                        "duration": 6,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            }
+                        ]
+                    }
+                },
+                "snd_prompt": 0,
+                "content": null
+            },
+            {
+                "obj_id": 9,
+                "type_name": "story",
+                "name": "",
+                "pos": 11,
+                "skip_flag": 0,
+                "start_type": 1,
+                "note": "",
+                "story": {
+                    "id": 9,
+                    "name": "МВМ+Мантуров",
+                    "type": "БЗ",
+                    "version": 1,
+                    "presenter": 5,
+                    "plan_durat": 125,
+                    "text_duration": 123,
+                    "comments_duration": 0,
+                    "comments_prompter_duration": 0,
+                    "gap_duration": 0,
+                    "video_duration": 0,
+                    "graphics_duration": 0,
+                    "fact_duration": 248,
+                    "status": "ГОТОВО",
+                    "status_video": "",
+                    "text": {
+                        "text_xml": "<NewsStoryContent maxBlockID=\"2\" durText=\"123\" durComment=\"0\" durCommentPrompt=\"0\" durGAP=\"0\" durVideo=\"0\" durGraphics=\"0\">\n    <Block ID=\"1\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"0\" TextRealLen=\"0\"></Content>\n        </Contents>\n    </Block>\n    <Block ID=\"2\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"123\" TextRealLen=\"82\">Ледовитого океана. Следующий ледокол Якутия планируем сдать в конце текущего года.</Content>\n        </Contents>\n    </Block>\n</NewsStoryContent>\n",
+                        "text": "\nЛедовитого океана. Следующий ледокол Якутия планируем сдать в конце текущего года.",
+                        "blocks": [
+                            {
+                                "block_id": 1,
+                                "content_data": [
+                                    {
+                                        "text": "",
+                                        "duration": 0,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            },
+                            {
+                                "block_id": 2,
+                                "content_data": [
+                                    {
+                                        "text": "Ледовитого океана. Следующий ледокол Якутия планируем сдать в конце текущего года.",
+                                        "duration": 123,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            }
+                        ]
+                    }
+                },
+                "snd_prompt": 1,
+                "content": null
+            },
+            {
+                "obj_id": 31,
+                "type_name": "rubric",
+                "name": "САРОВ",
+                "pos": 0,
+                "skip_flag": 0,
+                "start_type": 0,
+                "note": "",
+                "story": null,
+                "snd_prompt": 0,
+                "content": [
+                    {
+                        "obj_id": 10,
+                        "type_name": "story",
+                        "name": "",
+                        "pos": 12,
+                        "skip_flag": 0,
+                        "start_type": 1,
+                        "note": "",
+                        "story": {
+                            "id": 10,
+                            "name": "Саров",
+                            "type": "БЗ",
+                            "version": 1,
+                            "presenter": 5,
+                            "plan_durat": 1000,
+                            "text_duration": 904,
+                            "comments_duration": 0,
+                            "comments_prompter_duration": 0,
+                            "gap_duration": 0,
+                            "video_duration": 0,
+                            "graphics_duration": 0,
+                            "fact_duration": 1904,
+                            "status": "ИСПРАВИТЬ",
+                            "status_video": "",
+                            "text": {
+                                "text_xml": "<NewsStoryContent maxBlockID=\"4\" durText=\"904\" durComment=\"0\" durCommentPrompt=\"0\" durGAP=\"0\" durVideo=\"0\" durGraphics=\"0\">\n    <Block ID=\"1\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"0\" TextRealLen=\"0\"></Content>\n        </Contents>\n    </Block>\n    <Block ID=\"2\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"112\" TextRealLen=\"75\">Россия должна войти в десятку стран-лидеров в области электроники будущего.</Content>\n        </Contents>\n    </Block>\n    <Block ID=\"3\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"792\" TextRealLen=\"528\">Такую задачу поставил сегодня Михаил Мишустин на совещании по вопросам технологического суверенитета в области фотОники, которое прошло в городе Саров Нижегородской области. Перед этим глава правительства осмотрел профильную выставку госкорпорации Росатом. Там представлены современные научные разработки для машиностроения, телекоммуникаций, космоса и медицины. Мишустину показали комплексы для диагностики онкологии на ранних стадиях, хирургические аппараты, лазеры, компоненты для супер-компьютеров, сенсоры, 3-Д принтеры.</Content>\n        </Contents>\n    </Block>\n    <Block ID=\"4\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"0\" TextRealLen=\"0\"></Content>\n        </Contents>\n    </Block>\n</NewsStoryContent>\n",
+                                "text": "\nРоссия должна войти в десятку стран-лидеров в области электроники будущего.\nТакую задачу поставил сегодня Михаил Мишустин на совещании по вопросам технологического суверенитета в области фотОники, которое прошло в городе Саров Нижегородской области. Перед этим глава правительства осмотрел профильную выставку госкорпорации Росатом. Там представлены современные научные разработки для машиностроения, телекоммуникаций, космоса и медицины. Мишустину показали комплексы для диагностики онкологии на ранних стадиях, хирургические аппараты, лазеры, компоненты для супер-компьютеров, сенсоры, 3-Д принтеры.\n",
+                                "blocks": [
+                                    {
+                                        "block_id": 1,
+                                        "content_data": [
+                                            {
+                                                "text": "",
+                                                "duration": 0,
+                                                "content_type": 0
+                                            }
+                                        ],
+                                        "pos": 0
+                                    },
+                                    {
+                                        "block_id": 2,
+                                        "content_data": [
+                                            {
+                                                "text": "Россия должна войти в десятку стран-лидеров в области электроники будущего.",
+                                                "duration": 112,
+                                                "content_type": 0
+                                            }
+                                        ],
+                                        "pos": 0
+                                    },
+                                    {
+                                        "block_id": 3,
+                                        "content_data": [
+                                            {
+                                                "text": "Такую задачу поставил сегодня Михаил Мишустин на совещании по вопросам технологического суверенитета в области фотОники, которое прошло в городе Саров Нижегородской области. Перед этим глава правительства осмотрел профильную выставку госкорпорации Росатом. Там представлены современные научные разработки для машиностроения, телекоммуникаций, космоса и медицины. Мишустину показали комплексы для диагностики онкологии на ранних стадиях, хирургические аппараты, лазеры, компоненты для супер-компьютеров, сенсоры, 3-Д принтеры.",
+                                                "duration": 792,
+                                                "content_type": 0
+                                            }
+                                        ],
+                                        "pos": 0
+                                    },
+                                    {
+                                        "block_id": 4,
+                                        "content_data": [
+                                            {
+                                                "text": "",
+                                                "duration": 0,
+                                                "content_type": 0
+                                            }
+                                        ],
+                                        "pos": 0
+                                    }
+                                ]
+                            }
+                        },
+                        "snd_prompt": 1,
+                        "content": null
+                    },
+                    {
+                        "obj_id": 11,
+                        "type_name": "story",
+                        "name": "",
+                        "pos": 13,
+                        "skip_flag": 0,
+                        "start_type": 1,
+                        "note": "",
+                        "story": {
+                            "id": 11,
+                            "name": "МВМ в Сарове",
+                            "type": "ВМЗ",
+                            "version": 3,
+                            "presenter": 0,
+                            "plan_durat": 825,
+                            "text_duration": 221,
+                            "comments_duration": 0,
+                            "comments_prompter_duration": 0,
+                            "gap_duration": 0,
+                            "video_duration": 0,
+                            "graphics_duration": 0,
+                            "fact_duration": 825,
+                            "status": "В РАБОТЕ",
+                            "status_video": "НОВЫЙ",
+                            "text": {
+                                "text_xml": "<NewsStoryContent maxBlockID=\"7\" durText=\"221\" durComment=\"0\" durCommentPrompt=\"0\" durGAP=\"0\" durVideo=\"0\" durGraphics=\"0\">\n    <Block ID=\"3\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"25\" TextRealLen=\"17\">33 сек</Content>\n        </Contents>\n    </Block>\n    <Block ID=\"4\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"0\" TextRealLen=\"0\"></Content>\n        </Contents>\n    </Block>\n    <Block ID=\"5\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"171\" TextRealLen=\"114\">у нас отличная сильная школа. Создали первые лазеры. важно и дальше укреплять преимушество. И локализовать цепочку</Content>\n        </Contents>\n    </Block>\n    <Block ID=\"6\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"0\" TextRealLen=\"0\"></Content>\n        </Contents>\n    </Block>\n    <Block ID=\"7\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"25\" TextRealLen=\"17\">... технологииэбж</Content>\n        </Contents>\n    </Block>\n</NewsStoryContent>\n",
+                                "text": "33 сек\n\nу нас отличная сильная школа. Создали первые лазеры. важно и дальше укреплять преимушество. И локализовать цепочку\n\n... технологииэбж",
+                                "blocks": [
+                                    {
+                                        "block_id": 3,
+                                        "content_data": [
+                                            {
+                                                "text": "33 сек",
+                                                "duration": 25,
+                                                "content_type": 0
+                                            }
+                                        ],
+                                        "pos": 0
+                                    },
+                                    {
+                                        "block_id": 4,
+                                        "content_data": [
+                                            {
+                                                "text": "",
+                                                "duration": 0,
+                                                "content_type": 0
+                                            }
+                                        ],
+                                        "pos": 0
+                                    },
+                                    {
+                                        "block_id": 5,
+                                        "content_data": [
+                                            {
+                                                "text": "у нас отличная сильная школа. Создали первые лазеры. важно и дальше укреплять преимушество. И локализовать цепочку",
+                                                "duration": 171,
+                                                "content_type": 0
+                                            }
+                                        ],
+                                        "pos": 0
+                                    },
+                                    {
+                                        "block_id": 6,
+                                        "content_data": [
+                                            {
+                                                "text": "",
+                                                "duration": 0,
+                                                "content_type": 0
+                                            }
+                                        ],
+                                        "pos": 0
+                                    },
+                                    {
+                                        "block_id": 7,
+                                        "content_data": [
+                                            {
+                                                "text": "... технологииэбж",
+                                                "duration": 25,
+                                                "content_type": 0
+                                            }
+                                        ],
+                                        "pos": 0
+                                    }
+                                ]
+                            }
+                        },
+                        "snd_prompt": 0,
+                        "content": null
+                    }
+                ]
+            },
+            {
+                "obj_id": 32,
+                "type_name": "rubric",
+                "name": "Старовойт",
+                "pos": 0,
+                "skip_flag": 0,
+                "start_type": 0,
+                "note": "",
+                "story": null,
+                "snd_prompt": 0,
+                "content": [
+                    {
+                        "obj_id": 12,
+                        "type_name": "story",
+                        "name": "",
+                        "pos": 14,
+                        "skip_flag": 0,
+                        "start_type": 1,
+                        "note": "",
+                        "story": {
+                            "id": 12,
+                            "name": "Старовойт твю216",
+                            "type": "БЗ",
+                            "version": 1,
+                            "presenter": 5,
+                            "plan_durat": 750,
+                            "text_duration": 660,
+                            "comments_duration": 0,
+                            "comments_prompter_duration": 0,
+                            "gap_duration": 0,
+                            "video_duration": 0,
+                            "graphics_duration": 0,
+                            "fact_duration": 1410,
+                            "status": "НОВЫЙ",
+                            "status_video": "",
+                            "text": {
+                                "text_xml": "<NewsStoryContent maxBlockID=\"3\" durText=\"660\" durComment=\"0\" durCommentPrompt=\"0\" durGAP=\"0\" durVideo=\"0\" durGraphics=\"0\">\n    <Block ID=\"1\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"0\" TextRealLen=\"0\"></Content>\n        </Contents>\n    </Block>\n    <Block ID=\"2\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"114\" TextRealLen=\"76\">Коллективу Министерства транспорта России сегодня представлен новый министр.</Content>\n        </Contents>\n    </Block>\n    <Block ID=\"3\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"546\" TextRealLen=\"364\">Указом президента на эту должность назначен Роман Старовойт, Как отметил Виталий Савельев - бывший глава Минтранса, а ныне вице-премьер, курирующий транспортную сферу - в особом представлении Старовойт не нуждается. Он долгое время работал в министерстве, несколько лет руководил Автодором, был и заместителем министра, а последние годы возглавлял Курскую область.</Content>\n        </Contents>\n    </Block>\n</NewsStoryContent>\n",
+                                "text": "\nКоллективу Министерства транспорта России сегодня представлен новый министр.\nУказом президента на эту должность назначен Роман Старовойт, Как отметил Виталий Савельев - бывший глава Минтранса, а ныне вице-премьер, курирующий транспортную сферу - в особом представлении Старовойт не нуждается. Он долгое время работал в министерстве, несколько лет руководил Автодором, был и заместителем министра, а последние годы возглавлял Курскую область.",
+                                "blocks": [
+                                    {
+                                        "block_id": 1,
+                                        "content_data": [
+                                            {
+                                                "text": "",
+                                                "duration": 0,
+                                                "content_type": 0
+                                            }
+                                        ],
+                                        "pos": 0
+                                    },
+                                    {
+                                        "block_id": 2,
+                                        "content_data": [
+                                            {
+                                                "text": "Коллективу Министерства транспорта России сегодня представлен новый министр.",
+                                                "duration": 114,
+                                                "content_type": 0
+                                            }
+                                        ],
+                                        "pos": 0
+                                    },
+                                    {
+                                        "block_id": 3,
+                                        "content_data": [
+                                            {
+                                                "text": "Указом президента на эту должность назначен Роман Старовойт, Как отметил Виталий Савельев - бывший глава Минтранса, а ныне вице-премьер, курирующий транспортную сферу - в особом представлении Старовойт не нуждается. Он долгое время работал в министерстве, несколько лет руководил Автодором, был и заместителем министра, а последние годы возглавлял Курскую область.",
+                                                "duration": 546,
+                                                "content_type": 0
+                                            }
+                                        ],
+                                        "pos": 0
+                                    }
+                                ]
+                            }
+                        },
+                        "snd_prompt": 1,
+                        "content": null
+                    },
+                    {
+                        "obj_id": 13,
+                        "type_name": "story",
+                        "name": "",
+                        "pos": 15,
+                        "skip_flag": 0,
+                        "start_type": 1,
+                        "note": "",
+                        "story": {
+                            "id": 13,
+                            "name": "Савельев + Старовойт",
+                            "type": "ВМЗ",
+                            "version": 1,
+                            "presenter": 0,
+                            "plan_durat": 625,
+                            "text_duration": 633,
+                            "comments_duration": 0,
+                            "comments_prompter_duration": 0,
+                            "gap_duration": 0,
+                            "video_duration": 0,
+                            "graphics_duration": 0,
+                            "fact_duration": 625,
+                            "status": "НОВЫЙ",
+                            "status_video": "НОВЫЙ",
+                            "text": {
+                                "text_xml": "<NewsStoryContent maxBlockID=\"4\" durText=\"633\" durComment=\"0\" durCommentPrompt=\"0\" durGAP=\"0\" durVideo=\"0\" durGraphics=\"0\">\n    <Block ID=\"1\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"0\" TextRealLen=\"0\"></Content>\n        </Contents>\n    </Block>\n    <Block ID=\"2\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"285\" TextRealLen=\"190\">07:20 как губернатор РВ приобрел опыт, которого у многих в том числе и у меня нет. Руководить регионом в режиме СВО работал И всегда Роман Владимир был на связи 07:42</Content>\n        </Contents>\n    </Block>\n    <Block ID=\"3\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"0\" TextRealLen=\"0\"></Content>\n        </Contents>\n    </Block>\n    <Block ID=\"4\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"348\" TextRealLen=\"232\">12:30 Хочу поблагодарить за оказанное доверие руководить такой отраслью, потому что я считаю что Мин транс ожин из ключевых исполнительной валасти в стране зависит комфорт жителей нашей страны 13:08</Content>\n        </Contents>\n    </Block>\n</NewsStoryContent>\n",
+                                "text": "\n07:20 как губернатор РВ приобрел опыт, которого у многих в том числе и у меня нет. Руководить регионом в режиме СВО работал И всегда Роман Владимир был на связи 07:42\n\n12:30 Хочу поблагодарить за оказанное доверие руководить такой отраслью, потому что я считаю что Мин транс ожин из ключевых исполнительной валасти в стране зависит комфорт жителей нашей страны 13:08",
+                                "blocks": [
+                                    {
+                                        "block_id": 1,
+                                        "content_data": [
+                                            {
+                                                "text": "",
+                                                "duration": 0,
+                                                "content_type": 0
+                                            }
+                                        ],
+                                        "pos": 0
+                                    },
+                                    {
+                                        "block_id": 2,
+                                        "content_data": [
+                                            {
+                                                "text": "07:20 как губернатор РВ приобрел опыт, которого у многих в том числе и у меня нет. Руководить регионом в режиме СВО работал И всегда Роман Владимир был на связи 07:42",
+                                                "duration": 285,
+                                                "content_type": 0
+                                            }
+                                        ],
+                                        "pos": 0
+                                    },
+                                    {
+                                        "block_id": 3,
+                                        "content_data": [
+                                            {
+                                                "text": "",
+                                                "duration": 0,
+                                                "content_type": 0
+                                            }
+                                        ],
+                                        "pos": 0
+                                    },
+                                    {
+                                        "block_id": 4,
+                                        "content_data": [
+                                            {
+                                                "text": "12:30 Хочу поблагодарить за оказанное доверие руководить такой отраслью, потому что я считаю что Мин транс ожин из ключевых исполнительной валасти в стране зависит комфорт жителей нашей страны 13:08",
+                                                "duration": 348,
+                                                "content_type": 0
+                                            }
+                                        ],
+                                        "pos": 0
+                                    }
+                                ]
+                            }
+                        },
+                        "snd_prompt": 0,
+                        "content": null
+                    }
+                ]
+            },
+            {
+                "obj_id": 14,
+                "type_name": "story",
+                "name": "",
+                "pos": 16,
+                "skip_flag": 0,
+                "start_type": 1,
+                "note": "",
+                "story": {
+                    "id": 14,
+                    "name": "далее",
+                    "type": "БЗ",
+                    "version": 1,
+                    "presenter": 5,
+                    "plan_durat": 375,
+                    "text_duration": 398,
+                    "comments_duration": 0,
+                    "comments_prompter_duration": 0,
+                    "gap_duration": 0,
+                    "video_duration": 0,
+                    "graphics_duration": 0,
+                    "fact_duration": 773,
+                    "status": "ИСПРАВИТЬ",
+                    "status_video": "",
+                    "text": {
+                        "text_xml": "<NewsStoryContent maxBlockID=\"7\" durText=\"398\" durComment=\"0\" durCommentPrompt=\"0\" durGAP=\"0\" durVideo=\"0\" durGraphics=\"0\">\n    <Block ID=\"2\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"13\" TextRealLen=\"9\">И далее -</Content>\n        </Contents>\n    </Block>\n    <Block ID=\"3\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"94\" TextRealLen=\"63\">- вернемся к теме Ирана - посмотрим первые страницы мировых СМИ</Content>\n        </Contents>\n    </Block>\n    <Block ID=\"4\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"105\" TextRealLen=\"70\">- пассажиров из России с пристрастием допрашивают в аэропорту Кишинева</Content>\n        </Contents>\n    </Block>\n    <Block ID=\"5\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"109\" TextRealLen=\"73\">- и расскажем об остановке после обстрела посёлка Юбилейный под Луганском</Content>\n        </Contents>\n    </Block>\n    <Block ID=\"6\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"58\" TextRealLen=\"39\">и города Васильевка Запорожской области</Content>\n        </Contents>\n    </Block>\n    <Block ID=\"7\">\n        <Contents>\n            <Content TypeID=\"0\" Duration=\"19\" TextRealLen=\"13\">Не пропустите</Content>\n        </Contents>\n    </Block>\n</NewsStoryContent>\n",
+                        "text": "И далее -\n- вернемся к теме Ирана - посмотрим первые страницы мировых СМИ\n- пассажиров из России с пристрастием допрашивают в аэропорту Кишинева\n- и расскажем об остановке после обстрела посёлка Юбилейный под Луганском\nи города Васильевка Запорожской области\nНе пропустите",
+                        "blocks": [
+                            {
+                                "block_id": 2,
+                                "content_data": [
+                                    {
+                                        "text": "И далее -",
+                                        "duration": 13,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            },
+                            {
+                                "block_id": 3,
+                                "content_data": [
+                                    {
+                                        "text": "- вернемся к теме Ирана - посмотрим первые страницы мировых СМИ",
+                                        "duration": 94,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            },
+                            {
+                                "block_id": 4,
+                                "content_data": [
+                                    {
+                                        "text": "- пассажиров из России с пристрастием допрашивают в аэропорту Кишинева",
+                                        "duration": 105,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            },
+                            {
+                                "block_id": 5,
+                                "content_data": [
+                                    {
+                                        "text": "- и расскажем об остановке после обстрела посёлка Юбилейный под Луганском",
+                                        "duration": 109,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            },
+                            {
+                                "block_id": 6,
+                                "content_data": [
+                                    {
+                                        "text": "и города Васильевка Запорожской области",
+                                        "duration": 58,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            },
+                            {
+                                "block_id": 7,
+                                "content_data": [
+                                    {
+                                        "text": "Не пропустите",
+                                        "duration": 19,
+                                        "content_type": 0
+                                    }
+                                ],
+                                "pos": 0
+                            }
+                        ]
+                    }
+                },
+                "snd_prompt": 1,
+                "content": null
+            },
+            {
+                "obj_id": 33,
+                "type_name": "rubric",
+                "name": "",
+                "pos": 0,
+                "skip_flag": 0,
+                "start_type": 0,
+                "note": "",
+                "story": null,
+                "snd_prompt": 0,
+                "content": [
+                    {
+                        "obj_id": 27,
+                        "type_name": "",
+                        "name": "",
+                        "pos": 0,
+                        "skip_flag": 0,
+                        "start_type": 0,
+                        "note": "",
+                        "story": null,
+                        "snd_prompt": 0,
+                        "content": [
+                            {
+                                "obj_id": 5,
+                                "type_name": "separator",
+                                "name": "",
+                                "pos": 0,
+                                "skip_flag": 0,
+                                "start_type": 0,
+                                "note": "",
+                                "story": null,
+                                "snd_prompt": 0,
+                                "content": null
+                            },
+                            {
+                                "obj_id": 6,
+                                "type_name": "story",
+                                "name": "",
+                                "pos": 17,
+                                "skip_flag": 0,
+                                "start_type": 1,
+                                "note": "",
+                                "story": {
+                                    "id": 6,
+                                    "name": "РЕКЛАМА",
+                                    "type": "РЕКЛАМА",
+                                    "version": 0,
+                                    "presenter": 0,
+                                    "plan_durat": 5375,
+                                    "text_duration": 0,
+                                    "comments_duration": 0,
+                                    "comments_prompter_duration": 0,
+                                    "gap_duration": 0,
+                                    "video_duration": 0,
+                                    "graphics_duration": 0,
+                                    "fact_duration": 5375,
+                                    "status": "В РАБОТЕ",
+                                    "status_video": "",
+                                    "text": {
+                                        "text_xml": "",
+                                        "text": "",
+                                        "blocks": null
+                                    }
+                                },
+                                "snd_prompt": 0,
+                                "content": null
+                            }
+                        ]
+                    },
+                    {
+                        "obj_id": 330,
+                        "type_name": "story",
+                        "name": "123",
+                        "pos": 18,
+                        "skip_flag": 0,
+                        "start_type": 1,
+                        "note": "",
+                        "story": {
+                            "id": 330,
+                            "name": "123",
+                            "type": "РЕКЛАМА",
+                            "version": 0,
+                            "presenter": 5,
+                            "plan_durat": 0,
+                            "text_duration": 0,
+                            "comments_duration": 0,
+                            "comments_prompter_duration": 0,
+                            "gap_duration": 0,
+                            "video_duration": 0,
+                            "graphics_duration": 0,
+                            "fact_duration": 0,
+                            "status": "",
+                            "status_video": "",
+                            "text": {
+                                "text_xml": "",
+                                "text": "",
+                                "blocks": null
+                            }
+                        },
+                        "snd_prompt": 0,
+                        "content": null
+                    }
+                ]
+            }
+        ],
+        "title": "НОВОСТИ 12:00",
+        "air_date": "23-01-2026 12:00:00",
+        "duration": 0
+    },
+    "command": "update",
+    "id": 0
+}

@@ -1,0 +1,11 @@
+{
+    "template_name": "Выпуски.Монтажный лист",
+    "data": {
+        "RunDown": {
+            "Name": "Test"
+        },
+        "Story": [
+            { "Pos": 1, "DurationFact": "11111", "Type": "Testims", "Name": "KV" }
+        ]
+    }
+}

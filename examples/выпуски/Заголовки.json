@@ -1,0 +1,49 @@
+{
+    "template_name": "Выпуски.Заголовки",
+    "data": {
+        "RunDown": {
+            "Name": "Test",
+            "Author": "JOJO",
+            "State": "Some state",
+            "DurationPlan": "1 month",
+            "AirDate": "26.04.4026",
+            "AirTime": "20:31",
+            "DurationFact": "Extreme"
+        },
+        "Story": [
+            {
+                "Pos": 0,
+                "Name": "NoName",
+                "Type": "All",
+                "Author": "Araki",
+                "State": "Same",
+                "Presenter": "Jump",
+                "DurationPlan": "Year",
+                "StartPlan": "01.01.01",
+                "DurationFact": "Experimental"
+            },
+            {
+                "Pos": 1,
+                "Name": "NoName",
+                "Type": "All",
+                "Author": "Araki",
+                "State": "Same",
+                "Presenter": "Jump",
+                "DurationPlan": "Year",
+                "StartPlan": "01.01.01",
+                "DurationFact": "Experimental"
+            },
+            {
+                "Pos": 2,
+                "Name": "NoName",
+                "Type": "All",
+                "Author": "Araki",
+                "State": "Same",
+                "Presenter": "Jump",
+                "DurationPlan": "Year",
+                "StartPlan": "01.01.01",
+                "DurationFact": "Experimental"
+            }
+        ]
+    }
+}

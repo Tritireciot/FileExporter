@@ -1,0 +1,53 @@
+{
+    "template_name": "События.Всё",
+    "data": {
+        "Story": {
+            "Name": "Name",
+            "Type": "Type",
+            "Author": "Author",
+            "State": "State",
+            "Presenter": "Presenter",
+            "DurationPlan": "DurationPlan",
+            "StartPlan": "StartPlan",
+            "DurationFact": "DurationFact",
+            "Text": "Text"
+        },
+        "Media": [
+            {
+                "Pos": "Pos",
+                "Type": "Type",
+                "Name": "Name",
+                "Duration": "Duration",
+                "Params": "Params"
+            },
+            {
+                "Pos": "Pos",
+                "Type": "Type",
+                "Name": "Name",
+                "Duration": "Duration",
+                "Params": "Params"
+            },
+            {
+                "Pos": "Pos",
+                "Type": "Type",
+                "Name": "Name",
+                "Duration": "Duration",
+                "Params": "Params"
+            },
+            {
+                "Pos": "Pos",
+                "Type": "Type",
+                "Name": "Name",
+                "Duration": "Duration",
+                "Params": "Params"
+            },
+            {
+                "Pos": "Pos",
+                "Type": "Type",
+                "Name": "Name",
+                "Duration": "Duration",
+                "Params": "Params"
+            }
+        ]
+    }
+}

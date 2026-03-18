@@ -1,0 +1,41 @@
+{
+    "template_name": "Выпуски.Всё",
+    "data": {
+        "RunDown": {
+            "Name": "Test",
+            "Author": "SomeOne",
+            "State": "Roasted",
+            "DurationPlan": "300",
+            "AirTime": "200",
+            "DurationFact": "IDK",
+            "AirDate": "Another"
+        },
+        "Story": [
+            { "Pos": 1, "DurationFact": "11111", "Type": "Testims", "Name": "KV", "Author": "SomeOne", "State": "Roasted", "Presenter": "OOO",  "DurationPlan": "300", "StartPlan": "Tuesday", "Text": "Nope", "StartFact": "Anu",
+                "Media": [
+                    {
+                        "Pos": 2,
+                        "Name": "KKK",
+                        "Type": "Hot",
+                        "Start": "0:00",
+                        "Params": "Y"
+                    },
+                    {
+                        "Pos": 3,
+                        "Name": "KKH",
+                        "Type": "HotK",
+                        "Start": "0:01",
+                        "Params": "Z"
+                    },
+                    {
+                        "Pos": 4,
+                        "Name": "555",
+                        "Type": "888",
+                        "Start": "20:31",
+                        "Params": "GOJO SATORU"
+                    }
+                ]
+            }
+        ]
+    }
+}

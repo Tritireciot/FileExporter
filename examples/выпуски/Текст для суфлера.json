@@ -1,0 +1,50 @@
+{
+    "template_name": "Выпуски.Текст для Суфлера",
+    "data": {
+        "RunDown": {
+            "Name": "Name",
+            "Author": "Author",
+            "State": "State",
+            "DurationPlan": "DurationPlan",
+            "AirDate": "AirDate",
+            "AirTime": "AirTime",
+            "DurationFact": "DurationFact"
+        },
+        "Story": [
+            {
+                "Pos": "Pos",
+                "Name": "Name",
+                "Type": "Type",
+                "Author": "Author",
+                "Presenter": "Presenter",
+                "DurationPlan": "DurationPlan",
+                "StartPlan": "StartPlan",
+                "DurationFact": "DurationFact",
+                "Text": "Text"
+            },
+            {
+                "Pos": "Pos",
+                "Name": "Name",
+                "Type": "Type",
+                "Author": "Author",
+                "Presenter": "Presenter",
+                "DurationPlan": "DurationPlan",
+                "StartPlan": "StartPlan",
+                "DurationFact": "DurationFact",
+                "Text": "Text"
+            },
+            {
+                "Pos": "Pos",
+                "Name": "Name",
+                "Type": "Type",
+                "Author": "Author",
+                "Presenter": "Presenter",
+                "DurationPlan": "DurationPlan",
+                "StartPlan": "StartPlan",
+                "DurationFact": "DurationFact",
+                "Text": "Text"
+            }
+        ]
+    } 
+
+}
