@@ -185,7 +185,7 @@
         "name": "#Media.Duration#",
         "description": "Длительность клипа/графики",
         "subsystem": "Media",
-        "alias": "rundown.content[].story.media_content[].duration"
+        "alias": "rundown.content.%d.story.media_content.%d.duration"
     },
     {
         "name": "#Media.Params#",
@@ -203,12 +203,12 @@
         "name": "#Repeat#Story#",
         "description": "Блок данных события, выводимый для каждого события в списке",
         "subsystem": "ALL",
-        "alias": "rundown.content[]"
+        "alias": "rundown.content"
     },
     {
         "name": "#Repeat#Media#",
         "description": "Блок данных медиа, выводимый для каждого клипа/графики в списке",
         "subsystem": "ALL",
-        "alias": "rundown.content[].story.media_content[]"
+        "alias": "rundown.content.%d.story.media_content.%d"
     }
 ]
