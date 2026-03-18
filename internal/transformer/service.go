@@ -15,7 +15,7 @@ type TransformService struct {
 func NewTransformService(db_repo *db.DBRepository) *TransformService {
 	return &TransformService{
 		db_repo:        db_repo,
-		reshaper:       *NewReshaper(),
+		reshaper:       *NewReshaper(db_repo),
 	}
 }
 
@@ -41,13 +41,10 @@ func (service *TransformService) RenderTemplate(ctx context.Context, template_na
 		return "", err
 	}
 
-	requiredTags := map[string]string{}
+	requiredTags := map[string]any{}
+	repeatTags := map[string]string{}
 
-	formatted_template := service.reshaper.TransformTemplate(template_.Content, &requiredTags)
-	err = collectAliases(ctx, service.db_repo, &requiredTags)
-	if err != nil {
-		return "", err
-	}
+	formatted_template := service.reshaper.TransformTemplate(ctx, template_.Content, &requiredTags, &repeatTags)
 
 	form_template, err := template.New(template_name).Parse(formatted_template)
 
