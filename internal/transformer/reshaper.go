@@ -46,7 +46,7 @@ func (reshaper *Reshaper) changeBaseTags(ctx context.Context, template_content s
 			}
 			(*requiredTags)[entity] = sub_map
 		} else {
-			(*requiredTags)[entity] = map[string]string{field: getAlias(ctx, reshaper.db_repo, match_tag[0])}
+			(*requiredTags)[entity] = map[string]any{field: getAlias(ctx, reshaper.db_repo, match_tag[0])}
 		}
 		if contains(repeats, entity) {
 			return fmt.Sprintf("{{ $%s.%s }}", entity, field)
