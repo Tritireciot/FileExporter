@@ -22,7 +22,12 @@ func (handler *ExportHandler) TransformTemplate(writer http.ResponseWriter, requ
 	}
 	defer request.Body.Close()
 	ctx := request.Context()
-	export_doc, err:= handler.transformer.RenderTemplate(ctx, export_form.TemplateName, export_form.Data)
+	raw_data, err := json.Marshal(export_form.Data)
+	if err != nil {
+		http.Error(writer, "Something went wrong", http.StatusBadRequest)
+        return
+	}
+	export_doc, err:= handler.transformer.RenderTemplate(ctx, export_form.TemplateName, raw_data)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
         return

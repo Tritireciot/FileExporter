@@ -33,7 +33,7 @@ func execute(template_ *template.Template, data map[string]any) (string, error) 
 
 }
 
-func (service *TransformService) RenderTemplate(ctx context.Context, template_name string, raw_data map[string]any) (string, error) {
+func (service *TransformService) RenderTemplate(ctx context.Context, template_name string, raw_data []byte) (string, error) {
 	template_ := &db.Template{Name: template_name}
 	err := service.db_repo.GetElementByName(ctx, template_)
 
@@ -51,9 +51,8 @@ func (service *TransformService) RenderTemplate(ctx context.Context, template_na
 	if err != nil {
 		return "", err
 	}
+	data := translate(raw_data, requiredTags, repeatTags)
+	return execute(form_template, data)
 	
 
-	data := raw_data // TODO: remove
-
-	return execute(form_template, data)
 }
