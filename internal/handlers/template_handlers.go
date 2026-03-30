@@ -45,8 +45,7 @@ func (handler *TemplateHandler) GetTemplate(writer http.ResponseWriter, request 
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	writer.Write([]byte(template.Content))
+	json.NewEncoder(writer).Encode(template)
 }
 
 func (handler *TemplateHandler) AddNewTemplate(writer http.ResponseWriter, request *http.Request) {

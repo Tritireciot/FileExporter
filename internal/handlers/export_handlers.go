@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"former/internal/transformer"
 	"net/http"
+	"former/internal/db"
 )
 
 type ExportHandler struct {
@@ -32,5 +33,5 @@ func (handler *ExportHandler) TransformTemplate(writer http.ResponseWriter, requ
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
         return
 	}
-	writer.Write([]byte(export_doc))
+	json.NewEncoder(writer).Encode(db.Template{Name: export_form.TemplateName, Content: export_doc})
 }
