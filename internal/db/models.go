@@ -4,6 +4,7 @@ package db
 
 type DBModel interface {
 	getTable() string
+	getID() int
 	getName() string
 	getColumns() []any
 }
@@ -21,6 +22,11 @@ func (template *Template) getTable() string {
 func (template *Template) getName() string {
 	return template.Name
 }
+
+func (template *Template) getID() int {
+	return template.ID
+}
+
 
 func (template *Template) getColumns() []any {
 	return []any{
@@ -43,6 +49,11 @@ func (tag *Tag) getTable() string {
 func (tag *Tag) getName() string {
 	return tag.Name
 }
+
+func (tag *Tag) getID() int {
+	return tag.ID
+}
+
 
 func (tag *Tag) getColumns() []any {
 	return []any{

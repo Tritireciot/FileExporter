@@ -8,14 +8,14 @@ import (
 )
 
 type TransformService struct {
-	db_repo        *db.DBRepository
-	reshaper       Reshaper
+	db_repo  *db.DBRepository
+	reshaper Reshaper
 }
 
 func NewTransformService(db_repo *db.DBRepository) *TransformService {
 	return &TransformService{
-		db_repo:        db_repo,
-		reshaper:       *NewReshaper(db_repo),
+		db_repo:  db_repo,
+		reshaper: *NewReshaper(db_repo),
 	}
 }
 
@@ -35,7 +35,7 @@ func execute(template_ *template.Template, data map[string]any) (string, error) 
 
 func (service *TransformService) RenderTemplate(ctx context.Context, template_name string, raw_data []byte) (string, error) {
 	template_ := &db.Template{Name: template_name}
-	err := service.db_repo.GetElementByName(ctx, template_)
+	err := service.db_repo.GetElement(ctx, template_, db.Columns.Name)
 
 	if err != nil {
 		return "", err
@@ -53,6 +53,5 @@ func (service *TransformService) RenderTemplate(ctx context.Context, template_na
 	}
 	data := translate(raw_data, requiredTags, repeatTags)
 	return execute(form_template, data)
-	
 
 }

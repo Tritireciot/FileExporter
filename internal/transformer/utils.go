@@ -10,7 +10,7 @@ import (
 
 func getAlias(ctx context.Context, db_repo *db.DBRepository, tag_name string) string {
 	tag := db.Tag{Name: tag_name}
-	err := db_repo.GetElementByName(ctx, &tag)
+	err := db_repo.GetElement(ctx, &tag, db.Columns.Name)
 	if err != nil {
 		fmt.Println(tag_name)
 		fmt.Println("Error in getting alias: ", err.Error())
@@ -21,15 +21,15 @@ func getAlias(ctx context.Context, db_repo *db.DBRepository, tag_name string) st
 
 func modifyStructure(entity_stack []string, requiredTags *map[string]any, connections *map[string]string) {
 	sub_requiredTags := requiredTags
-	for i, entity := range  entity_stack{
+	for i, entity := range entity_stack {
 		sub_map, ok := (*sub_requiredTags)[entity].(map[string]any)
 		if !ok {
 			if i > 0 {
-				(*connections)[entity_stack[i - 1]] = entity
+				(*connections)[entity_stack[i-1]] = entity
 			}
 			(*sub_requiredTags)[entity] = map[string]any{}
 			sub_map, _ = (*sub_requiredTags)[entity].(map[string]any)
-		} 
+		}
 		sub_requiredTags = &sub_map
 	}
 }

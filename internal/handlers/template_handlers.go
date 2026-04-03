@@ -5,6 +5,7 @@ import (
 	"errors"
 	"former/internal/db"
 	"net/http"
+	"strconv"
 )
 
 type TemplateHandler struct {
@@ -29,14 +30,20 @@ func (handler *TemplateHandler) GetAllTemplates(writer http.ResponseWriter, requ
 }
 
 func (handler *TemplateHandler) GetTemplate(writer http.ResponseWriter, request *http.Request) {
+	template_id, err := strconv.Atoi(request.URL.Query().Get("id"))
 	name := request.URL.Query().Get("name")
-	if name == "" {
-		http.Error(writer, "name is required", http.StatusBadRequest)
+	if (name == "" && (template_id < 0 && err == nil)) || (name == "" && err != nil) {
+		http.Error(writer, "name or id is required", http.StatusBadRequest)
 		return
 	}
 	ctx := request.Context()
-	template := db.Template{Name: name}
-	err := handler.repo.GetElementByName(ctx, &template)
+	column := db.Columns.ID
+	if err != nil || template_id < 0 {
+		column = db.Columns.Name
+	}
+	
+	template := db.Template{ID: template_id, Name: name}
+	err = handler.repo.GetElement(ctx, &template, column)
 	if err != nil {
 		if errors.Is(err, db.ErrTemplateNotFound) {
 			http.Error(writer, "template not found", http.StatusNotFound)

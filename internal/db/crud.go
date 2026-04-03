@@ -34,20 +34,27 @@ func (repository *DBRepository) GetAllElements(ctx context.Context, element DBMo
 	return &elements, nil
 }
 
-func (repository *DBRepository) GetElementByName(
+func (repository *DBRepository) GetElement(
 	ctx context.Context,
 	element DBModel,
+	column string,
 ) error {
 
 	query := fmt.Sprintf(
 		"SELECT * FROM %s WHERE %s = $1",
-		element.getTable(), Columns.Name,
+		element.getTable(), column,
 	)
-
-	err := repository.pool.
-		QueryRow(ctx, query, element.getName()).
-		Scan(element.getColumns()...)
+	var field any
 	
+	if column == Columns.Name {
+		field = element.getName()
+	} else {
+		field = element.getID()
+	}
+	err := repository.pool.
+			QueryRow(ctx, query, field).
+			Scan(element.getColumns()...)
+
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return ErrTemplateNotFound
