@@ -5,6 +5,7 @@ import (
 	"errors"
 	"former/internal/db"
 	"net/http"
+	"strconv"
 )
 
 type TagsHandler struct {
@@ -49,15 +50,15 @@ func (handler *TagsHandler) AddNewTag(writer http.ResponseWriter, request *http.
 }
 
 func (handler *TagsHandler) DeleteTag(writer http.ResponseWriter, request *http.Request) {
-	tag_name := request.URL.Query().Get("name")
-	if tag_name == "" {
-		http.Error(writer, "name is required", http.StatusBadRequest)
+	tag_id, err := strconv.Atoi(request.URL.Query().Get("id"))
+	if (tag_id < 0 && err == nil) || err != nil  {
+		http.Error(writer, "id is required", http.StatusBadRequest)
 		return
 	}
 
 	ctx := request.Context()
 
-	err := handler.repo.DeleteElement(ctx, &db.Tag{Name: tag_name})
+	err = handler.repo.DeleteElement(ctx, &db.Tag{ID: tag_id}, db.Columns.ID)
 	if err != nil {
 		if errors.Is(err, db.ErrElementNotFound) {
 			http.Error(writer, "tag not found", http.StatusNotFound)

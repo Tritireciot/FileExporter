@@ -33,9 +33,9 @@ func execute(template_ *template.Template, data map[string]any) (string, error) 
 
 }
 
-func (service *TransformService) RenderTemplate(ctx context.Context, template_name string, raw_data []byte) (string, error) {
-	template_ := &db.Template{Name: template_name}
-	err := service.db_repo.GetElement(ctx, template_, db.Columns.Name)
+func (service *TransformService) RenderTemplate(ctx context.Context, template_id int, raw_data []byte) (string, error) {
+	template_ := &db.Template{ID: template_id}
+	err := service.db_repo.GetElement(ctx, template_, db.Columns.ID)
 
 	if err != nil {
 		return "", err
@@ -46,7 +46,7 @@ func (service *TransformService) RenderTemplate(ctx context.Context, template_na
 
 	formatted_template := service.reshaper.TransformTemplate(ctx, template_.Content, &requiredTags, &repeatTags)
 
-	form_template, err := template.New(template_name).Parse(formatted_template)
+	form_template, err := template.New(template_.Name).Parse(formatted_template)
 
 	if err != nil {
 		return "", err

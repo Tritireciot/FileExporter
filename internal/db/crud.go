@@ -8,13 +8,18 @@ import (
 	"github.com/jackc/pgx/v4"
 )
 
-func (repository *DBRepository) GetAllElements(ctx context.Context, element DBModel) (*[]string, error) {
+type ShortElement struct {
+	Element_id int `json:"element_id"`
+	Element_name string `json:"element_name"`
+}
+
+func (repository *DBRepository) GetAllElements(ctx context.Context, element DBModel) (*[]ShortElement, error) {
 	query := fmt.Sprintf(
-		"SELECT %s FROM %s",
-		Columns.Name, element.getTable(),
+		"SELECT %s, %s FROM %s",
+		Columns.ID, Columns.Name, element.getTable(),
 	)
 
-	var elements []string
+	var elements []ShortElement
 
 	rows, err := repository.pool.Query(ctx, query)
 	if err != nil {
@@ -23,12 +28,12 @@ func (repository *DBRepository) GetAllElements(ctx context.Context, element DBMo
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var element_name string
-		err := rows.Scan(&element_name)
+		short_element := ShortElement{}
+		err := rows.Scan(&short_element.Element_id, &short_element.Element_name)
 		if err != nil {
 			return nil, err
 		}
-		elements = append(elements, element_name)
+		elements = append(elements, short_element)
 	}
 
 	return &elements, nil
@@ -65,12 +70,23 @@ func (repository *DBRepository) GetElement(
 	return nil
 }
 
-func (repository *DBRepository) DeleteElement(ctx context.Context, element DBModel) error {
+func (repository *DBRepository) DeleteElement(
+	ctx context.Context, 
+	element DBModel,
+	column string,
+) error {
 	query := fmt.Sprintf(
 		"DELETE FROM %s WHERE %s = $1",
-		element.getTable(), Columns.Name,
+		element.getTable(), column,
 	)
-	cmd, err := repository.pool.Exec(ctx, query, element.getName())
+
+	var field any
+	if column == Columns.Name {
+		field = element.getName()
+	} else {
+		field = element.getID()
+	}
+	cmd, err := repository.pool.Exec(ctx, query, field)
 
 	if err != nil {
 		return err

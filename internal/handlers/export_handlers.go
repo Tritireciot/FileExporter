@@ -28,10 +28,10 @@ func (handler *ExportHandler) TransformTemplate(writer http.ResponseWriter, requ
 		http.Error(writer, "Something went wrong", http.StatusBadRequest)
         return
 	}
-	export_doc, err:= handler.transformer.RenderTemplate(ctx, export_form.TemplateName, raw_data)
+	export_doc, err:= handler.transformer.RenderTemplate(ctx, export_form.TemplateId, raw_data)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
         return
 	}
-	json.NewEncoder(writer).Encode(db.Template{Name: export_form.TemplateName, Content: export_doc})
+	json.NewEncoder(writer).Encode(db.Template{ID: export_form.TemplateId, Content: export_doc})
 }

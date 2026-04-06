@@ -31,19 +31,13 @@ func (handler *TemplateHandler) GetAllTemplates(writer http.ResponseWriter, requ
 
 func (handler *TemplateHandler) GetTemplate(writer http.ResponseWriter, request *http.Request) {
 	template_id, err := strconv.Atoi(request.URL.Query().Get("id"))
-	name := request.URL.Query().Get("name")
-	if (name == "" && (template_id < 0 && err == nil)) || (name == "" && err != nil) {
-		http.Error(writer, "name or id is required", http.StatusBadRequest)
+	if (template_id < 0 && err == nil) || err != nil {
+		http.Error(writer, "id is required", http.StatusBadRequest)
 		return
 	}
 	ctx := request.Context()
-	column := db.Columns.ID
-	if err != nil || template_id < 0 {
-		column = db.Columns.Name
-	}
-	
-	template := db.Template{ID: template_id, Name: name}
-	err = handler.repo.GetElement(ctx, &template, column)
+	template := db.Template{ID: template_id}
+	err = handler.repo.GetElement(ctx, &template, db.Columns.ID)
 	if err != nil {
 		if errors.Is(err, db.ErrTemplateNotFound) {
 			http.Error(writer, "template not found", http.StatusNotFound)
@@ -52,6 +46,8 @@ func (handler *TemplateHandler) GetTemplate(writer http.ResponseWriter, request 
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	writer.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(writer).Encode(template)
 }
 
@@ -75,15 +71,15 @@ func (handler *TemplateHandler) AddNewTemplate(writer http.ResponseWriter, reque
 }
 
 func (handler *TemplateHandler) DeleteTemplate(writer http.ResponseWriter, request *http.Request) {
-	template_name := request.URL.Query().Get("name")
-	if template_name == "" {
-		http.Error(writer, "name is required", http.StatusBadRequest)
+	template_id, err := strconv.Atoi(request.URL.Query().Get("id"))
+	if (template_id < 0 && err == nil) || err != nil {
+		http.Error(writer, "id is required", http.StatusBadRequest)
 		return
 	}
 
 	ctx := request.Context()
 
-	err := handler.repo.DeleteElement(ctx, &db.Template{Name: template_name})
+	err = handler.repo.DeleteElement(ctx, &db.Template{ID: template_id}, db.Columns.ID)
 	if err != nil {
 		if errors.Is(err, db.ErrElementNotFound) {
 			http.Error(writer, "template not found", http.StatusNotFound)
