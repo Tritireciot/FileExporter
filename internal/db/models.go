@@ -1,10 +1,10 @@
 package db
 
 type DBModel interface {
-	getTable() string
-	getID() int
-	getName() string
-	getColumns() []any
+	GetTable() string
+	GetID() int
+	GetName() string
+	GetColumns() []any
 }
 
 type Template struct {
@@ -13,19 +13,19 @@ type Template struct {
 	Content string `json:"content"`
 }
 
-func (template *Template) getTable() string {
+func (template *Template) GetTable() string {
 	return Tables.Templates
 }
 
-func (template *Template) getName() string {
+func (template *Template) GetName() string {
 	return template.Name
 }
 
-func (template *Template) getID() int {
+func (template *Template) GetID() int {
 	return template.ID
 }
 
-func (template *Template) getColumns() []any {
+func (template *Template) GetColumns() []any {
 	return []any{
 		&template.ID, &template.Name, &template.Content,
 	}
@@ -39,19 +39,19 @@ type Tag struct {
 	Alias       string `json:"alias"`
 }
 
-func (tag *Tag) getTable() string {
+func (tag *Tag) GetTable() string {
 	return Tables.Tags
 }
 
-func (tag *Tag) getName() string {
+func (tag *Tag) GetName() string {
 	return tag.Name
 }
 
-func (tag *Tag) getID() int {
+func (tag *Tag) GetID() int {
 	return tag.ID
 }
 
-func (tag *Tag) getColumns() []any {
+func (tag *Tag) GetColumns() []any {
 	return []any{
 		&tag.ID, &tag.Name, &tag.Description, &tag.Subsystem, &tag.Alias,
 	}

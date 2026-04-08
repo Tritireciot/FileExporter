@@ -14,3 +14,7 @@ type DBRepository struct {
 func NewRepository(pool *pgxpool.Pool, logger *log.Logger) *DBRepository {
 	return &DBRepository{pool: pool, logger: logger}
 }
+
+func (repository *DBRepository) TearDown() {
+	repository.pool.Close()
+}

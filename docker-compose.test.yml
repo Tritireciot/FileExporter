@@ -27,14 +27,14 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
     volumes:
-      - pg_data:/var/lib/postgresql/data
+      - test_pg_data:/var/lib/postgresql/data
     networks:
       - app
 
 
 volumes:
-  pg_data:
-    name: pg_data
+  test_pg_data:
+    name: test_pg_data
   templates_data:
     name: templates_data
 

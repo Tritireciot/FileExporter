@@ -16,7 +16,7 @@ type ShortElement struct {
 func (repository *DBRepository) GetAllElements(ctx context.Context, element DBModel) (*[]ShortElement, error) {
 	query := fmt.Sprintf(
 		"SELECT %s, %s FROM %s",
-		Columns.ID, Columns.Name, element.getTable(),
+		Columns.ID, Columns.Name, element.GetTable(),
 	)
 
 	var elements []ShortElement
@@ -47,18 +47,18 @@ func (repository *DBRepository) GetElement(
 
 	query := fmt.Sprintf(
 		"SELECT * FROM %s WHERE %s = $1",
-		element.getTable(), column,
+		element.GetTable(), column,
 	)
 	var field any
 
 	if column == Columns.Name {
-		field = element.getName()
+		field = element.GetName()
 	} else {
-		field = element.getID()
+		field = element.GetID()
 	}
 	err := repository.pool.
 		QueryRow(ctx, query, field).
-		Scan(element.getColumns()...)
+		Scan(element.GetColumns()...)
 
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -77,14 +77,14 @@ func (repository *DBRepository) DeleteElement(
 ) error {
 	query := fmt.Sprintf(
 		"DELETE FROM %s WHERE %s = $1",
-		element.getTable(), column,
+		element.GetTable(), column,
 	)
 
 	var field any
 	if column == Columns.Name {
-		field = element.getName()
+		field = element.GetName()
 	} else {
-		field = element.getID()
+		field = element.GetID()
 	}
 	cmd, err := repository.pool.Exec(ctx, query, field)
 
