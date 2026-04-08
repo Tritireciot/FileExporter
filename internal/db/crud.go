@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/Masterminds/squirrel"
 	"github.com/jackc/pgx/v4"
 )
 
@@ -14,11 +15,10 @@ type ShortElement struct {
 }
 
 func (repository *DBRepository) GetAllElements(ctx context.Context, element DBModel) (*[]ShortElement, error) {
-	query := fmt.Sprintf(
-		"SELECT %s, %s FROM %s",
-		Columns.ID, Columns.Name, element.GetTable(),
-	)
-
+	query, _, err:= squirrel.Select(Columns.ID, Columns.Name).From(element.GetTable()).ToSql()
+	if err != nil {
+		return nil, err
+	}
 	var elements []ShortElement
 
 	rows, err := repository.pool.Query(ctx, query)
@@ -44,11 +44,8 @@ func (repository *DBRepository) GetElement(
 	element DBModel,
 	column string,
 ) error {
-
-	query := fmt.Sprintf(
-		"SELECT * FROM %s WHERE %s = $1",
-		element.GetTable(), column,
-	)
+	
+	
 	var field any
 
 	if column == Columns.Name {
@@ -56,8 +53,13 @@ func (repository *DBRepository) GetElement(
 	} else {
 		field = element.GetID()
 	}
-	err := repository.pool.
-		QueryRow(ctx, query, field).
+	psql := squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar) // TODO сделать полем
+	query, args, err := psql.Select("*").From(element.GetTable()).Where(squirrel.Eq{column: field}).ToSql()
+	if err != nil {
+		return err
+	}
+	err = repository.pool.
+		QueryRow(ctx, query, args...).
 		Scan(element.GetColumns()...)
 
 	if err != nil {
