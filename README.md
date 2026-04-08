@@ -23,3 +23,8 @@ docker-compose up
 ```
 
 После успешного запуска приложение будет доступно по адресу: ```http://localhost:8000```
+
+##  тесты
+```
+docker compose -f docker-compose.test.yml up --build --abort-on-container-exit
+```
