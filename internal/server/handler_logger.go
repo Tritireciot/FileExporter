@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/gorilla/handlers"
-
 )
 
 func (app *App) createLoggingRouter(out io.Writer) http.Handler {

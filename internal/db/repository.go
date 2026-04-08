@@ -6,9 +6,8 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
-
 type DBRepository struct {
-	pool *pgxpool.Pool
+	pool   *pgxpool.Pool
 	logger *log.Logger
 }
 

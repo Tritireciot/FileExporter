@@ -15,7 +15,7 @@ func formatPathName(path string, separator string) string {
 }
 
 func (repository *DBRepository) fillTemplatesTable(ctx context.Context, templates_path string) error {
-	
+
 	err := filepath.WalkDir(templates_path, func(path string, d fs.DirEntry, err error) error {
 
 		if err != nil {
@@ -46,7 +46,7 @@ func (repository *DBRepository) fillTemplatesTable(ctx context.Context, template
 	if err != nil {
 		return err
 	}
-	
+
 	return nil
 }
 
@@ -60,8 +60,8 @@ func (repository *DBRepository) fillTagsTable(ctx context.Context, tags_filepath
 	}
 
 	if err := json.NewDecoder(file).Decode(&tags); err != nil {
-        return err
-    }
+		return err
+	}
 	for _, tag_data := range tags {
 		repository.logger.Println("Insert: ", tag_data.Name)
 		if err := repository.AddTag(ctx, &tag_data); err != nil {

@@ -9,7 +9,7 @@ import (
 )
 
 type ShortElement struct {
-	Element_id int `json:"element_id"`
+	Element_id   int    `json:"element_id"`
 	Element_name string `json:"element_name"`
 }
 
@@ -50,15 +50,15 @@ func (repository *DBRepository) GetElement(
 		element.getTable(), column,
 	)
 	var field any
-	
+
 	if column == Columns.Name {
 		field = element.getName()
 	} else {
 		field = element.getID()
 	}
 	err := repository.pool.
-			QueryRow(ctx, query, field).
-			Scan(element.getColumns()...)
+		QueryRow(ctx, query, field).
+		Scan(element.getColumns()...)
 
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -71,7 +71,7 @@ func (repository *DBRepository) GetElement(
 }
 
 func (repository *DBRepository) DeleteElement(
-	ctx context.Context, 
+	ctx context.Context,
 	element DBModel,
 	column string,
 ) error {

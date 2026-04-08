@@ -8,14 +8,14 @@ import (
 )
 
 type Reshaper struct {
-	db_repo *db.DBRepository
-	tagPattern *regexp.Regexp
+	db_repo          *db.DBRepository
+	tagPattern       *regexp.Regexp
 	tagRepeatPattern [2]*regexp.Regexp
 }
 
 func NewReshaper(db_repo *db.DBRepository) *Reshaper {
 	return &Reshaper{
-		db_repo: db_repo,
+		db_repo:    db_repo,
 		tagPattern: regexp.MustCompile(`#([A-Za-z]+)\.([A-Za-z]+)#`),
 		tagRepeatPattern: [2]*regexp.Regexp{
 			regexp.MustCompile(`<#Repeat#([A-Za-z]+)#>`),
@@ -24,14 +24,13 @@ func NewReshaper(db_repo *db.DBRepository) *Reshaper {
 	}
 }
 
-
 func contains(slice []string, element string) bool {
-    for _, v := range slice {
-        if v == element {
-            return true
-        }
-    }
-    return false
+	for _, v := range slice {
+		if v == element {
+			return true
+		}
+	}
+	return false
 }
 
 func (reshaper *Reshaper) changeBaseTags(ctx context.Context, template_content string, repeats []string, requiredTags *map[string]any) string {
@@ -60,7 +59,7 @@ func (reshaper *Reshaper) changeRepeatTags(ctx context.Context, template_content
 		match_tag := reshaper.tagRepeatPattern[0].FindStringSubmatch(tag)
 		field := match_tag[1]
 		repeats = append(repeats, field)
-		(*repeatTags)[field] =  getAlias(ctx, reshaper.db_repo, match_tag[0][1:len(match_tag[0]) - 1])
+		(*repeatTags)[field] = getAlias(ctx, reshaper.db_repo, match_tag[0][1:len(match_tag[0])-1])
 		return fmt.Sprintf("{{ range $%s := .%s }}", field, field)
 	})
 

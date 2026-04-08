@@ -2,7 +2,7 @@ package config
 
 type Config struct {
 	App AppConfig
-	DB DataBaseConfig
+	DB  DataBaseConfig
 }
 
 type AppConfig struct {
