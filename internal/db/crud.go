@@ -15,7 +15,7 @@ type ShortElement struct {
 }
 
 func (repository *DBRepository) GetAllElements(ctx context.Context, element DBModel) (*[]ShortElement, error) {
-	query, _, err:= squirrel.Select(Columns.ID, Columns.Name).From(element.GetTable()).ToSql()
+	query, _, err:= repository.psql.Select(Columns.ID, Columns.Name).From(element.GetTable()).ToSql()
 	if err != nil {
 		return nil, err
 	}
@@ -53,8 +53,7 @@ func (repository *DBRepository) GetElement(
 	} else {
 		field = element.GetID()
 	}
-	psql := squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar) // TODO сделать полем
-	query, args, err := psql.Select("*").From(element.GetTable()).Where(squirrel.Eq{column: field}).ToSql()
+	query, args, err := repository.psql.Select("*").From(element.GetTable()).Where(squirrel.Eq{column: field}).ToSql()
 	if err != nil {
 		return err
 	}
@@ -77,18 +76,17 @@ func (repository *DBRepository) DeleteElement(
 	element DBModel,
 	column string,
 ) error {
-	query := fmt.Sprintf(
-		"DELETE FROM %s WHERE %s = $1",
-		element.GetTable(), column,
-	)
-
 	var field any
 	if column == Columns.Name {
 		field = element.GetName()
 	} else {
 		field = element.GetID()
 	}
-	cmd, err := repository.pool.Exec(ctx, query, field)
+	query, args, err := repository.psql.Delete(element.GetTable()).Where(squirrel.Eq{column: field}).ToSql()
+	if err != nil {
+		return err
+	}
+	cmd, err := repository.pool.Exec(ctx, query, args...)
 
 	if err != nil {
 		return err
@@ -102,37 +100,46 @@ func (repository *DBRepository) DeleteElement(
 }
 
 func (repository *DBRepository) AddTemplate(ctx context.Context, template *Template) error {
-	query := fmt.Sprintf(
-		`INSERT INTO %s (%s, %s)
-			VALUES ($1, $2)
+	query, args, err := repository.psql.Insert(Tables.Templates).
+	Columns(Columns.Name, Columns.Content).
+	Values(template.Name, template.Content).Suffix(
+		fmt.Sprintf(`
 			ON CONFLICT (%s) DO UPDATE
 			SET %s = EXCLUDED.%s;
-			`,
-		Tables.Templates, Columns.Name, Columns.Content,
-		Columns.Name,
-		Columns.Content, Columns.Content,
-	)
-	_, err := repository.pool.Exec(ctx, query, template.Name, template.Content)
+			`, 
+			Columns.Name,
+			Columns.Content, Columns.Content,
+		),
+	).ToSql()
+	if err != nil {
+		return err
+	}
+	_, err = repository.pool.Exec(ctx, query, args...)
 	return err
 }
 
 func (repository *DBRepository) AddTag(ctx context.Context, tag *Tag) error {
-	query := fmt.Sprintf(
-		`INSERT INTO %s (%s, %s, %s, %s)
-			VALUES ($1, $2, $3, $4)
+	query, args, err := repository.psql.Insert(Tables.Tags).
+	Columns(Columns.Name, Columns.Description, Columns.Subsystem, Columns.Alias).
+	Values(tag.Name, tag.Description, tag.Subsystem, tag.Alias).Suffix(
+		fmt.Sprintf(`
 			ON CONFLICT (%s) DO UPDATE
 			SET 
 				%s = EXCLUDED.%s,
 				%s = EXCLUDED.%s,
 				%s = EXCLUDED.%s;
-			`,
-		Tables.Tags, Columns.Name, Columns.Description, Columns.Subsystem, Columns.Alias,
-		Columns.Name,
-		Columns.Description, Columns.Description,
-		Columns.Subsystem, Columns.Subsystem,
-		Columns.Alias, Columns.Alias,
-	)
-	_, err := repository.pool.Exec(ctx, query, tag.Name, tag.Description, tag.Subsystem, tag.Alias)
+			`, 
+			Columns.Name,
+			Columns.Description, Columns.Description,
+			Columns.Subsystem, Columns.Subsystem,
+			Columns.Alias, Columns.Alias,
+		),
+	).ToSql()
+	if err != nil {
+		return err
+	}
+
+	_, err = repository.pool.Exec(ctx, query, args...)
 	return err
 }
 
