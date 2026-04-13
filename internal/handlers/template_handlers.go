@@ -66,8 +66,13 @@ func (handler *TemplateHandler) AddNewTemplate(writer http.ResponseWriter, reque
 		http.Error(writer, "failed to create template", http.StatusInternalServerError)
 		return
 	}
+	if err := handler.repo.GetElement(ctx, &template, db.Columns.Name); err != nil {
+		http.Error(writer, "failed to create template", http.StatusInternalServerError)
+		return
+	}
 
 	writer.WriteHeader(http.StatusCreated)
+	json.NewEncoder(writer).Encode(template)
 }
 
 func (handler *TemplateHandler) DeleteTemplate(writer http.ResponseWriter, request *http.Request) {
@@ -89,5 +94,6 @@ func (handler *TemplateHandler) DeleteTemplate(writer http.ResponseWriter, reque
 		return
 	}
 
-	writer.WriteHeader(http.StatusNoContent)
+	writer.WriteHeader(http.StatusOK)
+	json.NewEncoder(writer).Encode(map[string]int{"ID": template_id})
 }

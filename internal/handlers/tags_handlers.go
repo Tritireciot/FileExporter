@@ -44,8 +44,13 @@ func (handler *TagsHandler) AddNewTag(writer http.ResponseWriter, request *http.
 		http.Error(writer, "failed to create tag", http.StatusInternalServerError)
 		return
 	}
+	if err := handler.repo.GetElement(ctx, &tag, db.Columns.Name); err != nil {
+		http.Error(writer, "failed to create tag", http.StatusInternalServerError)
+		return
+	}
 
 	writer.WriteHeader(http.StatusCreated)
+	json.NewEncoder(writer).Encode(tag)
 }
 
 func (handler *TagsHandler) DeleteTag(writer http.ResponseWriter, request *http.Request) {
@@ -56,7 +61,6 @@ func (handler *TagsHandler) DeleteTag(writer http.ResponseWriter, request *http.
 	}
 
 	ctx := request.Context()
-
 	err = handler.repo.DeleteElement(ctx, &db.Tag{ID: tag_id}, db.Columns.ID)
 	if err != nil {
 		if errors.Is(err, db.ErrElementNotFound) {
@@ -67,5 +71,6 @@ func (handler *TagsHandler) DeleteTag(writer http.ResponseWriter, request *http.
 		return
 	}
 
-	writer.WriteHeader(http.StatusNoContent)
+	writer.WriteHeader(http.StatusOK)
+	json.NewEncoder(writer).Encode(map[string]int{"ID": tag_id})
 }

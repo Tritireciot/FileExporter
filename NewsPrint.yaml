@@ -69,6 +69,10 @@ paths:
       responses:
         '201':
           description: Шаблон добавлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FullTemplateModel'
   /db/delete_template:
     delete:
       tags:
@@ -83,6 +87,10 @@ paths:
       responses: 
         '204':
           description: Шаблон удален
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IDModel'
         '404':
           description: Шаблон не найден
   /db/get_all_tags:
@@ -111,10 +119,14 @@ paths:
         content: 
           application/json:
             "schema":
-              $ref: '#/components/schemas/AddTag'
+              $ref: '#/components/schemas/TagModel'
       responses:
         '201':
           description: Тэг добавлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FullTagModel'
   /db/delete_tag:
     delete:
       tags:
@@ -127,8 +139,12 @@ paths:
           schema: 
             type: integer
       responses:
-        '204':
+        '200':
           description: Тэг удален
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IDModel'
         '404':
           description: Тэг не найден
   /export:
@@ -176,6 +192,15 @@ components:
             type: string
           content:
             type: string
+    FullTemplateModel:
+      type: object
+      properties:
+          ID:
+            type: integer
+          name:
+            type: string
+          content:
+            type: string
     ShortTag:
       type: object
       properties:
@@ -183,9 +208,22 @@ components:
             type: integer
           name:
             type: string
-    AddTag:
+    TagModel:
       type: object
       properties:
+        name:
+          type: string
+        description:
+          type: string
+        subsystem:
+          type: string
+        alias:
+          type: string
+    FullTagModel:
+      type: object
+      properties:
+        ID:
+          type: integer
         name:
           type: string
         description:
@@ -201,6 +239,11 @@ components:
           type: integer
         data:
           type: object
+    IDModel:
+      type: object
+      properties: 
+        ID: 
+          type: integer
       
 
     
