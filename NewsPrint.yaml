@@ -73,6 +73,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FullTemplateModel'
+        '500':
+          description: Ошибка добавления
   /db/delete_template:
     delete:
       tags:
@@ -127,6 +129,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FullTagModel'
+        '500':
+          description: Ошибка добавления
   /db/delete_tag:
     delete:
       tags:
@@ -167,6 +171,8 @@ paths:
                 $ref: '#/components/schemas/Template'
         '404':
           description: Шаблон не найден
+        '500':
+          description: Ошибка в формировании отчета
 components:
   schemas:
     Template:
