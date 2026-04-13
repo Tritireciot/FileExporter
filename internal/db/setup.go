@@ -68,7 +68,7 @@ func (repository *DBRepository) createFilledTables(ctx context.Context) error {
 	}
 	repository.logger.Println("Created Template Table")
 
-	if err := repository.fillTemplatesTable(ctx, os.Getenv("TEMPlATES_PATH")); err != nil {
+	if err := repository.fillTemplatesTable(ctx, os.Getenv("TEMPLATES_PATH")); err != nil {
 		repository.pool.Close()
 		return err
 	}

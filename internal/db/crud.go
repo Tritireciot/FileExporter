@@ -105,16 +105,16 @@ func (repository *DBRepository) AddTemplate(ctx context.Context, template *Templ
 	Values(template.Name, template.Content).Suffix(
 		fmt.Sprintf(`
 			ON CONFLICT (%s) DO UPDATE
-			SET %s = EXCLUDED.%s;
+			SET %s = EXCLUDED.%s
 			`, 
 			Columns.Name,
 			Columns.Content, Columns.Content,
 		),
-	).ToSql()
+	).Suffix(fmt.Sprintf("RETURNING %s;", Columns.ID)).ToSql()
 	if err != nil {
 		return err
 	}
-	_, err = repository.pool.Exec(ctx, query, args...)
+	err = repository.pool.QueryRow(ctx, query, args...).Scan(&template.ID)
 	return err
 }
 
@@ -127,14 +127,14 @@ func (repository *DBRepository) AddTag(ctx context.Context, tag *Tag) error {
 			SET 
 				%s = EXCLUDED.%s,
 				%s = EXCLUDED.%s,
-				%s = EXCLUDED.%s;
+				%s = EXCLUDED.%s
 			`, 
 			Columns.Name,
 			Columns.Description, Columns.Description,
 			Columns.Subsystem, Columns.Subsystem,
 			Columns.Alias, Columns.Alias,
 		),
-	).ToSql()
+	).Suffix(fmt.Sprintf("RETURNING %s;", Columns.ID)).ToSql()
 	if err != nil {
 		return err
 	}

@@ -5,7 +5,6 @@ import (
 	"errors"
 	"former/internal/db"
 	"net/http"
-	"strconv"
 )
 
 type TagsHandler struct {
@@ -33,7 +32,7 @@ func (handler *TagsHandler) AddNewTag(writer http.ResponseWriter, request *http.
 
 	var tag db.Tag
 	if err := json.NewDecoder(request.Body).Decode(&tag); err != nil {
-		http.Error(writer, "invalid json", http.StatusBadRequest)
+		invalidJsonError(writer)
 		return
 	}
 
@@ -41,11 +40,7 @@ func (handler *TagsHandler) AddNewTag(writer http.ResponseWriter, request *http.
 	ctx := request.Context()
 
 	if err := handler.repo.AddTag(ctx, &tag); err != nil {
-		http.Error(writer, "failed to create tag", http.StatusInternalServerError)
-		return
-	}
-	if err := handler.repo.GetElement(ctx, &tag, db.Columns.Name); err != nil {
-		http.Error(writer, "failed to create tag", http.StatusInternalServerError)
+		failedCreatingError(writer)
 		return
 	}
 
@@ -54,23 +49,23 @@ func (handler *TagsHandler) AddNewTag(writer http.ResponseWriter, request *http.
 }
 
 func (handler *TagsHandler) DeleteTag(writer http.ResponseWriter, request *http.Request) {
-	tag_id, err := strconv.Atoi(request.URL.Query().Get("id"))
-	if (tag_id < 0 && err == nil) || err != nil {
-		http.Error(writer, "id is required", http.StatusBadRequest)
+	tag_id, ok := validateId(request)
+	if !ok {
+		idRequiredError(writer)
 		return
 	}
 
 	ctx := request.Context()
-	err = handler.repo.DeleteElement(ctx, &db.Tag{ID: tag_id}, db.Columns.ID)
+	err := handler.repo.DeleteElement(ctx, &db.Tag{ID: tag_id}, db.Columns.ID)
 	if err != nil {
 		if errors.Is(err, db.ErrElementNotFound) {
-			http.Error(writer, "tag not found", http.StatusNotFound)
+			notFoundError(writer)
 			return
 		}
-		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		unknownError(writer, err)
 		return
 	}
 
 	writer.WriteHeader(http.StatusOK)
-	json.NewEncoder(writer).Encode(map[string]int{"ID": tag_id})
+	json.NewEncoder(writer).Encode(IDModel{ID: tag_id})
 }

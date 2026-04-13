@@ -5,7 +5,6 @@ import (
 	"errors"
 	"former/internal/db"
 	"net/http"
-	"strconv"
 )
 
 type TemplateHandler struct {
@@ -30,20 +29,20 @@ func (handler *TemplateHandler) GetAllTemplates(writer http.ResponseWriter, requ
 }
 
 func (handler *TemplateHandler) GetTemplate(writer http.ResponseWriter, request *http.Request) {
-	template_id, err := strconv.Atoi(request.URL.Query().Get("id"))
-	if (template_id < 0 && err == nil) || err != nil {
-		http.Error(writer, "id is required", http.StatusBadRequest)
+	template_id, ok := validateId(request)
+	if !ok {
+		idRequiredError(writer)
 		return
 	}
 	ctx := request.Context()
 	template := db.Template{ID: template_id}
-	err = handler.repo.GetElement(ctx, &template, db.Columns.ID)
+	err := handler.repo.GetElement(ctx, &template, db.Columns.ID)
 	if err != nil {
 		if errors.Is(err, db.ErrTemplateNotFound) {
-			http.Error(writer, "template not found", http.StatusNotFound)
+			notFoundError(writer)
 			return
 		}
-		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		unknownError(writer, err)
 		return
 	}
 
@@ -55,7 +54,7 @@ func (handler *TemplateHandler) AddNewTemplate(writer http.ResponseWriter, reque
 
 	var template db.Template
 	if err := json.NewDecoder(request.Body).Decode(&template); err != nil {
-		http.Error(writer, "invalid json", http.StatusBadRequest)
+		invalidJsonError(writer)
 		return
 	}
 
@@ -63,11 +62,7 @@ func (handler *TemplateHandler) AddNewTemplate(writer http.ResponseWriter, reque
 	ctx := request.Context()
 
 	if err := handler.repo.AddTemplate(ctx, &template); err != nil {
-		http.Error(writer, "failed to create template", http.StatusInternalServerError)
-		return
-	}
-	if err := handler.repo.GetElement(ctx, &template, db.Columns.Name); err != nil {
-		http.Error(writer, "failed to create template", http.StatusInternalServerError)
+		failedCreatingError(writer)
 		return
 	}
 
@@ -76,24 +71,24 @@ func (handler *TemplateHandler) AddNewTemplate(writer http.ResponseWriter, reque
 }
 
 func (handler *TemplateHandler) DeleteTemplate(writer http.ResponseWriter, request *http.Request) {
-	template_id, err := strconv.Atoi(request.URL.Query().Get("id"))
-	if (template_id < 0 && err == nil) || err != nil {
-		http.Error(writer, "id is required", http.StatusBadRequest)
+	template_id, ok := validateId(request)
+	if !ok {
+		idRequiredError(writer)
 		return
 	}
 
 	ctx := request.Context()
 
-	err = handler.repo.DeleteElement(ctx, &db.Template{ID: template_id}, db.Columns.ID)
+	err := handler.repo.DeleteElement(ctx, &db.Template{ID: template_id}, db.Columns.ID)
 	if err != nil {
 		if errors.Is(err, db.ErrElementNotFound) {
-			http.Error(writer, "template not found", http.StatusNotFound)
+			notFoundError(writer)
 			return
 		}
-		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		unknownError(writer, err)
 		return
 	}
 
 	writer.WriteHeader(http.StatusOK)
-	json.NewEncoder(writer).Encode(map[string]int{"ID": template_id})
+	json.NewEncoder(writer).Encode(IDModel{ID: template_id})
 }
