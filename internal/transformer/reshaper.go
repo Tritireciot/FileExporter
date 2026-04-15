@@ -33,7 +33,7 @@ func contains(slice []string, element string) bool {
 	return false
 }
 
-func (reshaper *Reshaper) changeBaseTags(ctx context.Context, template_content string, repeats []string, requiredTags *map[string]any) string {
+func (reshaper *Reshaper) ChangeBaseTags(ctx context.Context, template_content string, repeats []string, requiredTags *map[string]any) string {
 	return reshaper.tagPattern.ReplaceAllStringFunc(template_content, func(tag string) string {
 		match_tag := reshaper.tagPattern.FindStringSubmatch(tag)
 		entity, field := match_tag[1], match_tag[2]
@@ -54,7 +54,8 @@ func (reshaper *Reshaper) changeBaseTags(ctx context.Context, template_content s
 	})
 }
 
-func (reshaper *Reshaper) changeRepeatTags(ctx context.Context, template_content string, repeats []string, repeatTags *map[string]string) ([]string, string) {
+func (reshaper *Reshaper) ChangeRepeatTags(ctx context.Context, template_content string, repeatTags *map[string]string) ([]string, string) {
+	repeats := []string{}
 	template_content = reshaper.tagRepeatPattern[0].ReplaceAllStringFunc(template_content, func(tag string) string {
 		match_tag := reshaper.tagRepeatPattern[0].FindStringSubmatch(tag)
 		field := match_tag[1]
@@ -70,13 +71,9 @@ func (reshaper *Reshaper) changeRepeatTags(ctx context.Context, template_content
 }
 
 func (reshaper *Reshaper) TransformTemplate(ctx context.Context, template_content string, requiredTags *map[string]any, repeatTags *map[string]string) string {
-	connections := includeRepeatStructure(template_content, requiredTags)
-	fmt.Println("requiredTags1: ", requiredTags)
-	var repeats []string
-	repeats, template_content = reshaper.changeRepeatTags(ctx, template_content, repeats, repeatTags)
-	template_content = reshaper.changeBaseTags(ctx, template_content, repeats, requiredTags)
-	completeConnections(connections, requiredTags, repeatTags)
-	fmt.Println("requiredTags: ", requiredTags)
-	fmt.Println("repeatTags: ", repeatTags)
+	connections := IncludeRepeatStructure(template_content, requiredTags)
+	repeats, template_content := reshaper.ChangeRepeatTags(ctx, template_content, repeatTags)
+	template_content = reshaper.ChangeBaseTags(ctx, template_content, repeats, requiredTags)
+	CompleteConnections(connections, requiredTags, repeatTags)
 	return template_content
 }

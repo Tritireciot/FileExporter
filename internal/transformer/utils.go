@@ -34,7 +34,7 @@ func modifyStructure(entity_stack []string, requiredTags *map[string]any, connec
 	}
 }
 
-func includeRepeatStructure(template_content string, requiredTags *map[string]any) map[string]string {
+func IncludeRepeatStructure(template_content string, requiredTags *map[string]any) map[string]string {
 	connections := map[string]string{}
 	repeat_pattern := regexp.MustCompile(`</?#Repeat#([A-Za-z]+)#>`)
 	stack := []string{}
@@ -50,7 +50,7 @@ func includeRepeatStructure(template_content string, requiredTags *map[string]an
 	return connections
 }
 
-func completeConnections(connections map[string]string, requiredTags *map[string]any, repeatTags *map[string]string) {
+func CompleteConnections(connections map[string]string, requiredTags *map[string]any, repeatTags *map[string]string) {
 	for source, destination := range connections {
 		destination_map := (*requiredTags)[destination]
 		if source_map, ok := (*requiredTags)[source].(map[string]any); ok {
