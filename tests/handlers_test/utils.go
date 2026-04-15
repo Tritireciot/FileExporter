@@ -60,3 +60,22 @@ func checkBody(
 		}
 	}
 }
+
+func checkArrayBody(
+	t *testing.T,
+	recorder *httptest.ResponseRecorder,
+	expectedBody []map[string]any,
+) {
+	var actual []map[string]any
+	if err := json.NewDecoder(recorder.Body).Decode(&actual); err != nil {
+		t.Fatalf("could not decode json: %v", err)
+	}
+	for i := range actual {
+		for key := range actual[i] {
+			if actual[i][key] != expectedBody[i][key] {
+				t.Errorf("handler returned unexpected body param %s : got %v want %v",
+            	key, actual[i][key], expectedBody[i][key])
+			} 
+		}
+	}
+}

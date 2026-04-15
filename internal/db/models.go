@@ -5,6 +5,7 @@ type DBModel interface {
 	GetID() int
 	GetName() string
 	GetColumns() []any
+	Validate() bool
 }
 
 type Template struct {
@@ -29,6 +30,9 @@ func (template *Template) GetColumns() []any {
 	return []any{
 		&template.ID, &template.Name, &template.Content,
 	}
+}
+func (template *Template) Validate() bool{
+	return template.Name != "" && template.Content != ""
 }
 
 type Tag struct {
@@ -55,4 +59,9 @@ func (tag *Tag) GetColumns() []any {
 	return []any{
 		&tag.ID, &tag.Name, &tag.Description, &tag.Subsystem, &tag.Alias,
 	}
+}
+
+func (tag *Tag) Validate() bool{
+	return tag.Name != "" && tag.Description != "" && 
+	tag.Subsystem != "" && tag.Alias != ""
 }

@@ -6,55 +6,8 @@ import (
 	"testing"
 )
 
-func TestGetTemplateHandler(t *testing.T) {
-	test_data := []struct {
-		ID int
-		ExpectedStatus int
-		ExpectedResponse *map[string]any
-	}{
-		{
-			DBRepoMock.ExpectedId, 
-			http.StatusOK,
-			&map[string]any{
-				"ID": float64(DBRepoMock.ExpectedId),
-				"name": DBRepoMock.ExpectedStub,
-				"content": DBRepoMock.ExpectedStub,
-			},
-		},
-		{
-			DBRepoMock.UnknownId, 
-			http.StatusNotFound,
-			nil,
-		},
-		{
-			DBRepoMock.ErrorId, 
-			http.StatusInternalServerError,
-			nil,
-		},
-		{
-			-1, 
-			http.StatusUnprocessableEntity,
-			nil,
-		},
-	}
 
-	for _, set := range test_data {
-		recorder := createRequest(
-			t,
-			MockApp,
-			"GET",
-			fmt.Sprintf("/db/get_template?id=%d", set.ID), 
-			nil,
-		)
-		checkStatusCode(t, recorder, set.ExpectedStatus)
-		if set.ExpectedResponse != nil {
-			checkBody(t, recorder, *set.ExpectedResponse)
-		}
-	}
-}
-
-
-func TestAddTemplateHandler(t *testing.T) {
+func TestAddTagHandler(t *testing.T) {
 	test_data := []struct {
 		ExpectedStatus int
 		ExpectedResponse *map[string]any
@@ -65,11 +18,15 @@ func TestAddTemplateHandler(t *testing.T) {
 			&map[string]any{
 				"ID": float64(DBRepoMock.ExpectedId),
 				"name": "test",
-				"content": "test",
+				"description": "test",
+				"subsystem": "test",
+				"alias": "test",
 			},
 			&map[string]any{
-				"name":  "test",
-				"content": "test",
+				"name": "test",
+				"description": "test",
+				"subsystem": "test",
+				"alias": "test",
 			},
 		},
 		{
@@ -77,14 +34,16 @@ func TestAddTemplateHandler(t *testing.T) {
 			nil,
 			&map[string]any{
 				"name":  DBRepoMock.ErrorName,
-				"content": "test",
+				"description": "test",
+				"subsystem": "test",
+				"alias": "test",
 			},
 		},
 		{
 			http.StatusUnprocessableEntity,
 			nil,
 			&map[string]any{
-				"content": "UnprocessableEntity",
+				"description": "UnprocessableEntity",
 			},
 		},
 	}
@@ -93,7 +52,7 @@ func TestAddTemplateHandler(t *testing.T) {
 			t,
 			MockApp,
 			"POST",
-			"/db/add_template", 
+			"/db/add_tag", 
 			set.RequestBody,
 		)
 		checkStatusCode(t, recorder, set.ExpectedStatus)
@@ -103,7 +62,7 @@ func TestAddTemplateHandler(t *testing.T) {
 	}
 }
 
-func TestDeleteTemplateHandler(t *testing.T) {
+func TestDeleteTagHandler(t *testing.T) {
 	test_data := []struct {
 		ID int
 		ExpectedStatus int
@@ -138,7 +97,7 @@ func TestDeleteTemplateHandler(t *testing.T) {
 			t,
 			MockApp,
 			"DELETE",
-			fmt.Sprintf("/db/delete_template?id=%d", set.ID), 
+			fmt.Sprintf("/db/delete_tag?id=%d", set.ID), 
 			nil,
 		)
 		checkStatusCode(t, recorder, set.ExpectedStatus)
@@ -148,7 +107,7 @@ func TestDeleteTemplateHandler(t *testing.T) {
 	}
 }
 
-func TestGetAllTemplatesHandler(t *testing.T) {
+func TestGetAllTagsHandler(t *testing.T) {
 	test_data := []struct {
 		ExpectedStatus int
 		ExpectedResponse []map[string]any
@@ -167,7 +126,7 @@ func TestGetAllTemplatesHandler(t *testing.T) {
 			t,
 			MockApp,
 			"GET",
-			"/db/get_all_templates", 
+			"/db/get_all_tags", 
 			nil,
 		)
 		checkStatusCode(t, recorder, set.ExpectedStatus)

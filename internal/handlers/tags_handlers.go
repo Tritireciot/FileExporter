@@ -31,7 +31,7 @@ func (handler *TagsHandler) GetAllTags(writer http.ResponseWriter, request *http
 func (handler *TagsHandler) AddNewTag(writer http.ResponseWriter, request *http.Request) {
 
 	var tag db.Tag
-	if err := json.NewDecoder(request.Body).Decode(&tag); err != nil {
+	if err := json.NewDecoder(request.Body).Decode(&tag); err != nil || !tag.Validate() {
 		invalidJsonError(writer)
 		return
 	}

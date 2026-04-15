@@ -20,7 +20,7 @@ func (handler *TemplateHandler) GetAllTemplates(writer http.ResponseWriter, requ
 	ctx := request.Context()
 	template_list, err := handler.repo.GetAllElements(ctx, &db.Template{})
 	if err != nil {
-		http.Error(writer, err.Error(), http.StatusBadRequest)
+		unknownError(writer, err)
 		return
 	}
 
@@ -53,7 +53,8 @@ func (handler *TemplateHandler) GetTemplate(writer http.ResponseWriter, request 
 func (handler *TemplateHandler) AddNewTemplate(writer http.ResponseWriter, request *http.Request) {
 
 	var template db.Template
-	if err := json.NewDecoder(request.Body).Decode(&template); err != nil {
+	if err := json.NewDecoder(request.Body).Decode(&template); 
+	err != nil || !template.Validate() {
 		invalidJsonError(writer)
 		return
 	}
