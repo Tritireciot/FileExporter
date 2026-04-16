@@ -66,14 +66,14 @@ func TestIncludeRepeatStructure(t *testing.T) {
 	test_data := []struct {
 		TestTemplate string
 		ExpectedRequiredTags map[string]any
-		ExpectedConnections map[string]string
+		ExpectedConnections map[string]any
 	}{
 		{
 			"<#Repeat#Story#></#Repeat#Story#>",
 			map[string]any{
 				"Story": map[string]any{},
 			},
-			map[string]string{},
+			map[string]any{},
 		},
 		{
 			"<#Repeat#Story#><#Repeat#Media#></#Repeat#Media#></#Repeat#Story#>",
@@ -82,7 +82,7 @@ func TestIncludeRepeatStructure(t *testing.T) {
 					"Media": map[string]any{},
 				},
 			},
-			map[string]string{
+			map[string]any{
 				"Story": "Media",
 			},
 		},
@@ -92,7 +92,7 @@ func TestIncludeRepeatStructure(t *testing.T) {
 				"Story": map[string]any{},
 				"Media": map[string]any{},
 			},
-			map[string]string{},
+			map[string]any{},
 		},
 		{
 			"<#Repeat#Story#><#Repeat#Media#><#Repeat#Unknown#></#Repeat#Unknown#></#Repeat#Media#></#Repeat#Story#>",
@@ -103,7 +103,7 @@ func TestIncludeRepeatStructure(t *testing.T) {
 					},
 				},
 			},
-			map[string]string{
+			map[string]any{
 				"Story": "Media",
 				"Media": "Unknown",
 			},
@@ -116,7 +116,7 @@ func TestIncludeRepeatStructure(t *testing.T) {
 				},
 				"Unknown": map[string]any{},
 			},
-			map[string]string{
+			map[string]any{
 				"Story": "Media",
 			},
 		},
@@ -128,10 +128,14 @@ func TestIncludeRepeatStructure(t *testing.T) {
 			set.TestTemplate, 
 			&requiredTags,
 		)
-		if len(connections) != len(set.ExpectedConnections) {
+		checkable_connections := make(map[string]any, len(connections))
+		for src, dest := range connections{
+			checkable_connections[src] = dest
+		}
+		if !assertMaps(checkable_connections, set.ExpectedConnections) {
 			t.Errorf("Wrong connections expected: %v got: %v", set.ExpectedConnections, connections)
 		}
-		if len(requiredTags) != len(set.ExpectedRequiredTags) {
+		if !assertMaps(requiredTags, set.ExpectedRequiredTags) {
 			t.Errorf("Wrong requiredTags expected:\n %v\n got:\n %v\n", set.ExpectedRequiredTags, requiredTags)
 		}
 	}
@@ -144,114 +148,12 @@ func TestChangeBaseTags(t *testing.T){
 		ExpectedRequiredTags map[string]any
 	}{
 		{
-			`<#Repeat#Story#>
-			<hr />
-			<p style="text-align: left;">№#Story.Pos#. #Story.Name#</p>
-			<table style="width: 100%; margin-left: auto; margin-right: auto;">
-			<tbody>
-			<tr>
-			<td colspan="5" nowrap>#Story.Type#</td>
-			</tr>
-			<tr>
-			<td>Автор:</td>
-			<td nowrap>#Story.Author#</td>
-			<td></td>
-			<td>Готовность:</td>
-			<td nowrap>#Story.State#</td>
-			</tr>
-			<tr>
-			<td>Начитка:</td>
-			<td nowrap>#Story.Presenter#</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			</tr>
-			<tr>
-			<td colspan="2" nowrap>Время старта от начала выпуска:</td>
-			<td>&nbsp;</td>
-			<td nowrap>Длительность планируемая:</td>
-			<td nowrap>#Story.DurationPlan#</td>
-			</tr>
-			<tr>
-			<td colspan="2" nowrap>#Story.StartPlan#</td>
-			<td>&nbsp;</td>
-			<td nowrap>Длительность фактическая:</td>
-			<td nowrap>#Story.DurationFact#</td>
-			</tr>
-			</tbody>
-			</table>
-			<p style="word-wrap:break-word;">#Story.Text#</p>
-			<table width="100%">
-			<tbody>
-			<#Repeat#Media#>
-			<tr>
-			<td nowrap>#Story.Pos# #Media.Pos#</td>
-			<td nowrap>#Media.Type# #Media.Name#</td>
-			<td align="right" nowrap>#Media.Start#</td>
-			</tr>		
-			<tr>
-			<td colspan="2">#Media.Params#</td>
-			</tr>
-			</#Repeat#Media#>
-			</tbody>
-			</table>
-			</#Repeat#Story#>`,
-			`{{ range $Story := .Story }}
-			<hr />
-			<p style="text-align: left;">№{{ $Story.Pos }}. {{ $Story.Name }}</p>
-			<table style="width: 100%; margin-left: auto; margin-right: auto;">
-			<tbody>
-			<tr>
-			<td colspan="5" nowrap>{{ $Story.Type }}</td>
-			</tr>
-			<tr>
-			<td>Автор:</td>
-			<td nowrap>{{ $Story.Author }}</td>
-			<td></td>
-			<td>Готовность:</td>
-			<td nowrap>{{ $Story.State }}</td>
-			</tr>
-			<tr>
-			<td>Начитка:</td>
-			<td nowrap>{{ $Story.Presenter }}</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			</tr>
-			<tr>
-			<td colspan="2" nowrap>Время старта от начала выпуска:</td>
-			<td>&nbsp;</td>
-			<td nowrap>Длительность планируемая:</td>
-			<td nowrap>{{ $Story.DurationPlan }}</td>
-			</tr>
-			<tr>
-			<td colspan="2" nowrap>{{ $Story.StartPlan }}</td>
-			<td>&nbsp;</td>
-			<td nowrap>Длительность фактическая:</td>
-			<td nowrap>{{ $Story.DurationFact }}</td>
-			</tr>
-			</tbody>
-			</table>
-			<p style="word-wrap:break-word;">{{ $Story.Text }}</p>
-			<table width="100%">
-			<tbody>
-			{{ range $Media := .Media }}
-			<tr>
-			<td nowrap>{{ $Story.Pos }} {{ $Media.Pos }}</td>
-			<td nowrap>{{ $Media.Type }} {{ $Media.Name }}</td>
-			<td align="right" nowrap>{{ $Media.Start }}</td>
-			</tr>		
-			<tr>
-			<td colspan="2">{{ $Media.Params }}</td>
-			</tr>
-			{{ end }}
-			</tbody>
-			</table>
-			{{ end }}`,
+			ComplexTemplate,
+			ComplexExpectedTemplate,
 			map[string]any{
 				"Story": map[string]any{
 					"Pos": "rundown.content.%d.pos",
-					"Name": "rundown.content.%d.story.id",
+					"Name": "rundown.content.%d.story.name",
 					"Type": "rundown.content.%d.story.type",
 					"Author": "rundown.content.%d.story.author",
 					"State": "rundown.content.%d.story.status",
@@ -271,6 +173,70 @@ func TestChangeBaseTags(t *testing.T){
 				},
 			},
 		},
+		{
+			`<#Repeat#Story#>
+			#Story.Pos#
+			#Story.Name#
+			#Story.Type#
+			</#Repeat#Story#>
+			<#Repeat#Media#>
+			#Media.Pos#
+			</#Repeat#Media#>
+			`,
+			`{{ range $Story := .Story }}
+			{{ $Story.Pos }}
+			{{ $Story.Name }}
+			{{ $Story.Type }}
+			{{ end }}
+			{{ range $Media := .Media }}
+			{{ $Media.Pos }}
+			{{ end }}
+			`,
+			map[string]any{
+				"Story": map[string]any{
+					"Pos": "rundown.content.%d.pos",
+					"Name": "rundown.content.%d.story.name",
+					"Type": "rundown.content.%d.story.type",
+				},
+				"Media": map[string]any{
+					"Pos": "rundown.content.%d.story.media_content.%d.pos",
+				},
+			},
+		},
+		{
+			`#RunDown.Author#
+			#Story.Pos#
+			#Story.Name#
+			#Story.Type#
+			#Media.Pos#
+			`,
+			`{{ .RunDown.Author }}
+			{{ .Story.Pos }}
+			{{ .Story.Name }}
+			{{ .Story.Type }}
+			{{ .Media.Pos }}
+			`,
+			map[string]any{
+				"RunDown": map[string]any{
+					"Author": "rundown.author",
+				},
+				"Story": map[string]any{
+					"Pos": "rundown.content.%d.pos",
+					"Name": "rundown.content.%d.story.name",
+					"Type": "rundown.content.%d.story.type",
+				},
+				"Media": map[string]any{
+					"Pos": "rundown.content.%d.story.media_content.%d.pos",
+				},
+			},
+		},
+		{
+			`#RunDown.Author.Unknown#
+			`,
+			`#RunDown.Author.Unknown#
+			`,
+			map[string]any{},
+		},
 	}
 	for _, set := range test_data {
 		requiredTags := map[string]any{}
@@ -282,8 +248,116 @@ func TestChangeBaseTags(t *testing.T){
 			t.Errorf("Wrong reshape expected:\n %v \n got:\n %v \n", set.ExpectedTemplate, template_content)
 		}
 
-		if len(requiredTags) != len(set.ExpectedRequiredTags) {
+		if !assertMaps(requiredTags, set.ExpectedRequiredTags) {
 			t.Errorf("Wrong requiredTags expected:\n %v \n got:\n %v \n", set.ExpectedRequiredTags, requiredTags)
 		}
 	}
+}
+
+func TestCompleteConnections(t *testing.T){
+	test_data := []struct{
+		TestTemplate string
+		ExpectedRequiredTags map[string]any
+		ExpectedRepeatTags map[string]any
+	}{
+		{
+			ComplexTemplate,
+			map[string]any{
+				"Story": map[string]any{
+					"Pos": "rundown.content.%d.pos",
+					"Name": "rundown.content.%d.story.name",
+					"Type": "rundown.content.%d.story.type",
+					"Author": "rundown.content.%d.story.author",
+					"State": "rundown.content.%d.story.status",
+					"Presenter": "rundown.content.%d.story.presenter",
+					"DurationPlan": "rundown.content.%d.story.plan_durat",
+					"StartPlan": "rundown.content.%d.story.plan_start",
+					"DurationFact": "rundown.content.%d.story.fact_duration",
+					"Text": "rundown.content.%d.story.text.text",
+					"Media": map[string]any{
+						"Pos": "rundown.content.%d.story.media_content.%d.pos",
+						"Type": "rundown.content.%d.story.media_content.%d.type",
+						"Name": "rundown.content.%d.story.media_content.%d.name",
+						"Start": "rundown.content.%d.story.media_content.%d.mark_in",
+						"Params": "rundown.content.%d.story.media_content.%d",
+					},
+				},
+			},
+			map[string]any{
+				"Story": "rundown.content",
+			},
+		},
+		{
+			`#RunDown.Author#
+			#Story.Pos#
+			#Story.Name#
+			#Story.Type#
+			#Media.Pos#
+			`,
+			map[string]any{
+				"RunDown": map[string]any{
+					"Author": "rundown.author",
+				},
+				"Story": map[string]any{
+					"Pos": "rundown.content.%d.pos",
+					"Name": "rundown.content.%d.story.name",
+					"Type": "rundown.content.%d.story.type",
+				},
+				"Media": map[string]any{
+					"Pos": "rundown.content.%d.story.media_content.%d.pos",
+				},
+			},
+			map[string]any{},
+		},
+		{
+			`<#Repeat#Story#>
+			#Story.Pos#
+			#Story.Name#
+			#Story.Type#
+			</#Repeat#Story#>
+			<#Repeat#Media#>
+			#Media.Pos#
+			</#Repeat#Media#>
+			`,
+			map[string]any{
+				"Story": map[string]any{
+					"Pos": "rundown.content.%d.pos",
+					"Name": "rundown.content.%d.story.name",
+					"Type": "rundown.content.%d.story.type",
+				},
+				"Media": map[string]any{
+					"Pos": "rundown.content.%d.story.media_content.%d.pos",
+				},
+			},
+			map[string]any{
+				"Story": "rundown.content",
+				"Media": "rundown.content.%d.story.media_content",
+			},
+		},
+	}
+
+	for _, set := range test_data {
+		requiredTags := map[string]any{}
+		repeatTags := map[string]string{}
+		connections := transformer.IncludeRepeatStructure(set.TestTemplate, &requiredTags)
+		repeats, template_content := test_reshaper.ChangeRepeatTags(test_context, set.TestTemplate, &repeatTags)
+		test_reshaper.ChangeBaseTags(test_context, template_content, repeats, &requiredTags)
+		transformer.CompleteConnections(connections, &requiredTags, &repeatTags)
+
+		if !assertMaps(requiredTags, set.ExpectedRequiredTags) {
+			t.Errorf("Wrong requiredTags expected:\n %v \n got:\n %v \n", set.ExpectedRequiredTags, requiredTags)
+		}
+
+		checkable_repeatTags := make(map[string]any, len(repeatTags))
+		for src, dest := range repeatTags{
+			checkable_repeatTags[src] = dest
+		}
+
+		if !assertMaps(checkable_repeatTags, set.ExpectedRepeatTags) {
+			t.Errorf("Wrong requiredTags expected:\n %v \n got:\n %v \n", set.ExpectedRepeatTags, checkable_repeatTags)
+		}
+	}
+
+
+
 }
