@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
-	"former/internal/db"
+	//"former/internal/db"
 	"former/internal/transformer"
 	"net/http"
 )
@@ -33,5 +33,6 @@ func (handler *ExportHandler) TransformTemplate(writer http.ResponseWriter, requ
 		unknownError(writer, err)
 		return
 	}
-	json.NewEncoder(writer).Encode(db.Template{ID: export_form.TemplateId, Content: export_doc})
+	writer.Write([]byte(export_doc))
+	//json.NewEncoder(writer).Encode(db.Template{ID: export_form.TemplateId, Content: export_doc})
 }

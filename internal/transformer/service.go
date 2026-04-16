@@ -51,7 +51,7 @@ func (service *TransformService) RenderTemplate(ctx context.Context, template_id
 	if err != nil {
 		return "", err
 	}
-	data := translate(raw_data, requiredTags, repeatTags)
+	data := Translate(raw_data, requiredTags, repeatTags)
 	return execute(form_template, data)
 
 }

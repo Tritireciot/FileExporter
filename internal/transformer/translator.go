@@ -124,7 +124,7 @@ func fillNormalTag(json_data []byte, schema map[string]any) map[string]any {
 	return schema
 }
 
-func translate(json_data []byte, requiredTags map[string]any, repeatTags map[string]string) map[string]any {
+func Translate(json_data []byte, requiredTags map[string]any, repeatTags map[string]string) map[string]any {
 
 	resultData := addRepeatedTags(repeatTags)
 

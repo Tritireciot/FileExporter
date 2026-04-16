@@ -6,16 +6,27 @@ func assertMaps(actual map[string]any, expected map[string]any) bool {
 	}
 	for key, raw_value := range actual {
 		if value, ok := actual[key].(map[string]any); ok {
-			part_equal := true
 			if expected_value, ok := expected[key].(map[string]any); ok {
-				part_equal = assertMaps(value, expected_value)
+				if !assertMaps(value, expected_value){
+					return false
+				}
 			} else {
 				return false
 			}
-			if !part_equal {
+		} else if value, ok := actual[key].([]map[string]any); ok{
+			if expected_value, ok := expected[key].([]map[string]any); ok {
+				if len(value) != len(expected_value) {
+					return false
+				}
+				for i := range value {
+					if !assertMaps(value[i], expected_value[i]) {
+						return false
+					}
+				}
+			} else {
 				return false
 			}
-		} else {
+		}else {
 			if raw_value != expected[key] {
 				return false
 			}
