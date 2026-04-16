@@ -15,7 +15,7 @@ type App struct {
 	Logger *log.Logger
 }
 
-func (app *App) InitializeRouter(db_repo db.DBRepo, transformer_ *transformer.TransformService) {
+func (app *App) InitializeRouter(db_repo db.DBRepo, transformer_ transformer.Transformer) {
 	template_handler := handlers.NewTemplateHandler(db_repo)
 	tag_handler := handlers.NewTagsHandler(db_repo)
 	export_handler := handlers.NewExportHandler(transformer_)
@@ -31,7 +31,7 @@ func (app *App) InitializeRouter(db_repo db.DBRepo, transformer_ *transformer.Tr
 	app.Router.HandleFunc("/export", export_handler.TransformTemplate).Methods("POST")
 }
 
-func (app *App) Init(db_repo db.DBRepo, transformer_ *transformer.TransformService) {
+func (app *App) Init(db_repo db.DBRepo, transformer_ transformer.Transformer) {
 	app.Router = mux.NewRouter()
 	app.InitializeRouter(db_repo, transformer_)
 }

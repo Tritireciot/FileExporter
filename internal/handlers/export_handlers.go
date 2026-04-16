@@ -2,22 +2,22 @@ package handlers
 
 import (
 	"encoding/json"
-	//"former/internal/db"
+	"former/internal/db"
 	"former/internal/transformer"
 	"net/http"
 )
 
 type ExportHandler struct {
-	transformer *transformer.TransformService
+	transformer transformer.Transformer
 }
 
-func NewExportHandler(transformer_ *transformer.TransformService) *ExportHandler {
+func NewExportHandler(transformer_ transformer.Transformer) *ExportHandler {
 	return &ExportHandler{transformer: transformer_}
 }
 
 func (handler *ExportHandler) TransformTemplate(writer http.ResponseWriter, request *http.Request) {
 	var export_form ExportModel
-	if err := json.NewDecoder(request.Body).Decode(&export_form); err != nil {
+	if err := json.NewDecoder(request.Body).Decode(&export_form); err != nil || !export_form.Validate() {
 		invalidJsonError(writer)
 		return
 	}
@@ -33,6 +33,6 @@ func (handler *ExportHandler) TransformTemplate(writer http.ResponseWriter, requ
 		unknownError(writer, err)
 		return
 	}
-	writer.Write([]byte(export_doc))
-	//json.NewEncoder(writer).Encode(db.Template{ID: export_form.TemplateId, Content: export_doc})
+	writer.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(writer).Encode(db.Template{ID: export_form.TemplateId, Content: export_doc})
 }

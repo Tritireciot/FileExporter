@@ -7,6 +7,10 @@ import (
 	"html/template"
 )
 
+type Transformer interface {
+	RenderTemplate(ctx context.Context, template_id int, raw_data []byte) (string, error)
+}
+
 type TransformService struct {
 	db_repo  db.DBRepo
 	reshaper Reshaper
