@@ -12,16 +12,31 @@ import (
 type ShortElement struct {
 	Element_id   int    `json:"element_id"`
 	Element_name string `json:"element_name"`
+	IsSingle bool `json:"is_single"`
 }
 
-func (repository *DBRepository) GetAllElements(ctx context.Context, element DBModel) (*[]ShortElement, error) {
-	query, _, err := repository.psql.Select(Columns.ID, Columns.Name).From(element.GetTable()).ToSql()
+func (repository *DBRepository) GetAllElements(ctx context.Context, element DBModel, subsystem string, isActive bool) (*[]ShortElement, error) {
+	var sqr_query squirrel.SelectBuilder
+	if _, ok := element.(*Template); ok {
+		sqr_query = repository.psql.Select(Columns.ID, Columns.Name, Columns.IsSingle)
+	} else {
+		sqr_query = repository.psql.Select(Columns.ID, Columns.Name)
+	}
+	sqr_query = sqr_query.From(element.GetTable())
+
+	if isActive {
+		sqr_query = sqr_query.Where(Columns.IsActive)
+	}
+	if ok := ParseSubsystem(subsystem); ok {
+		sqr_query = sqr_query.Where(squirrel.Eq{Columns.Subsystem: subsystem})
+	}
+	query, args, err := sqr_query.ToSql()
 	if err != nil {
 		return nil, err
 	}
 	var elements []ShortElement
 
-	rows, err := repository.pool.Query(ctx, query)
+	rows, err := repository.pool.Query(ctx, query, args...)
 	if err != nil {
 		rows.Close()
 		return nil, err
@@ -29,7 +44,11 @@ func (repository *DBRepository) GetAllElements(ctx context.Context, element DBMo
 	defer rows.Close()
 	for rows.Next() {
 		short_element := ShortElement{}
-		err := rows.Scan(&short_element.Element_id, &short_element.Element_name)
+		if _, ok := element.(*Template); ok {
+			err = rows.Scan(&short_element.Element_id, &short_element.Element_name, &short_element.IsSingle)
+		} else {
+			err = rows.Scan(&short_element.Element_id, &short_element.Element_name)
+		}
 		if err != nil {
 			return nil, err
 		}
@@ -100,14 +119,23 @@ func (repository *DBRepository) DeleteElement(
 
 func (repository *DBRepository) AddTemplate(ctx context.Context, template *Template) error {
 	query, args, err := repository.psql.Insert(Tables.Templates).
-		Columns(Columns.Name, Columns.Content).
-		Values(template.Name, template.Content).Suffix(
+		Columns(Columns.Name, Columns.Content, Columns.Subsystem, Columns.IsActive, Columns.RenderData, Columns.IsSingle).
+		Values(template.Name, template.Content, template.Subsystem, template.IsActive, template.RenderData, template.IsSingle).Suffix(
 		fmt.Sprintf(`
 			ON CONFLICT (%s) DO UPDATE
-			SET %s = EXCLUDED.%s
+			SET 
+				%s = EXCLUDED.%s,
+				%s = EXCLUDED.%s,
+				%s = EXCLUDED.%s,
+				%s = EXCLUDED.%s,
+				%s = EXCLUDED.%s
 			`,
 			Columns.Name,
 			Columns.Content, Columns.Content,
+			Columns.Subsystem, Columns.Subsystem,
+			Columns.IsActive, Columns.IsActive,
+			Columns.RenderData, Columns.RenderData,
+			Columns.IsSingle, Columns.IsSingle,
 		),
 	).Suffix(fmt.Sprintf("RETURNING %s;", Columns.ID)).ToSql()
 	if err != nil {
@@ -148,14 +176,16 @@ func (repository *DBRepository) createTagsTables(ctx context.Context) error {
 		%s TEXT NOT NULL UNIQUE,
 		%s TEXT NOT NULL,
 		%s TEXT NOT NULL,
-		%s TEXT NOT NULL);
+		%s TEXT NOT NULL,
+		%s BOOLEAN DEFAULT TRUE);
 	`,
 		Tables.Tags,
 		Columns.ID,
 		Columns.Name,
 		Columns.Description,
 		Columns.Subsystem,
-		Columns.Alias)
+		Columns.Alias,
+		Columns.IsActive)
 	_, err := repository.pool.Exec(ctx, query)
 	return err
 }
@@ -164,12 +194,20 @@ func (repository *DBRepository) createTemplatesTables(ctx context.Context) error
 	query := fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s (
 		%s SERIAL PRIMARY KEY,
 		%s TEXT NOT NULL UNIQUE,
-		%s TEXT NOT NULL);
+		%s TEXT NOT NULL,
+		%s TEXT NOT NULL,
+		%s BOOLEAN DEFAULT TRUE,
+		%s JSONB DEFAULT '{}',
+		%s BOOLEAN DEFAULT FALSE);
 	`,
 		Tables.Templates,
 		Columns.ID,
 		Columns.Name,
-		Columns.Content)
+		Columns.Content,
+		Columns.Subsystem,
+		Columns.IsActive,
+		Columns.RenderData,
+		Columns.IsSingle)
 	_, err := repository.pool.Exec(ctx, query)
 	return err
 }

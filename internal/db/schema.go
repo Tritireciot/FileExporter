@@ -8,6 +8,8 @@ var Tables = struct {
 	Tags:      "tags",
 }
 
+
+
 var Columns = struct {
 	ID          string
 	Name        string
@@ -15,6 +17,9 @@ var Columns = struct {
 	Subsystem   string
 	Description string
 	Alias       string
+	IsActive	string
+	RenderData 	string
+	IsSingle	string
 }{
 	ID:          "id",
 	Name:        "name",
@@ -22,4 +27,7 @@ var Columns = struct {
 	Subsystem:   "subsystem",
 	Description: "description",
 	Alias:       "alias",
+	IsActive:	 "is_active",
+	RenderData:	 "render_data",
+	IsSingle: 	 "is_single",
 }

@@ -19,6 +19,10 @@ func TestGetTemplateHandler(t *testing.T) {
 				"ID": float64(DBRepoMock.ExpectedId),
 				"name": DBRepoMock.ExpectedStub,
 				"content": DBRepoMock.ExpectedStub,
+				"subsystem": DBRepoMock.ExpectedStub,
+				"is_active": true,
+				"render_data": nil,
+				"is_single": false,
 			},
 		},
 		{
@@ -66,10 +70,15 @@ func TestAddTemplateHandler(t *testing.T) {
 				"ID": float64(DBRepoMock.ExpectedId),
 				"name": "test",
 				"content": "test",
+				"subsystem": "NEWS",
+				"is_active": false,
+				"render_data": nil,
+				"is_single": false,
 			},
 			&map[string]any{
 				"name":  "test",
 				"content": "test",
+				"subsystem": "NEWS",
 			},
 		},
 		{
@@ -78,6 +87,7 @@ func TestAddTemplateHandler(t *testing.T) {
 			&map[string]any{
 				"name":  DBRepoMock.ErrorName,
 				"content": "test",
+				"subsystem": "NEWS",
 			},
 		},
 		{
@@ -156,8 +166,8 @@ func TestGetAllTemplatesHandler(t *testing.T) {
 		{
 			http.StatusOK,
 			[]map[string]any{
-				{"element_id": float64(1), "element_name": "1"},
-				{"element_id": float64(2), "element_name": "2"},
+				{"element_id": float64(1), "element_name": "1", "is_single": false},
+				{"element_id": float64(2), "element_name": "2", "is_single": false},
 			},
 		},
 	}

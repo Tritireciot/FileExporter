@@ -54,16 +54,21 @@ func (repository *MockDB) GetElement(ctx context.Context, element db.DBModel, co
 	if template, ok := element.(*db.Template); ok {
 		template.Name = repository.ExpectedStub
 		template.Content = repository.ExpectedStub
+		template.Subsystem = repository.ExpectedStub
+		template.IsActive = true
+		template.RenderData = nil
+		template.IsSingle = false
 	} else if tag, ok := element.(*db.Tag); ok {
 		tag.Name = repository.ExpectedStub
 		tag.Subsystem = repository.ExpectedStub
 		tag.Alias = repository.ExpectedStub
+		tag.IsActive = true
 	}
 	
 	return nil
 }
 
-func (repository *MockDB) GetAllElements(ctx context.Context, element db.DBModel) (*[]db.ShortElement, error) {
+func (repository *MockDB) GetAllElements(ctx context.Context, element db.DBModel, subsystem string, isActive bool) (*[]db.ShortElement, error) {
 	elements := []db.ShortElement{
 		{Element_id: 1, Element_name: "1"},
 		{Element_id: 2, Element_name: "2"},

@@ -13,8 +13,8 @@ import (
 
 var test_db_repo *db.DBRepository
 var test_context context.Context
-var test_tag = db.Tag{Name: "Test", Description: "Test", Subsystem: "Test", Alias: "Test"}
-var test_template = db.Template{Name: "Test", Content: "Test"}
+var test_tag = db.Tag{Name: "Test", Description: "Test", Subsystem: "Test", Alias: "Test", IsActive: true}
+var test_template = db.Template{Name: "Test", Content: "Test", Subsystem: "Test", IsActive: true, RenderData: map[string]any{}}
 
 func createDBRepository() *db.DBRepository {
 	logger := log.New(os.Stdout, "[SERVICE] ", log.LstdFlags)
@@ -145,7 +145,7 @@ func TestModifyTag(t *testing.T) {
 func TestGetAllElements(t *testing.T) {
 	dbmodels := []db.DBModel{&db.Template{}, &db.Tag{}}
 	for _, model := range dbmodels {
-		template_arr, err := test_db_repo.GetAllElements(test_context, model)
+		template_arr, err := test_db_repo.GetAllElements(test_context, model, "", true)
 		if err != nil {
 			t.Errorf("Error: %s at table %s", err.Error(), model.GetTable())
 		}

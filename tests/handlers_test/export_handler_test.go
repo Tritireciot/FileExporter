@@ -17,6 +17,10 @@ func TestExportTemplateHandler(t *testing.T) {
 				"ID": float64(TransformerServiceMock.ExpectedId),
 				"name": "",
 				"content": "RenderedTemplate",
+				"subsystem": "",
+				"is_active": false,
+				"render_data": nil,
+				"is_single": false,
 			},
 			&map[string]any{
 				"template_id":  TransformerServiceMock.ExpectedId,

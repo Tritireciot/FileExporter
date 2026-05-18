@@ -21,6 +21,7 @@ func TestAddTagHandler(t *testing.T) {
 				"description": "test",
 				"subsystem": "test",
 				"alias": "test",
+				"is_active": false,
 			},
 			&map[string]any{
 				"name": "test",
@@ -115,8 +116,8 @@ func TestGetAllTagsHandler(t *testing.T) {
 		{
 			http.StatusOK,
 			[]map[string]any{
-				{"element_id": float64(1), "element_name": "1"},
-				{"element_id": float64(2), "element_name": "2"},
+				{"element_id": float64(1), "element_name": "1", "is_single": false},
+				{"element_id": float64(2), "element_name": "2", "is_single": false},
 			},
 		},
 	}

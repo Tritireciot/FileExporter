@@ -8,10 +8,32 @@ type DBModel interface {
 	Validate() bool
 }
 
+type Subsystem string
+
+const (
+	News      Subsystem = "NEWS"
+	Logs      Subsystem = "LOGS"
+	Broadcast Subsystem = "BROADCAST"
+)
+
+func ParseSubsystem(val string) bool {
+	s := Subsystem(val)
+	switch s {
+	case News, Logs, Broadcast:
+		return true
+	default:
+		return false
+	}
+}
+
 type Template struct {
 	ID      int
 	Name    string `json:"name"`
 	Content string `json:"content"`
+	Subsystem string `json:"subsystem"`
+	IsActive bool `json:"is_active"`
+	RenderData map[string]any `json:"render_data"`
+	IsSingle bool `json:"is_single"`
 }
 
 func (template *Template) GetTable() string {
@@ -28,7 +50,8 @@ func (template *Template) GetID() int {
 
 func (template *Template) GetColumns() []any {
 	return []any{
-		&template.ID, &template.Name, &template.Content,
+		&template.ID, &template.Name, &template.Content, &template.Subsystem, 
+		&template.IsActive, &template.RenderData, &template.IsSingle,
 	}
 }
 func (template *Template) Validate() bool{
@@ -41,6 +64,7 @@ type Tag struct {
 	Description string `json:"description"`
 	Subsystem   string `json:"subsystem"`
 	Alias       string `json:"alias"`
+	IsActive	bool `json:"is_active"`
 }
 
 func (tag *Tag) GetTable() string {
@@ -57,7 +81,7 @@ func (tag *Tag) GetID() int {
 
 func (tag *Tag) GetColumns() []any {
 	return []any{
-		&tag.ID, &tag.Name, &tag.Description, &tag.Subsystem, &tag.Alias,
+		&tag.ID, &tag.Name, &tag.Description, &tag.Subsystem, &tag.Alias, &tag.IsActive,
 	}
 }
 

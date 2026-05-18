@@ -9,7 +9,7 @@ import (
 )
 
 type DBRepo interface {
-	GetAllElements(ctx context.Context, element DBModel) (*[]ShortElement, error)
+	GetAllElements(ctx context.Context, element DBModel, subsystem string, isActive bool) (*[]ShortElement, error)
 	GetElement(ctx context.Context, element DBModel, column string) error
 	DeleteElement(ctx context.Context, element DBModel, column string) error
 	AddTemplate(ctx context.Context, template *Template) error

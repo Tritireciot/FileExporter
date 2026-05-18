@@ -33,6 +33,10 @@ func (handler *ExportHandler) TransformTemplate(writer http.ResponseWriter, requ
 		unknownError(writer, err)
 		return
 	}
+	rundown_title := ""
+	if rundown, ok := export_form.Data["rundown"].(map[string]any); ok {
+		rundown_title, _ = rundown["title"].(string)
+	}
 	writer.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(writer).Encode(db.Template{ID: export_form.TemplateId, Content: export_doc})
+	json.NewEncoder(writer).Encode(db.Template{ID: export_form.TemplateId, Name: rundown_title, Content: export_doc})
 }

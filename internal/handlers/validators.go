@@ -12,3 +12,15 @@ func validateId(request *http.Request) (int, bool) {
 	}
 	return id_, true
 }
+
+func validateFlag(request *http.Request, flagName string) (bool, bool) {
+	flag := request.URL.Query().Get(flagName)
+	if flag == "" {
+		return false, false
+	}
+	bool_flag, err := strconv.ParseBool(flag)
+	if err != nil {
+		return false, false
+	}
+	return bool_flag, true
+}

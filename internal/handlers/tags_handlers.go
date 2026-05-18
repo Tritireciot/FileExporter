@@ -18,7 +18,7 @@ func NewTagsHandler(repo db.DBRepo) *TagsHandler {
 func (handler *TagsHandler) GetAllTags(writer http.ResponseWriter, request *http.Request) {
 
 	ctx := request.Context()
-	tags_list, err := handler.repo.GetAllElements(ctx, &db.Tag{})
+	tags_list, err := handler.repo.GetAllElements(ctx, &db.Tag{}, "", true)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusBadRequest)
 		return
