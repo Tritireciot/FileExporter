@@ -44,7 +44,7 @@ func (handler *TagsHandler) AddNewTag(writer http.ResponseWriter, request *http.
 		return
 	}
 
-	writer.WriteHeader(http.StatusCreated)
+	writer.WriteHeader(http.StatusOK)
 	json.NewEncoder(writer).Encode(tag)
 }
 

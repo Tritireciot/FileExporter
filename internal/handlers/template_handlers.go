@@ -54,8 +54,7 @@ func (handler *TemplateHandler) GetTemplate(writer http.ResponseWriter, request 
 func (handler *TemplateHandler) AddNewTemplate(writer http.ResponseWriter, request *http.Request) {
 
 	var template db.Template
-	if err := json.NewDecoder(request.Body).Decode(&template); 
-	err != nil || !template.Validate() {
+	if err := json.NewDecoder(request.Body).Decode(&template); err != nil || !template.Validate() {
 		invalidJsonError(writer)
 		return
 	}
@@ -72,7 +71,7 @@ func (handler *TemplateHandler) AddNewTemplate(writer http.ResponseWriter, reque
 		return
 	}
 
-	writer.WriteHeader(http.StatusCreated)
+	writer.WriteHeader(http.StatusOK)
 	json.NewEncoder(writer).Encode(template)
 }
 
