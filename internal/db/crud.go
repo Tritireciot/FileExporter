@@ -118,26 +118,35 @@ func (repository *DBRepository) DeleteElement(
 }
 
 func (repository *DBRepository) AddTemplate(ctx context.Context, template *Template) error {
-	query, args, err := repository.psql.Insert(Tables.Templates).
-		Columns(Columns.Name, Columns.Content, Columns.Subsystem, Columns.IsActive, Columns.RenderData, Columns.IsSingle).
-		Values(template.Name, template.Content, template.Subsystem, template.IsActive, template.RenderData, template.IsSingle).Suffix(
-		fmt.Sprintf(`
-			ON CONFLICT (%s) DO UPDATE
-			SET 
-				%s = EXCLUDED.%s,
-				%s = EXCLUDED.%s,
-				%s = EXCLUDED.%s,
-				%s = EXCLUDED.%s,
-				%s = EXCLUDED.%s
-			`,
-			Columns.Name,
-			Columns.Content, Columns.Content,
-			Columns.Subsystem, Columns.Subsystem,
-			Columns.IsActive, Columns.IsActive,
-			Columns.RenderData, Columns.RenderData,
-			Columns.IsSingle, Columns.IsSingle,
-		),
-	).Suffix(fmt.Sprintf("RETURNING %s;", Columns.ID)).ToSql()
+	sqr_query := repository.psql.Insert(Tables.Templates)
+	if template.GetID() != 0 {
+		sqr_query = sqr_query.Columns(Columns.ID, Columns.Name, Columns.Content, Columns.Subsystem, Columns.IsActive, Columns.RenderData, Columns.IsSingle).
+		Values(template.GetColumns()...).Suffix(
+			fmt.Sprintf(`
+				ON CONFLICT (%s) DO UPDATE
+				SET 
+					%s = EXCLUDED.%s,
+					%s = EXCLUDED.%s,
+					%s = EXCLUDED.%s,
+					%s = EXCLUDED.%s,
+					%s = EXCLUDED.%s,
+					%s = EXCLUDED.%s
+				`,
+				Columns.ID,
+				Columns.Name, Columns.Name,
+				Columns.Content, Columns.Content,
+				Columns.Subsystem, Columns.Subsystem,
+				Columns.IsActive, Columns.IsActive,
+				Columns.RenderData, Columns.RenderData,
+				Columns.IsSingle, Columns.IsSingle,
+			),
+		).Suffix(fmt.Sprintf("RETURNING %s;", Columns.ID))
+	} else {
+		sqr_query = sqr_query.Columns(Columns.Name, Columns.Content, Columns.Subsystem, Columns.IsActive, Columns.RenderData, Columns.IsSingle).
+		Values(template.GetColumns()[1:]...).Suffix(fmt.Sprintf("RETURNING %s;", Columns.ID))
+	}
+
+	query, args, err := sqr_query.ToSql()
 	if err != nil {
 		return err
 	}
@@ -193,7 +202,7 @@ func (repository *DBRepository) createTagsTables(ctx context.Context) error {
 func (repository *DBRepository) createTemplatesTables(ctx context.Context) error {
 	query := fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s (
 		%s SERIAL PRIMARY KEY,
-		%s TEXT NOT NULL UNIQUE,
+		%s TEXT NOT NULL,
 		%s TEXT NOT NULL,
 		%s TEXT NOT NULL,
 		%s BOOLEAN DEFAULT TRUE,
