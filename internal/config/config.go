@@ -15,5 +15,5 @@ type DataBaseConfig struct {
 }
 
 func (cfg Config) ConfigureAppUrl() string {
-	return cfg.App.Host + ":" + cfg.App.Port
+	return ":" + cfg.App.Port
 }

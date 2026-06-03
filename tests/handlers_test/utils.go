@@ -1,9 +1,9 @@
 package handlers
 
 import (
+	"PrintServer/internal/server"
 	"bytes"
 	"encoding/json"
-	"former/internal/server"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -13,8 +13,8 @@ import (
 func createRequest(
 	t *testing.T,
 	app server.App,
-	requestType string, 
-	url string, 
+	requestType string,
+	url string,
 	data *map[string]any,
 ) *httptest.ResponseRecorder {
 	var body io.Reader
@@ -26,8 +26,8 @@ func createRequest(
 	}
 	req, err := http.NewRequest(requestType, url, body)
 	if err != nil {
-        t.Fatal(err)
-    }
+		t.Fatal(err)
+	}
 	recorder := httptest.NewRecorder()
 	app.Router.ServeHTTP(recorder, req)
 	return recorder
@@ -39,9 +39,9 @@ func checkStatusCode(
 	expectedStatusCode int,
 ) {
 	if status := recorder.Code; status != expectedStatusCode {
-        t.Errorf("handler returned wrong status code: got %v want %v",
-            status, expectedStatusCode)
-    }
+		t.Errorf("handler returned wrong status code: got %v want %v",
+			status, expectedStatusCode)
+	}
 }
 
 func checkBody(
@@ -56,7 +56,7 @@ func checkBody(
 	for key := range actual {
 		if actual[key] != expectedBody[key] {
 			t.Errorf("handler returned unexpected body param %s : got %v want %v",
-            key, actual[key], expectedBody[key])
+				key, actual[key], expectedBody[key])
 		}
 	}
 }
@@ -74,8 +74,8 @@ func checkArrayBody(
 		for key := range actual[i] {
 			if actual[i][key] != expectedBody[i][key] {
 				t.Errorf("handler returned unexpected body param %s : got %v want %v",
-            	key, actual[i][key], expectedBody[i][key])
-			} 
+					key, actual[i][key], expectedBody[i][key])
+			}
 		}
 	}
 }

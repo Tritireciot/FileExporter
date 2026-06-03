@@ -1,6 +1,7 @@
 package db
 
 import (
+	"PrintServer/pgutils"
 	"context"
 	"fmt"
 	"log"
@@ -10,14 +11,15 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
-func SetupDB(ctx context.Context, db_url string, logger *log.Logger) (*DBRepository, error) {
-	dbpool, err := pgxpool.Connect(ctx, db_url)
-	repo := NewRepository(dbpool, logger)
+func SetupDB(ctx context.Context, cfg *pgutils.DatabaseConfig, logger *log.Logger) (*DBRepository, error) {
+	dbpool, err := pgxpool.Connect(ctx, pgutils.GetConnectionStringWithDBName(cfg))
+	
 	if err != nil {
 		logger.Println("Unable to connect to database:", err.Error())
 		dbpool.Close()
 		return nil, err
 	}
+	repo := NewRepository(dbpool, logger)
 
 	logger.Println("Check Connection")
 

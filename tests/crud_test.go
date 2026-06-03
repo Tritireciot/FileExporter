@@ -1,9 +1,9 @@
 package db
 
 import (
+	"PrintServer/internal/config"
+	"PrintServer/internal/db"
 	"context"
-	"former/internal/config"
-	"former/internal/db"
 	"log"
 	"math/rand"
 	"os"

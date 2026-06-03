@@ -1,9 +1,9 @@
 package server
 
 import (
-	"former/internal/db"
-	"former/internal/handlers"
-	"former/internal/transformer"
+	"PrintServer/internal/db"
+	"PrintServer/internal/handlers"
+	"PrintServer/internal/transformer"
 	"log"
 	"net/http"
 
@@ -32,7 +32,8 @@ func (app *App) InitializeRouter(db_repo db.DBRepo, transformer_ transformer.Tra
 }
 
 func (app *App) Init(db_repo db.DBRepo, transformer_ transformer.Transformer) {
-	app.Router = mux.NewRouter()
+	mainRouter := mux.NewRouter()
+	app.Router = mainRouter.PathPrefix("/api/core/print").Subrouter()
 	app.InitializeRouter(db_repo, transformer_)
 }
 

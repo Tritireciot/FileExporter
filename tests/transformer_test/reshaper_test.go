@@ -1,15 +1,15 @@
 package transformer
 
 import (
-	"former/internal/transformer"
+	"PrintServer/internal/transformer"
 	"testing"
 )
 
 func TestChangeRepeatTags(t *testing.T) {
 	test_data := []struct {
-		TestTemplate string
-		ExpectedTemplate string
-		ExpectedRepeats []string
+		TestTemplate       string
+		ExpectedTemplate   string
+		ExpectedRepeats    []string
 		ExpectedRepeatTags map[string]string
 	}{
 		{
@@ -34,8 +34,8 @@ func TestChangeRepeatTags(t *testing.T) {
 			"{{ range $Story := .Story }}{{ range $Media := .Media }}{{ range $Unknown := .Unknown }}{{ end }}{{ end }}{{ end }}",
 			[]string{"Story", "Media", "Unknown"},
 			map[string]string{
-				"Story": "rundown.content",
-				"Media": "rundown.content.%d.story.media_content",
+				"Story":   "rundown.content",
+				"Media":   "rundown.content.%d.story.media_content",
 				"Unknown": "",
 			},
 		},
@@ -44,8 +44,8 @@ func TestChangeRepeatTags(t *testing.T) {
 	for _, set := range test_data {
 		repeatTags := map[string]string{}
 		repeats, actual_template_content := test_reshaper.ChangeRepeatTags(
-			test_context, 
-			set.TestTemplate, 
+			test_context,
+			set.TestTemplate,
 			&repeatTags,
 		)
 		if len(repeats) != len(set.ExpectedRepeats) {
@@ -61,12 +61,11 @@ func TestChangeRepeatTags(t *testing.T) {
 
 }
 
-
 func TestIncludeRepeatStructure(t *testing.T) {
 	test_data := []struct {
-		TestTemplate string
+		TestTemplate         string
 		ExpectedRequiredTags map[string]any
-		ExpectedConnections map[string]any
+		ExpectedConnections  map[string]any
 	}{
 		{
 			"<#Repeat#Story#></#Repeat#Story#>",
@@ -125,11 +124,11 @@ func TestIncludeRepeatStructure(t *testing.T) {
 	for _, set := range test_data {
 		requiredTags := map[string]any{}
 		connections := transformer.IncludeRepeatStructure(
-			set.TestTemplate, 
+			set.TestTemplate,
 			&requiredTags,
 		)
 		checkable_connections := make(map[string]any, len(connections))
-		for src, dest := range connections{
+		for src, dest := range connections {
 			checkable_connections[src] = dest
 		}
 		if !assertMaps(checkable_connections, set.ExpectedConnections) {
@@ -141,10 +140,10 @@ func TestIncludeRepeatStructure(t *testing.T) {
 	}
 }
 
-func TestChangeBaseTags(t *testing.T){
+func TestChangeBaseTags(t *testing.T) {
 	test_data := []struct {
-		TestTemplate string
-		ExpectedTemplate string
+		TestTemplate         string
+		ExpectedTemplate     string
 		ExpectedRequiredTags map[string]any
 	}{
 		{
@@ -152,23 +151,23 @@ func TestChangeBaseTags(t *testing.T){
 			ComplexExpectedTemplate,
 			map[string]any{
 				"Story": map[string]any{
-					"Pos": "rundown.content.%d.pos",
-					"Name": "rundown.content.%d.story.name",
-					"Type": "rundown.content.%d.story.type",
-					"Author": "rundown.content.%d.story.author",
-					"State": "rundown.content.%d.story.status",
-					"Presenter": "rundown.content.%d.story.presenter",
+					"Pos":          "rundown.content.%d.pos",
+					"Name":         "rundown.content.%d.story.name",
+					"Type":         "rundown.content.%d.story.type",
+					"Author":       "rundown.content.%d.story.author",
+					"State":        "rundown.content.%d.story.status",
+					"Presenter":    "rundown.content.%d.story.presenter",
 					"DurationPlan": "rundown.content.%d.story.plan_durat",
-					"StartPlan": "rundown.content.%d.story.plan_start",
+					"StartPlan":    "rundown.content.%d.story.plan_start",
 					"DurationFact": "rundown.content.%d.story.fact_duration",
-					"Text": "rundown.content.%d.story.text.text",
-					"Media": map[string]any{},
+					"Text":         "rundown.content.%d.story.text.text",
+					"Media":        map[string]any{},
 				},
 				"Media": map[string]any{
-					"Pos": "rundown.content.%d.story.media_content.%d.pos",
-					"Type": "rundown.content.%d.story.media_content.%d.type",
-					"Name": "rundown.content.%d.story.media_content.%d.name",
-					"Start": "rundown.content.%d.story.media_content.%d.mark_in",
+					"Pos":    "rundown.content.%d.story.media_content.%d.pos",
+					"Type":   "rundown.content.%d.story.media_content.%d.type",
+					"Name":   "rundown.content.%d.story.media_content.%d.name",
+					"Start":  "rundown.content.%d.story.media_content.%d.mark_in",
 					"Params": "rundown.content.%d.story.media_content.%d",
 				},
 			},
@@ -194,7 +193,7 @@ func TestChangeBaseTags(t *testing.T){
 			`,
 			map[string]any{
 				"Story": map[string]any{
-					"Pos": "rundown.content.%d.pos",
+					"Pos":  "rundown.content.%d.pos",
 					"Name": "rundown.content.%d.story.name",
 					"Type": "rundown.content.%d.story.type",
 				},
@@ -221,7 +220,7 @@ func TestChangeBaseTags(t *testing.T){
 					"Author": "rundown.author",
 				},
 				"Story": map[string]any{
-					"Pos": "rundown.content.%d.pos",
+					"Pos":  "rundown.content.%d.pos",
 					"Name": "rundown.content.%d.story.name",
 					"Type": "rundown.content.%d.story.type",
 				},
@@ -254,31 +253,31 @@ func TestChangeBaseTags(t *testing.T){
 	}
 }
 
-func TestCompleteConnections(t *testing.T){
-	test_data := []struct{
-		TestTemplate string
+func TestCompleteConnections(t *testing.T) {
+	test_data := []struct {
+		TestTemplate         string
 		ExpectedRequiredTags map[string]any
-		ExpectedRepeatTags map[string]any
+		ExpectedRepeatTags   map[string]any
 	}{
 		{
 			ComplexTemplate,
 			map[string]any{
 				"Story": map[string]any{
-					"Pos": "rundown.content.%d.pos",
-					"Name": "rundown.content.%d.story.name",
-					"Type": "rundown.content.%d.story.type",
-					"Author": "rundown.content.%d.story.author",
-					"State": "rundown.content.%d.story.status",
-					"Presenter": "rundown.content.%d.story.presenter",
+					"Pos":          "rundown.content.%d.pos",
+					"Name":         "rundown.content.%d.story.name",
+					"Type":         "rundown.content.%d.story.type",
+					"Author":       "rundown.content.%d.story.author",
+					"State":        "rundown.content.%d.story.status",
+					"Presenter":    "rundown.content.%d.story.presenter",
 					"DurationPlan": "rundown.content.%d.story.plan_durat",
-					"StartPlan": "rundown.content.%d.story.plan_start",
+					"StartPlan":    "rundown.content.%d.story.plan_start",
 					"DurationFact": "rundown.content.%d.story.fact_duration",
-					"Text": "rundown.content.%d.story.text.text",
+					"Text":         "rundown.content.%d.story.text.text",
 					"Media": map[string]any{
-						"Pos": "rundown.content.%d.story.media_content.%d.pos",
-						"Type": "rundown.content.%d.story.media_content.%d.type",
-						"Name": "rundown.content.%d.story.media_content.%d.name",
-						"Start": "rundown.content.%d.story.media_content.%d.mark_in",
+						"Pos":    "rundown.content.%d.story.media_content.%d.pos",
+						"Type":   "rundown.content.%d.story.media_content.%d.type",
+						"Name":   "rundown.content.%d.story.media_content.%d.name",
+						"Start":  "rundown.content.%d.story.media_content.%d.mark_in",
 						"Params": "rundown.content.%d.story.media_content.%d",
 					},
 				},
@@ -299,7 +298,7 @@ func TestCompleteConnections(t *testing.T){
 					"Author": "rundown.author",
 				},
 				"Story": map[string]any{
-					"Pos": "rundown.content.%d.pos",
+					"Pos":  "rundown.content.%d.pos",
 					"Name": "rundown.content.%d.story.name",
 					"Type": "rundown.content.%d.story.type",
 				},
@@ -321,7 +320,7 @@ func TestCompleteConnections(t *testing.T){
 			`,
 			map[string]any{
 				"Story": map[string]any{
-					"Pos": "rundown.content.%d.pos",
+					"Pos":  "rundown.content.%d.pos",
 					"Name": "rundown.content.%d.story.name",
 					"Type": "rundown.content.%d.story.type",
 				},
@@ -349,7 +348,7 @@ func TestCompleteConnections(t *testing.T){
 		}
 
 		checkable_repeatTags := make(map[string]any, len(repeatTags))
-		for src, dest := range repeatTags{
+		for src, dest := range repeatTags {
 			checkable_repeatTags[src] = dest
 		}
 
@@ -357,7 +356,5 @@ func TestCompleteConnections(t *testing.T){
 			t.Errorf("Wrong requiredTags expected:\n %v \n got:\n %v \n", set.ExpectedRepeatTags, checkable_repeatTags)
 		}
 	}
-
-
 
 }

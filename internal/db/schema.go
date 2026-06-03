@@ -4,8 +4,8 @@ var Tables = struct {
 	Templates string
 	Tags      string
 }{
-	Templates: "templates",
-	Tags:      "tags",
+	Templates: "print.templates",
+	Tags:      "print.tags",
 }
 
 

@@ -1,10 +1,10 @@
 package handlers
 
 import (
+	"PrintServer/internal/db"
+	"PrintServer/internal/server"
 	"context"
 	"errors"
-	"former/internal/db"
-	"former/internal/server"
 )
 
 var MockApp server.App
@@ -13,11 +13,11 @@ var DBRepoMock *MockDB
 var TransformerServiceMock *MockTransformer
 
 type MockDB struct {
-	ExpectedId int
-	ErrorId int
+	ExpectedId   int
+	ErrorId      int
 	ExpectedStub string
-	UnknownId int
-	ErrorName string
+	UnknownId    int
+	ErrorName    string
 }
 
 func (repository *MockDB) AddTag(ctx context.Context, tag *db.Tag) error {
@@ -64,7 +64,7 @@ func (repository *MockDB) GetElement(ctx context.Context, element db.DBModel, co
 		tag.Alias = repository.ExpectedStub
 		tag.IsActive = true
 	}
-	
+
 	return nil
 }
 
@@ -78,7 +78,7 @@ func (repository *MockDB) GetAllElements(ctx context.Context, element db.DBModel
 
 type MockTransformer struct {
 	ExpectedId int
-	ErrorId int
+	ErrorId    int
 }
 
 func (service *MockTransformer) RenderTemplate(ctx context.Context, template_id int, raw_data []byte) (string, error) {

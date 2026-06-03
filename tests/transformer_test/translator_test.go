@@ -1,7 +1,7 @@
 package transformer
 
 import (
-	"former/internal/transformer"
+	"PrintServer/internal/transformer"
 	"os"
 	"testing"
 )
@@ -16,7 +16,7 @@ func TestTranslate(t *testing.T) {
 		{
 			map[string]any{
 				"Story": map[string]any{
-					"Pos": "rundown.content.%d.pos",
+					"Pos":  "rundown.content.%d.pos",
 					"Name": "rundown.content.%d.story.name",
 					"Media": map[string]any{
 						"Pos": "rundown.content.%d.story.media_content.%d.pos",
@@ -29,7 +29,7 @@ func TestTranslate(t *testing.T) {
 			map[string]any{
 				"Story": []map[string]any{
 					{
-						"Pos": "1",
+						"Pos":  "1",
 						"Name": "ШПИГЕЛЬ",
 						"Media": []map[string]any{
 							{
@@ -47,10 +47,10 @@ func TestTranslate(t *testing.T) {
 			map[string]any{
 				"RunDown": map[string]any{
 					"Name": "rundown.title",
-					"ID": "rundown_id",
+					"ID":   "rundown_id",
 				},
 				"Story": map[string]any{
-					"Pos": "rundown.content.%d.pos",
+					"Pos":  "rundown.content.%d.pos",
 					"Name": "rundown.content.%d.story.name",
 				},
 			},
@@ -60,11 +60,11 @@ func TestTranslate(t *testing.T) {
 			map[string]any{
 				"RunDown": map[string]any{
 					"Name": "НОВОСТИ 12:00",
-					"ID": "2",
+					"ID":   "2",
 				},
 				"Story": []map[string]any{
 					{
-						"Pos": "1",
+						"Pos":  "1",
 						"Name": "ШПИГЕЛЬ",
 					},
 				},

@@ -1,10 +1,10 @@
 package transformer
 
 import (
+	"PrintServer/internal/config"
+	"PrintServer/internal/db"
+	"PrintServer/internal/transformer"
 	"context"
-	"former/internal/config"
-	"former/internal/db"
-	"former/internal/transformer"
 	"log"
 	"os"
 	"testing"
