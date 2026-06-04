@@ -21,7 +21,15 @@ func main() {
 		if err := config.GetConfig(); err != nil {
 			log.Printf("Failed to get config: %v, retrying...", err)
 		} else {
-			db_repo, err = db.SetupDB(context.Background(), config.GetDBConfig(), logger)
+			db_config := config.GetDBConfig()
+			if os.Getenv("LOCAL") == "true" {
+				db_config.DBname = "backend-db"
+				db_config.Host = "db"
+				db_config.User = "user"
+				db_config.Password = "pass"
+				db_config.Schema = "print"
+			}
+			db_repo, err = db.SetupDB(context.Background(), db_config, logger)
 			if err != nil {
 				logger.Fatal(err.Error())
 				os.Exit(1)

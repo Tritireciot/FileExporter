@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/jackc/pgx/v4"
@@ -27,9 +28,7 @@ func (repository *DBRepository) GetAllElements(ctx context.Context, element DBMo
 	if isActive {
 		sqr_query = sqr_query.Where(Columns.IsActive)
 	}
-	if ok := ParseSubsystem(subsystem); ok {
-		sqr_query = sqr_query.Where(squirrel.Eq{Columns.Subsystem: subsystem})
-	}
+	sqr_query = sqr_query.Where(squirrel.Eq{Columns.Subsystem: strings.ToLower(subsystem)})
 	query, args, err := sqr_query.ToSql()
 	if err != nil {
 		return nil, err

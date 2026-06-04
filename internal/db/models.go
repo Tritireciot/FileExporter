@@ -10,30 +10,15 @@ type DBModel interface {
 
 type Subsystem string
 
-const (
-	News      Subsystem = "NEWS"
-	Logs      Subsystem = "LOGS"
-	Broadcast Subsystem = "BROADCAST"
-)
-
-func ParseSubsystem(val string) bool {
-	s := Subsystem(val)
-	switch s {
-	case News, Logs, Broadcast:
-		return true
-	default:
-		return false
-	}
-}
 
 type Template struct {
-	ID      int
-	Name    string `json:"name"`
-	Content string `json:"content"`
-	Subsystem string `json:"subsystem"`
-	IsActive bool `json:"is_active"`
+	ID         int
+	Name       string         `json:"name"`
+	Content    string         `json:"content"`
+	Subsystem  string         `json:"subsystem"`
+	IsActive   bool           `json:"is_active"`
 	RenderData map[string]any `json:"render_data"`
-	IsSingle bool `json:"is_single"`
+	IsSingle   bool           `json:"is_single"`
 }
 
 func (template *Template) GetTable() string {
@@ -50,11 +35,11 @@ func (template *Template) GetID() int {
 
 func (template *Template) GetColumns() []any {
 	return []any{
-		&template.ID, &template.Name, &template.Content, &template.Subsystem, 
+		&template.ID, &template.Name, &template.Content, &template.Subsystem,
 		&template.IsActive, &template.RenderData, &template.IsSingle,
 	}
 }
-func (template *Template) Validate() bool{
+func (template *Template) Validate() bool {
 	return template.Name != "" && template.Content != ""
 }
 
@@ -64,7 +49,7 @@ type Tag struct {
 	Description string `json:"description"`
 	Subsystem   string `json:"subsystem"`
 	Alias       string `json:"alias"`
-	IsActive	bool `json:"is_active"`
+	IsActive    bool   `json:"is_active"`
 }
 
 func (tag *Tag) GetTable() string {
@@ -85,7 +70,7 @@ func (tag *Tag) GetColumns() []any {
 	}
 }
 
-func (tag *Tag) Validate() bool{
-	return tag.Name != "" && tag.Description != "" && 
-	tag.Subsystem != "" && tag.Alias != ""
+func (tag *Tag) Validate() bool {
+	return tag.Name != "" && tag.Description != "" &&
+		tag.Subsystem != "" && tag.Alias != ""
 }

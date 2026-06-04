@@ -16,12 +16,23 @@ tags:
   - name: export
     description: Вывод на печать
 paths:
-  /db/get_all_templates:
+  /api/core/print/db/get_all_templates:
     get:
       tags: 
         - templates
-      summary: Получение получение всех шаблонов
-      description: Получение получение всех шаблонов
+      summary: Получение получение всех шаблонов подсистемы
+      description: Получение получение всех шаблонов по подсистеме(параметр subsystem). Параметр active, если true, то показывает только активные шаблоны(используемые), иначе показывает все по подсистеме.
+      parameters:
+        - name: active
+          in: query
+          example: true
+          schema: 
+            type: boolean
+        - name: subsystem
+          in: query
+          example: news
+          schema: 
+            type: string
       responses:
         '200':
           description: Успешно
@@ -33,7 +44,7 @@ paths:
                   allOf:
                     - $ref: '#/components/schemas/ShortTemplate'
         
-  /db/get_template:
+  /api/core/print/db/get_template:
     get:
       tags: 
         - templates
@@ -55,27 +66,25 @@ paths:
           description: Шаблон не найден
         '422':
           description: Необходим  id шаблона
-  /db/add_template:
+  /api/core/print/db/add_template:
     post:
       tags:
         - templates
       summary: Добавление шаблона
-      description: Добавление/изменение шаблона
+      description: Добавление/изменение шаблона. name, content и subsystem обязательны. Для изменения шаблона наужно указать его ID.
       requestBody: 
         content: 
           application/json:
             "schema":
               $ref: '#/components/schemas/AddTemplate'
       responses:
-        '201':
+        '200':
           description: Шаблон добавлен
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FullTemplateModel'
-        '500':
-          description: Ошибка добавления
-  /db/delete_template:
+                $ref: '#/components/schemas/Template'
+  /api/core/print/db/delete_template:
     delete:
       tags:
         - templates
@@ -87,15 +96,15 @@ paths:
           schema: 
             type: integer
       responses: 
-        '204':
+        '200':
           description: Шаблон удален
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IDModel'
+                $ref: '#/components/schemas/ModelID'
         '404':
           description: Шаблон не найден
-  /db/get_all_tags:
+  /api/core/print/db/get_all_tags:
     get:
       tags:
         - tags
@@ -111,7 +120,7 @@ paths:
                 items:
                   allOf:
                     - $ref: '#/components/schemas/ShortTag'
-  /db/add_tag:
+  /api/core/print/db/add_tag:
     post:
       tags:
         - tags
@@ -121,17 +130,15 @@ paths:
         content: 
           application/json:
             "schema":
-              $ref: '#/components/schemas/TagModel'
+              $ref: '#/components/schemas/AddTag'
       responses:
-        '201':
+        '200':
           description: Тэг добавлен
-          content:
+          content: 
             application/json:
-              schema:
-                $ref: '#/components/schemas/FullTagModel'
-        '500':
-          description: Ошибка добавления
-  /db/delete_tag:
+              "schema":
+                $ref: '#/components/schemas/Tag'
+  /api/core/print/db/delete_tag:
     delete:
       tags:
         - tags
@@ -148,10 +155,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IDModel'
+                $ref: '#/components/schemas/ModelID'
         '404':
           description: Тэг не найден
-  /export:
+  /api/core/print/export:
     post:
       tags:
         - export
@@ -171,34 +178,9 @@ paths:
                 $ref: '#/components/schemas/Template'
         '404':
           description: Шаблон не найден
-        '500':
-          description: Ошибка в формировании отчета
 components:
   schemas:
     Template:
-      type: object
-      properties:
-          id:
-            type: integer
-          name:
-            type: string
-          content:
-            type: string
-    ShortTemplate:
-      type: object
-      properties:
-          id:
-            type: integer
-          name:
-            type: string
-    AddTemplate:
-      type: object
-      properties:
-          name:
-            type: string
-          content:
-            type: string
-    FullTemplateModel:
       type: object
       properties:
           ID:
@@ -207,29 +189,70 @@ components:
             type: string
           content:
             type: string
-    ShortTag:
+          subsystem:
+            type: string
+          is_active:
+            type: boolean
+          render_data:
+            type: object
+          is_single:
+            type: boolean
+    ShortTemplate:
       type: object
       properties:
-          id:
+          element_id:
             type: integer
+          element_name:
+            type: string
+          is_single:
+            type: boolean
+    AddTemplate:
+      type: object
+      required:
+        - name
+        - content
+        - subsystem
+      properties:
+          ID:
+            type: integer
+            description: "Опционально"
           name:
             type: string
-    TagModel:
-      type: object
-      properties:
-        name:
-          type: string
-        description:
-          type: string
-        subsystem:
-          type: string
-        alias:
-          type: string
-    FullTagModel:
+          content:
+            type: string
+          subsystem:
+            type: string
+          is_active:
+            type: boolean
+            description: "Опционально"
+          render_data:
+            type: object
+            description: "Опционально"
+          is_single:
+            type: boolean
+            description: "Опционально"
+    ModelID:
       type: object
       properties:
         ID:
           type: integer
+    ShortTag:
+      type: object
+      properties:
+          element_id:
+            type: integer
+          element_name:
+            type: string
+          is_single:
+            type: boolean
+    AddTag:
+      type: object
+      required:
+        - name
+        - description
+        - subsystem
+        - alias
+      properties:
         name:
           type: string
         description:
@@ -238,6 +261,22 @@ components:
           type: string
         alias:
           type: string
+        is_active:
+          type: boolean
+          description: "Опционально"
+    Tag:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        subsystem:
+          type: string
+        alias:
+          type: string
+        is_active:
+          type: boolean
     ExportTemplate:
       type: object
       properties: 
@@ -245,11 +284,8 @@ components:
           type: integer
         data:
           type: object
-    IDModel:
-      type: object
-      properties: 
-        ID: 
-          type: integer
+        susbsystem:
+          type: string
       
 
     

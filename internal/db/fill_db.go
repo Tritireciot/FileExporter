@@ -37,7 +37,7 @@ func (repository *DBRepository) fillTemplatesTable(ctx context.Context, template
 		}
 		template_name := formatPathName(path, ".")
 		repository.logger.Println("Insert Template: ", template_name)
-		if err := repository.AddTemplate(ctx, &Template{Name: template_name, Content: string(data), Subsystem: strings.Split(path, "/")[1], IsActive: true}); err != nil {
+		if err := repository.AddTemplate(ctx, &Template{Name: template_name, Content: string(data), Subsystem: strings.ToLower(strings.Split(path, "/")[1]), IsActive: true}); err != nil {
 			return err
 		}
 

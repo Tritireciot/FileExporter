@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strings"
 )
 
 type TemplateHandler struct {
@@ -60,10 +61,7 @@ func (handler *TemplateHandler) AddNewTemplate(writer http.ResponseWriter, reque
 	}
 
 	defer request.Body.Close()
-	if ok := db.ParseSubsystem(template.Subsystem); !ok {
-		invalidJsonError(writer)
-		return
-	}
+	template.Subsystem = strings.ToLower(template.Subsystem)
 	ctx := request.Context()
 
 	if err := handler.repo.AddTemplate(ctx, &template); err != nil {
