@@ -70,7 +70,9 @@ func (repository *DBRepository) GetElement(
 	} else {
 		field = element.GetID()
 	}
-	query, args, err := repository.psql.Select("*").From(element.GetTable()).Where(squirrel.Eq{column: field}).ToSql()
+	query, args, err := repository.psql.Select(element.Columns()...).From(element.GetTable()).
+	LeftJoin(fmt.Sprintf("%s ON %s.%s = %s.%s", Tables.Subsystems, element.GetTable(), Columns.Subsystem, Tables.Subsystems, Columns.ID)).
+	Where(squirrel.Eq{fmt.Sprintf("%s.%s", element.GetTable(), column): field}).ToSql()
 	if err != nil {
 		return err
 	}
@@ -116,11 +118,30 @@ func (repository *DBRepository) DeleteElement(
 	return nil
 }
 
+func (repository *DBRepository) GetSubsystemId(ctx context.Context, subsystem string) (subsystem_id int, err error) {
+	query, args, err := repository.psql.Select(Columns.ID).From(Tables.Subsystems).Where(squirrel.Eq{Columns.Subsystem: subsystem}).ToSql()
+	if err != nil {
+		return
+	}
+
+	err = repository.pool.
+		QueryRow(ctx, query, args...).
+		Scan(&subsystem_id)
+
+	return subsystem_id, err
+}
+
 func (repository *DBRepository) AddTemplate(ctx context.Context, template *Template) error {
+
+	subsystem_id, err := repository.GetSubsystemId(ctx, template.Subsystem)
+	repository.logger.Println("template.Subsystem", template.Subsystem, subsystem_id)
+	if subsystem_id == 0 {
+		return err
+	}
 	sqr_query := repository.psql.Insert(Tables.Templates)
 	if template.GetID() != 0 {
 		sqr_query = sqr_query.Columns(Columns.ID, Columns.Name, Columns.Content, Columns.Subsystem, Columns.IsActive, Columns.RenderData, Columns.IsSingle).
-		Values(template.GetColumns()...).Suffix(
+		Values(template.ID, template.Name, template.Content, subsystem_id, template.IsActive, template.RenderData, template.IsSingle).Suffix(
 			fmt.Sprintf(`
 				ON CONFLICT (%s) DO UPDATE
 				SET 
@@ -142,7 +163,7 @@ func (repository *DBRepository) AddTemplate(ctx context.Context, template *Templ
 		).Suffix(fmt.Sprintf("RETURNING %s;", Columns.ID))
 	} else {
 		sqr_query = sqr_query.Columns(Columns.Name, Columns.Content, Columns.Subsystem, Columns.IsActive, Columns.RenderData, Columns.IsSingle).
-		Values(template.GetColumns()[1:]...).Suffix(fmt.Sprintf("RETURNING %s;", Columns.ID))
+		Values(template.Name, template.Content, subsystem_id, template.IsActive, template.RenderData, template.IsSingle).Suffix(fmt.Sprintf("RETURNING %s;", Columns.ID))
 	}
 
 	query, args, err := sqr_query.ToSql()
@@ -153,10 +174,23 @@ func (repository *DBRepository) AddTemplate(ctx context.Context, template *Templ
 	return err
 }
 
+func (repository *DBRepository) AddSubsystem(ctx context.Context, subsystem_name string) error {
+	query, args, err := repository.psql.Insert(Tables.Subsystems).Columns(Columns.Subsystem).
+	Values(subsystem_name).Suffix(fmt.Sprintf("ON CONFLICT (%s) DO NOTHING;", Columns.ID)).ToSql()
+	if err != nil {
+		return err
+	}
+
+	_, err = repository.pool.Exec(ctx, query, args...)
+
+	return err
+}
+
 func (repository *DBRepository) AddTag(ctx context.Context, tag *Tag) error {
+	subsystem_id, err := repository.GetSubsystemId(ctx, tag.Subsystem)
 	query, args, err := repository.psql.Insert(Tables.Tags).
 		Columns(Columns.Name, Columns.Description, Columns.Subsystem, Columns.Alias).
-		Values(tag.Name, tag.Description, tag.Subsystem, tag.Alias).Suffix(
+		Values(tag.Name, tag.Description, subsystem_id, tag.Alias).Suffix(
 		fmt.Sprintf(`
 			ON CONFLICT (%s) DO UPDATE
 			SET 
@@ -183,9 +217,14 @@ func (repository *DBRepository) createTagsTables(ctx context.Context) error {
 		%s SERIAL PRIMARY KEY,
 		%s TEXT NOT NULL UNIQUE,
 		%s TEXT NOT NULL,
+		%s INT,
 		%s TEXT NOT NULL,
-		%s TEXT NOT NULL,
-		%s BOOLEAN DEFAULT TRUE);
+		%s BOOLEAN DEFAULT TRUE,
+
+		CONSTRAINT fk_tags_subsystems 
+			FOREIGN KEY (%s) 
+			REFERENCES %s(%s)
+		);
 	`,
 		Tables.Tags,
 		Columns.ID,
@@ -193,7 +232,10 @@ func (repository *DBRepository) createTagsTables(ctx context.Context) error {
 		Columns.Description,
 		Columns.Subsystem,
 		Columns.Alias,
-		Columns.IsActive)
+		Columns.IsActive,
+		Columns.Subsystem,
+		Tables.Subsystems, Columns.ID,
+	)
 	_, err := repository.pool.Exec(ctx, query)
 	return err
 }
@@ -203,10 +245,15 @@ func (repository *DBRepository) createTemplatesTables(ctx context.Context) error
 		%s SERIAL PRIMARY KEY,
 		%s TEXT NOT NULL,
 		%s TEXT NOT NULL,
-		%s TEXT NOT NULL,
+		%s INT,
 		%s BOOLEAN DEFAULT TRUE,
 		%s JSONB DEFAULT '{}',
-		%s BOOLEAN DEFAULT FALSE);
+		%s BOOLEAN DEFAULT FALSE,
+
+		CONSTRAINT fk_templates_subsystems 
+			FOREIGN KEY (%s) 
+			REFERENCES %s(%s)
+		);
 	`,
 		Tables.Templates,
 		Columns.ID,
@@ -215,7 +262,25 @@ func (repository *DBRepository) createTemplatesTables(ctx context.Context) error
 		Columns.Subsystem,
 		Columns.IsActive,
 		Columns.RenderData,
-		Columns.IsSingle)
+		Columns.IsSingle,
+		Columns.Subsystem,
+		Tables.Subsystems, Columns.ID,
+	)
+	_, err := repository.pool.Exec(ctx, query)
+	return err
+}
+
+func (repository *DBRepository) createSubsystemsTables(ctx context.Context) error {
+	query := fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s (
+		%s SERIAL PRIMARY KEY,
+		%s TEXT NOT NULL
+		);
+	`,
+		Tables.Subsystems,
+		Columns.ID,
+		Columns.Subsystem,
+		
+	)
 	_, err := repository.pool.Exec(ctx, query)
 	return err
 }

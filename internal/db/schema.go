@@ -1,11 +1,13 @@
 package db
 
 var Tables = struct {
-	Templates string
-	Tags      string
+	Templates  string
+	Tags       string
+	Subsystems string
 }{
 	Templates: "print.templates",
 	Tags:      "print.tags",
+	Subsystems:"print.subsystems",
 }
 
 

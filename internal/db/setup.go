@@ -58,6 +58,13 @@ func (repository *DBRepository) isDBFilled(ctx context.Context) (bool, error) {
 }
 
 func (repository *DBRepository) createFilledTables(ctx context.Context) error {
+
+	if err := repository.createSubsystemsTables(ctx); err != nil {
+		repository.pool.Close()
+		return err
+	}
+	repository.logger.Println("Created Subsystems Table")
+
 	if err := repository.createTagsTables(ctx); err != nil {
 		repository.pool.Close()
 		return err
@@ -69,6 +76,10 @@ func (repository *DBRepository) createFilledTables(ctx context.Context) error {
 		return err
 	}
 	repository.logger.Println("Created Template Table")
+
+	repository.AddSubsystem(ctx, "news")
+	repository.AddSubsystem(ctx, "plan")
+
 
 	if err := repository.fillTemplatesTable(ctx, os.Getenv("TEMPLATES_PATH")); err != nil {
 		repository.pool.Close()

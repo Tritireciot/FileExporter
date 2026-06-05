@@ -212,9 +212,148 @@
         "alias": "rundown.content.%d.story.media_content"
     },
     {
-        "name": "#Plan.Title#",
-        "description": "Заголовок плана",
+        "name": "#Repeat#Monitor#",
+        "description": "",
         "subsystem": "plan",
-        "alias": "rundown.title"
+        "alias": ""
+    },
+    {
+        "name": "#Monitor.ID#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.id_entity_object"
+    },
+    {
+        "name": "#Monitor.CustomID#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.custom_id"
+    },
+    {
+        "name": "#Monitor.StartTime#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.start_time"
+    },
+    {
+        "name": "#Monitor.EndTime#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.end_time"
+    },
+    {
+        "name": "#Monitor.Name#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.name"
+    },
+    {
+        "name": "#Monitor.StatusID#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.id_status"
+    },
+    {
+        "name": "#Repeat#Infopovods#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.infopovods"
+    },
+    {
+        "name": "#Infopovods.ID#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.infopovods.%d.id"
+    },
+    {
+        "name": "#Infopovods.Title#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.infopovods.%d.value"
+    },
+    {
+        "name": "#Repeat#Locations#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.locations"
+    },
+    {
+        "name": "#Locations.Locations#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.locations.%d"
+    },
+    {
+        "name": "#Repeat#FilmCrews#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.film_crews"
+    },
+    {
+        "name": "#FilmCrews.ID#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.film_crews.%d.id"
+    },
+    {
+        "name": "#FilmCrews.Name#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.film_crews.%d.value"
+    },
+    {
+        "name": "#FilmCrews.Position#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.film_crews.%d.position"
+    },
+    {
+        "name": "#Repeat#Equipment#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.equipment"
+    },
+    {
+        "name": "#Equipment.ID#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.equipment.%d.id"
+    },
+    {
+        "name": "#Equipment.Name#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.equipment.%d.value"
+    },
+    {
+        "name": "#Equipment.Type#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.equipment.%d.equipment_type"
+    },
+    {
+        "name": "#Repeat#Transport#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.transport"
+    },
+    {
+        "name": "#Transport.ID#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.transport.%d.id"
+    },
+    {
+        "name": "#Transport.Name#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.transport.%d.value"
+    },
+    {
+        "name": "#Transport.Type#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.transport.%d.transport_type"
     }
+
 ]

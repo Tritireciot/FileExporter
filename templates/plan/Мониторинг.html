@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+		<title>#RunDown.Name#</title>
+	</head>
+    
+    <body style = "font-family:Arial;font-size:12pt;color:black;">
+        <div class="dynamic-table">
+  <!-- 1. ШАПКА ТАБЛИЦЫ (6 колонок) -->
+  <div class="th">Время</div>
+  <div class="th">Название</div>
+  <div class="th">Инфоповоды</div>
+  <div class="th">Состав</div>
+  <div class="th">Оборудование</div>
+  <div class="th">Транспорт</div>
+
+  <#Repeat#Monitor#>          
+    <div class="td-column fill-height">
+        <div class="cell-item">#Monitor.StartTime# - #Monitor.EndTime#</div>
+    </div>
+
+    <div class="td-column fill-height">
+        <div class="cell-item">#Monitor.Name#</div>
+    </div>
+
+
+    <div class="td-column">
+        <#Repeat#Infopovods#>
+            <div class="cell-item">#Infopovods.Title#</div>
+        </#Repeat#Infopovods#>
+    </div>
+
+
+    <div class="td-column">
+        <#Repeat#FilmCrews#>
+            <div class="cell-item">#FilmCrews.Name# - #FilmCrews.Position#</div>
+        </#Repeat#FilmCrews#>
+    </div>
+
+
+    <div class="td-column">
+        <#Repeat#Equipment#>
+            <div class="cell-item">#Equipment.Name# #Equipment.Type#</div>
+        </#Repeat#Equipment#>
+    </div>
+
+
+    <div class="td-column">
+        <#Repeat#Transport#>
+            <div class="cell-item">#Transport.Name# #Transport.Type#</div>
+        </#Repeat#Transport#>
+    </div>
+  </#Repeat#Monitor#>   
+</div>
+
+<style>
+
+.dynamic-table {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  border: 1px solid #ccc;
+  font-family: sans-serif;
+}
+
+
+.th {
+  background: #333;
+  color: white;
+  padding: 12px 10px;
+  font-weight: bold;
+  text-align: center;
+  border: 2px solid #000;
+}
+
+
+.td-column {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #ccc;
+  background: #fff;
+}
+.td-column:last-child {
+  border-right: none; 
+}
+
+
+.cell-item {
+  flex: 1; 
+  display: flex;
+  align-items: center; 
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  box-sizing: border-box;
+}
+.cell-item:last-child {
+  border-bottom: none;
+}
+
+
+.fill-height {
+  background: #f9f9f9;
+}
+</style>
+    </body>
+</html>

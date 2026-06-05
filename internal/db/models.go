@@ -1,15 +1,19 @@
 package db
 
+import (
+	"fmt"
+)
+
 type DBModel interface {
 	GetTable() string
 	GetID() int
 	GetName() string
 	GetColumns() []any
 	Validate() bool
+	Columns() []string
 }
 
 type Subsystem string
-
 
 type Template struct {
 	ID         int
@@ -43,6 +47,18 @@ func (template *Template) Validate() bool {
 	return template.Name != "" && template.Content != ""
 }
 
+func (template *Template) Columns() []string {
+	return []string{
+		fmt.Sprintf("%s.%s", Tables.Templates, Columns.ID),
+		fmt.Sprintf("%s.%s", Tables.Templates, Columns.Name),
+		fmt.Sprintf("%s.%s", Tables.Templates, Columns.Content),
+		fmt.Sprintf("%s.%s", Tables.Subsystems, Columns.Subsystem),
+		fmt.Sprintf("%s.%s", Tables.Templates, Columns.IsActive),
+		fmt.Sprintf("%s.%s", Tables.Templates, Columns.RenderData),
+		fmt.Sprintf("%s.%s", Tables.Templates, Columns.IsSingle),
+	}
+}
+
 type Tag struct {
 	ID          int
 	Name        string `json:"name"`
@@ -73,4 +89,16 @@ func (tag *Tag) GetColumns() []any {
 func (tag *Tag) Validate() bool {
 	return tag.Name != "" && tag.Description != "" &&
 		tag.Subsystem != "" && tag.Alias != ""
+}
+
+func (template *Tag) Columns() []string {
+	return []string{
+		fmt.Sprintf("%s.%s", Tables.Tags, Columns.ID),
+		fmt.Sprintf("%s.%s", Tables.Tags, Columns.Name),
+		fmt.Sprintf("%s.%s", Tables.Tags, Columns.Content),
+		fmt.Sprintf("%s.%s", Tables.Subsystems, Columns.Subsystem),
+		fmt.Sprintf("%s.%s", Tables.Tags, Columns.IsActive),
+		fmt.Sprintf("%s.%s", Tables.Tags, Columns.RenderData),
+		fmt.Sprintf("%s.%s", Tables.Tags, Columns.IsSingle),
+	}
 }
