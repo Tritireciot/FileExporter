@@ -2,12 +2,13 @@ package handlers
 
 type ExportModel struct {
 	TemplateId int            `json:"template_id"`
-	Data       map[string]any `json:"data"`
-	Subsystem string 		  `json:"susbsystem"`
+	Data       any 			  `json:"data"`
+	Subsystem string 		  `json:"subsystem"`
 }
 
+
 func (model *ExportModel) Validate() bool {
-	return len(model.Data) > 0
+	return model.TemplateId > 0 && len(model.Subsystem) > 0
 }
 
 

@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/jackc/pgx/v4"
@@ -17,6 +16,10 @@ type ShortElement struct {
 }
 
 func (repository *DBRepository) GetAllElements(ctx context.Context, element DBModel, subsystem string, isActive bool) (*[]ShortElement, error) {
+	subsystem_id, err := repository.GetSubsystemId(ctx, subsystem)
+	if subsystem_id == 0 {
+		return nil, err
+	}
 	var sqr_query squirrel.SelectBuilder
 	if _, ok := element.(*Template); ok {
 		sqr_query = repository.psql.Select(Columns.ID, Columns.Name, Columns.IsSingle)
@@ -28,7 +31,7 @@ func (repository *DBRepository) GetAllElements(ctx context.Context, element DBMo
 	if isActive {
 		sqr_query = sqr_query.Where(Columns.IsActive)
 	}
-	sqr_query = sqr_query.Where(squirrel.Eq{Columns.Subsystem: strings.ToLower(subsystem)})
+	sqr_query = sqr_query.Where(squirrel.Eq{Columns.Subsystem: subsystem_id})
 	query, args, err := sqr_query.ToSql()
 	if err != nil {
 		return nil, err
@@ -134,7 +137,6 @@ func (repository *DBRepository) GetSubsystemId(ctx context.Context, subsystem st
 func (repository *DBRepository) AddTemplate(ctx context.Context, template *Template) error {
 
 	subsystem_id, err := repository.GetSubsystemId(ctx, template.Subsystem)
-	repository.logger.Println("template.Subsystem", template.Subsystem, subsystem_id)
 	if subsystem_id == 0 {
 		return err
 	}

@@ -59,7 +59,13 @@ func addRepeatedTags(repeatTags map[string]string) map[string]any {
 }
 
 func fillRepeatedTag(json_data []byte, list_json_path string, list_schema []map[string]any, schema map[string]any) []map[string]any {
-	for i := range gjson.GetBytes(json_data, list_json_path).Array() {
+	var elements []gjson.Result
+	if list_json_path != "" {
+		elements = gjson.GetBytes(json_data, list_json_path).Array()
+	} else {
+		elements = gjson.ParseBytes(json_data).Array()
+	}
+	for i := range elements {
 		temp_schema := mapClone(schema)
 		var toAdd bool = true
 		for field, value := range schema {

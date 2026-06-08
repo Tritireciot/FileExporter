@@ -8,7 +8,7 @@ import (
 )
 
 type Transformer interface {
-	RenderTemplate(ctx context.Context, template_id int, raw_data []byte) (string, error)
+	RenderTemplate(ctx context.Context, template_id int, raw_data []byte) (string, string, error)
 }
 
 type TransformService struct {
@@ -37,12 +37,12 @@ func execute(template_ *template.Template, data map[string]any) (string, error) 
 
 }
 
-func (service *TransformService) RenderTemplate(ctx context.Context, template_id int, raw_data []byte) (string, error) {
+func (service *TransformService) RenderTemplate(ctx context.Context, template_id int, raw_data []byte) (string, string, error) {
 	template_ := &db.Template{ID: template_id}
 	err := service.db_repo.GetElement(ctx, template_, db.Columns.ID)
 
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	requiredTags := map[string]any{}
@@ -53,9 +53,9 @@ func (service *TransformService) RenderTemplate(ctx context.Context, template_id
 	form_template, err := template.New(template_.Name).Parse(formatted_template)
 
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 	data := Translate(raw_data, requiredTags, repeatTags)
-	return execute(form_template, data)
-
+	result_template, err := execute(form_template, data)
+	return template_.Name, result_template, err
 }

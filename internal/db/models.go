@@ -91,14 +91,13 @@ func (tag *Tag) Validate() bool {
 		tag.Subsystem != "" && tag.Alias != ""
 }
 
-func (template *Tag) Columns() []string {
+func (tag *Tag) Columns() []string {
 	return []string{
 		fmt.Sprintf("%s.%s", Tables.Tags, Columns.ID),
 		fmt.Sprintf("%s.%s", Tables.Tags, Columns.Name),
-		fmt.Sprintf("%s.%s", Tables.Tags, Columns.Content),
+		fmt.Sprintf("%s.%s", Tables.Tags, Columns.Description),
 		fmt.Sprintf("%s.%s", Tables.Subsystems, Columns.Subsystem),
+		fmt.Sprintf("%s.%s", Tables.Tags, Columns.Alias),
 		fmt.Sprintf("%s.%s", Tables.Tags, Columns.IsActive),
-		fmt.Sprintf("%s.%s", Tables.Tags, Columns.RenderData),
-		fmt.Sprintf("%s.%s", Tables.Tags, Columns.IsSingle),
 	}
 }
