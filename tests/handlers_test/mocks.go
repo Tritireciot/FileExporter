@@ -81,9 +81,9 @@ type MockTransformer struct {
 	ErrorId    int
 }
 
-func (service *MockTransformer) RenderTemplate(ctx context.Context, template_id int, raw_data []byte) (string, error) {
+func (service *MockTransformer) RenderTemplate(ctx context.Context, template_id int, raw_data []byte) (string, string, error) {
 	if template_id != service.ErrorId {
-		return "RenderedTemplate", nil
+		return "Title", "RenderedTemplate", nil
 	}
-	return "", MockError
+	return "", "", MockError
 }

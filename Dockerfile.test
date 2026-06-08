@@ -1,4 +1,4 @@
-FROM golang:1.19-alpine
+FROM cr.yandex/mirror/library/golang:1.19-alpine
 
 # Устанавливаем gcc и инструменты сборки
 RUN apk add --no-cache build-base

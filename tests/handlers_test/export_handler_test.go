@@ -15,9 +15,9 @@ func TestExportTemplateHandler(t *testing.T) {
 			http.StatusOK,
 			&map[string]any{
 				"ID": float64(TransformerServiceMock.ExpectedId),
-				"name": "",
+				"name": "Title",
 				"content": "RenderedTemplate",
-				"subsystem": "",
+				"subsystem": "news",
 				"is_active": false,
 				"render_data": nil,
 				"is_single": false,
@@ -27,6 +27,7 @@ func TestExportTemplateHandler(t *testing.T) {
 				"data": map[string]any{
 					"command": "update",
 				},
+				"subsystem": "news",
 			},
 		},
 		{
@@ -37,6 +38,7 @@ func TestExportTemplateHandler(t *testing.T) {
 				"data": map[string]any{
 					"command": "update",
 				},
+				"subsystem": "news",
 			},
 		},
 		{
@@ -46,6 +48,7 @@ func TestExportTemplateHandler(t *testing.T) {
 				"template_id":  0,
 				"data": map[string]any{
 				},
+				"subsystem": "",
 			},
 		},
 	}
@@ -54,7 +57,7 @@ func TestExportTemplateHandler(t *testing.T) {
 			t,
 			MockApp,
 			"POST",
-			"/export", 
+			"/api/core/print/export", 
 			set.RequestBody,
 		)
 		checkStatusCode(t, recorder, set.ExpectedStatus)

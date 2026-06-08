@@ -82,7 +82,7 @@ func TestIncludeRepeatStructure(t *testing.T) {
 				},
 			},
 			map[string]any{
-				"Story": "Media",
+				"Story": []string{"Media"},
 			},
 		},
 		{
@@ -103,8 +103,8 @@ func TestIncludeRepeatStructure(t *testing.T) {
 				},
 			},
 			map[string]any{
-				"Story": "Media",
-				"Media": "Unknown",
+				"Story": []string{"Media"},
+				"Media": []string{"Unknown"},
 			},
 		},
 		{
@@ -116,7 +116,7 @@ func TestIncludeRepeatStructure(t *testing.T) {
 				"Unknown": map[string]any{},
 			},
 			map[string]any{
-				"Story": "Media",
+				"Story": []string{"Media"},
 			},
 		},
 	}

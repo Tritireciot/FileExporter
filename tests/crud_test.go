@@ -1,8 +1,8 @@
 package db
 
 import (
-	"PrintServer/internal/config"
 	"PrintServer/internal/db"
+	"PrintServer/pgutils"
 	"context"
 	"log"
 	"math/rand"
@@ -13,13 +13,21 @@ import (
 
 var test_db_repo *db.DBRepository
 var test_context context.Context
-var test_tag = db.Tag{Name: "Test", Description: "Test", Subsystem: "Test", Alias: "Test", IsActive: true}
-var test_template = db.Template{Name: "Test", Content: "Test", Subsystem: "Test", IsActive: true, RenderData: map[string]any{}}
+var test_tag = db.Tag{Name: "Test", Description: "Test", Subsystem: "news", Alias: "Test", IsActive: true}
+var test_template = db.Template{Name: "Test", Content: "Test", Subsystem: "news", IsActive: true, RenderData: map[string]any{}}
 
 func createDBRepository() *db.DBRepository {
 	logger := log.New(os.Stdout, "[SERVICE] ", log.LstdFlags)
-	app_config := config.LoadConfig()
-	db_repo, err := db.SetupDB(context.Background(), app_config.DB.DB_URL, logger)
+	db_config := pgutils.DatabaseConfig{
+		Host: "db",
+		Port: 5432,
+		User: "user",
+		Password: "pass",
+		DBname: "backend-db",
+		Schema: "print",
+	}
+
+	db_repo, err := db.SetupDB(context.Background(), &db_config, logger)
 	if err != nil {
 		logger.Fatal(err.Error())
 		return nil
@@ -145,7 +153,7 @@ func TestModifyTag(t *testing.T) {
 func TestGetAllElements(t *testing.T) {
 	dbmodels := []db.DBModel{&db.Template{}, &db.Tag{}}
 	for _, model := range dbmodels {
-		template_arr, err := test_db_repo.GetAllElements(test_context, model, "", true)
+		template_arr, err := test_db_repo.GetAllElements(test_context, model, "news", true)
 		if err != nil {
 			t.Errorf("Error: %s at table %s", err.Error(), model.GetTable())
 		}

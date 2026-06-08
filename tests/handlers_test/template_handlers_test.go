@@ -47,7 +47,7 @@ func TestGetTemplateHandler(t *testing.T) {
 			t,
 			MockApp,
 			"GET",
-			fmt.Sprintf("/db/get_template?id=%d", set.ID), 
+			fmt.Sprintf("/api/core/print/db/get_template?id=%d", set.ID), 
 			nil,
 		)
 		checkStatusCode(t, recorder, set.ExpectedStatus)
@@ -65,12 +65,12 @@ func TestAddTemplateHandler(t *testing.T) {
 		RequestBody *map[string]any
 	}{
 		{
-			http.StatusCreated,
+			http.StatusOK,
 			&map[string]any{
 				"ID": float64(DBRepoMock.ExpectedId),
 				"name": "test",
 				"content": "test",
-				"subsystem": "NEWS",
+				"subsystem": "news",
 				"is_active": false,
 				"render_data": nil,
 				"is_single": false,
@@ -78,7 +78,7 @@ func TestAddTemplateHandler(t *testing.T) {
 			&map[string]any{
 				"name":  "test",
 				"content": "test",
-				"subsystem": "NEWS",
+				"subsystem": "news",
 			},
 		},
 		{
@@ -87,7 +87,7 @@ func TestAddTemplateHandler(t *testing.T) {
 			&map[string]any{
 				"name":  DBRepoMock.ErrorName,
 				"content": "test",
-				"subsystem": "NEWS",
+				"subsystem": "news",
 			},
 		},
 		{
@@ -103,7 +103,7 @@ func TestAddTemplateHandler(t *testing.T) {
 			t,
 			MockApp,
 			"POST",
-			"/db/add_template", 
+			"/api/core/print/db/add_template", 
 			set.RequestBody,
 		)
 		checkStatusCode(t, recorder, set.ExpectedStatus)
@@ -148,7 +148,7 @@ func TestDeleteTemplateHandler(t *testing.T) {
 			t,
 			MockApp,
 			"DELETE",
-			fmt.Sprintf("/db/delete_template?id=%d", set.ID), 
+			fmt.Sprintf("/api/core/print/db/delete_template?id=%d", set.ID), 
 			nil,
 		)
 		checkStatusCode(t, recorder, set.ExpectedStatus)
@@ -177,7 +177,7 @@ func TestGetAllTemplatesHandler(t *testing.T) {
 			t,
 			MockApp,
 			"GET",
-			"/db/get_all_templates", 
+			"/api/core/print/db/get_all_templates?subsystem=news", 
 			nil,
 		)
 		checkStatusCode(t, recorder, set.ExpectedStatus)

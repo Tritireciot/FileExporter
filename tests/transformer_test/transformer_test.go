@@ -1,9 +1,9 @@
 package transformer
 
 import (
-	"PrintServer/internal/config"
 	"PrintServer/internal/db"
 	"PrintServer/internal/transformer"
+	"PrintServer/pgutils"
 	"context"
 	"log"
 	"os"
@@ -16,8 +16,15 @@ var test_context context.Context
 
 func createDBRepository() *db.DBRepository {
 	logger := log.New(os.Stdout, "[TEST] ", log.LstdFlags)
-	app_config := config.LoadConfig()
-	db_repo, err := db.SetupDB(context.Background(), app_config.DB.DB_URL, logger)
+	db_config := pgutils.DatabaseConfig{
+		Host: "db",
+		Port: 5432,
+		User: "user",
+		Password: "pass",
+		DBname: "backend-db",
+		Schema: "print",
+	}
+	db_repo, err := db.SetupDB(context.Background(), &db_config, logger)
 	if err != nil {
 		logger.Fatal(err.Error())
 		return nil

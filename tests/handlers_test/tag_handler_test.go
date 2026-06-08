@@ -14,7 +14,7 @@ func TestAddTagHandler(t *testing.T) {
 		RequestBody *map[string]any
 	}{
 		{
-			http.StatusCreated,
+			http.StatusOK,
 			&map[string]any{
 				"ID": float64(DBRepoMock.ExpectedId),
 				"name": "test",
@@ -53,7 +53,7 @@ func TestAddTagHandler(t *testing.T) {
 			t,
 			MockApp,
 			"POST",
-			"/db/add_tag", 
+			"/api/core/print/db/add_tag", 
 			set.RequestBody,
 		)
 		checkStatusCode(t, recorder, set.ExpectedStatus)
@@ -98,7 +98,7 @@ func TestDeleteTagHandler(t *testing.T) {
 			t,
 			MockApp,
 			"DELETE",
-			fmt.Sprintf("/db/delete_tag?id=%d", set.ID), 
+			fmt.Sprintf("/api/core/print/db/delete_tag?id=%d", set.ID), 
 			nil,
 		)
 		checkStatusCode(t, recorder, set.ExpectedStatus)
@@ -127,7 +127,7 @@ func TestGetAllTagsHandler(t *testing.T) {
 			t,
 			MockApp,
 			"GET",
-			"/db/get_all_tags", 
+			"/api/core/print/db/get_all_tags", 
 			nil,
 		)
 		checkStatusCode(t, recorder, set.ExpectedStatus)
