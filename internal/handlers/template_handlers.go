@@ -17,7 +17,7 @@ func NewTemplateHandler(repo db.DBRepo) *TemplateHandler {
 }
 
 func (handler *TemplateHandler) GetAllTemplates(writer http.ResponseWriter, request *http.Request) {
-	subsystem_name := request.URL.Query().Get("subsystem")
+	subsystem_name := strings.ToLower(request.URL.Query().Get("subsystem"))
 	active, _ := validateFlag(request, "active")
 	ctx := request.Context()
 	template_list, err := handler.repo.GetAllElements(ctx, &db.Template{}, subsystem_name, active)
