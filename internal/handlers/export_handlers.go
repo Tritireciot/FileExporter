@@ -23,17 +23,11 @@ func (handler *ExportHandler) TransformTemplate(writer http.ResponseWriter, requ
 	}
 	defer request.Body.Close()
 	ctx := request.Context()
-	raw_data, err := json.Marshal(export_form.Data)
-	if err != nil {
-		invalidJsonError(writer)
-		return
-	}
-	title, export_doc, err := handler.transformer.RenderTemplate(ctx, export_form.TemplateId, raw_data)
+	title, export_doc, err := handler.transformer.RenderTemplate(ctx, export_form.TemplateId, export_form.Data)
 	if err != nil {
 		unknownError(writer, err)
 		return
 	}
 	writer.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(writer).Encode(db.Template{ID: export_form.TemplateId, Name: title, Content: export_doc, Subsystem: export_form.Subsystem})
-
 }

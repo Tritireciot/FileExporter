@@ -19,6 +19,7 @@ import (
 
 type InfrastructureConfiguration struct {
 	SubAccess []deploy.AccessConfig    // Межподсистемное взаимодействие
+	MQAccess  []deploy.AccessConfig    // Очередь
 	DBConfig  []pgutils.DatabaseConfig // База данных
 
 	PublicKey                 rsa.PublicKey // Публичный ключ проверки токенов
@@ -44,6 +45,7 @@ func GetPSQLCommonConfiguration(dbcfg pgutils.DatabaseConfig) (ic Infrastructure
 		return ic, err
 	} else {
 		defer dbconn.Close(context.Background())
+		// Получим конфигурации точки доступа
 		if sc, err := GetServiceConfiguration(dbconn, AccessPointTypeID); err != nil {
 			return ic, err
 		} else {
@@ -55,6 +57,21 @@ func GetPSQLCommonConfiguration(dbcfg pgutils.DatabaseConfig) (ic Infrastructure
 				ic.SubAccess = append(ic.SubAccess, ac)
 			}
 		}
+		//------------------------------------------------
+		// Получим конфигурацию Очереди
+		if sc, err := GetServiceConfiguration(dbconn, QueueTypeID); err != nil {
+			return ic, err
+		} else {
+			for i := range sc {
+				ac := deploy.AccessConfig{}
+				if err = mapstructure.Decode(sc[i].Configuration, &ac); err != nil {
+					return ic, err
+				}
+				ic.MQAccess = append(ic.MQAccess, ac)
+			}
+		}
+		//------------------------------------------------
+		// Получим конфигурацию БД
 		if sc, err := GetServiceConfiguration(dbconn, PostgreSQLSearchTypeID); err != nil {
 			return ic, err
 		} else {

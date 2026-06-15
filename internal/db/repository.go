@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"log"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -18,14 +17,12 @@ type DBRepo interface {
 
 type DBRepository struct {
 	pool   *pgxpool.Pool
-	logger *log.Logger
 	psql squirrel.StatementBuilderType
 }
 
-func NewRepository(pool *pgxpool.Pool, logger *log.Logger) *DBRepository {
+func NewRepository(pool *pgxpool.Pool) *DBRepository {
 	return &DBRepository{
 		pool: pool, 
-		logger: logger, 
 		psql: squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),
 	}
 }

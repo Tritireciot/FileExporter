@@ -1,27 +1,28 @@
 package db
 
 import (
+	logging "PrintServer/agent"
 	"PrintServer/pgutils"
 	"context"
 	"fmt"
-	"log"
 	"os"
 	"time"
 
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
-func SetupDB(ctx context.Context, cfg *pgutils.DatabaseConfig, logger *log.Logger) (*DBRepository, error) {
+func SetupDB(ctx context.Context, cfg *pgutils.DatabaseConfig) (*DBRepository, error) {
 	dbpool, err := pgxpool.Connect(ctx, pgutils.GetConnectionStringWithDBName(cfg))
 	
 	if err != nil {
-		logger.Println("Unable to connect to database:", err.Error())
+		logging.Agent.AddSimpleError("Подключение к БД", "Не удалось подключиться к БД: " + err.Error())
+
 		dbpool.Close()
 		return nil, err
 	}
-	repo := NewRepository(dbpool, logger)
+	repo := NewRepository(dbpool)
 
-	logger.Println("Check Connection")
+	logging.Agent.AddSimpleInfo("Проверка БД", "Подключение к БД...")
 
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
@@ -31,17 +32,17 @@ func SetupDB(ctx context.Context, cfg *pgutils.DatabaseConfig, logger *log.Logge
 		return nil, err
 	}
 
-	logger.Println("Check Fill")
+	logging.Agent.AddSimpleInfo("Проверка БД", "Проверка заполнения")
 
 	isFilled, err := repo.isDBFilled(ctx)
 
 	if !isFilled {
-		logger.Println("Fill DB")
+		logging.Agent.AddSimpleInfo("Проверка БД", "Заполнение БД базовыми данными")
 		if err := repo.createFilledTables(ctx); err != nil {
 			return nil, err
 		}
 	}
-	logger.Println("DB READY")
+	logging.Agent.AddSimpleInfo("Проверка БД", "БД готова к работе!")
 
 	return repo, nil
 }
@@ -63,19 +64,19 @@ func (repository *DBRepository) createFilledTables(ctx context.Context) error {
 		repository.pool.Close()
 		return err
 	}
-	repository.logger.Println("Created Subsystems Table")
+	logging.Agent.AddSimpleInfo("Заполнение БД", "Таблица подсистем создана")
 
 	if err := repository.createTagsTables(ctx); err != nil {
 		repository.pool.Close()
 		return err
 	}
-	repository.logger.Println("Created Tag Table")
+	logging.Agent.AddSimpleInfo("Заполнение БД", "Таблица тэгов создана")
 
 	if err := repository.createTemplatesTables(ctx); err != nil {
 		repository.pool.Close()
 		return err
 	}
-	repository.logger.Println("Created Template Table")
+	logging.Agent.AddSimpleInfo("Заполнение БД", "Таблица шаблонов создана")
 
 	repository.AddSubsystem(ctx, "news")
 	repository.AddSubsystem(ctx, "plan")
@@ -85,13 +86,13 @@ func (repository *DBRepository) createFilledTables(ctx context.Context) error {
 		repository.pool.Close()
 		return err
 	}
-	repository.logger.Println("Filled Template Table")
+	logging.Agent.AddSimpleInfo("Заполнение БД", "Заполнение шаблонами по умолчанию")
 
 	if err := repository.fillTagsTable(ctx, os.Getenv("TAGS_FILEPATH")); err != nil {
 		repository.pool.Close()
 		return err
 	}
-	repository.logger.Println("Filled Tag Table")
+	logging.Agent.AddSimpleInfo("Заполнение БД", "Заполнение тегами по умолчанию")
 
 	return nil
 

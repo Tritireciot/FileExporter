@@ -1,6 +1,7 @@
 package db
 
 import (
+	logging "PrintServer/agent"
 	"context"
 	"encoding/json"
 	"io/fs"
@@ -36,7 +37,7 @@ func (repository *DBRepository) fillTemplatesTable(ctx context.Context, template
 			return err
 		}
 		template_name := formatPathName(path, ".")
-		repository.logger.Println("Insert Template: ", template_name)
+		logging.Agent.AddSimpleInfo("Добавление шаблона", "Название шаблона: " + template_name)
 		if err := repository.AddTemplate(ctx, &Template{Name: template_name, Content: string(data), Subsystem: strings.ToLower(strings.Split(path, "/")[1]), IsActive: true}); err != nil {
 			return err
 		}
@@ -63,7 +64,7 @@ func (repository *DBRepository) fillTagsTable(ctx context.Context, tags_filepath
 		return err
 	}
 	for _, tag_data := range tags {
-		repository.logger.Println("Insert: ", tag_data.Name)
+		logging.Agent.AddSimpleInfo("Добавление тэга", "Название тэга: " + tag_data.Name)
 		if err := repository.AddTag(ctx, &tag_data); err != nil {
 			return err
 		}

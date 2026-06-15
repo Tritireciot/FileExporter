@@ -6,20 +6,36 @@ import (
 	"PrintServer/internal/server"
 	"PrintServer/internal/transformer"
 	"context"
-	"fmt"
-	"log"
 	"os"
+	"sync"
 	"time"
+
+	logging "PrintServer/agent"
 )
 
 func main() {
-	logger := log.New(os.Stdout, "[SERVICE] ", log.LstdFlags)
-	app := server.App{Logger: logger}
+
+	host, _ := os.Hostname()
+
+	logging.InitAXAgent(logging.Config{}, logging.AXLocation{
+		Subsystem: "Print",
+		App:       "Service",
+		Host:      host,
+		ProcessId: uint32(os.Getpid()),
+	})
+
+	waitLogger := sync.WaitGroup{}
+	stopLogger := make(chan bool)
+
+	logging.Agent.StartStdout(&waitLogger, stopLogger)
+	logging.Agent.StartFile(&waitLogger, stopLogger)
+
+	app := server.App{}
 	app_config := config.LoadConfig()
 	var db_repo *db.DBRepository
 	for {
 		if err := config.GetConfig(); err != nil {
-			log.Printf("Failed to get config: %v, retrying...", err)
+			logging.Agent.AddSimpleError("Загрузка конфигурации", "Не удалось загрузить конфигурацию приложения: "+err.Error())
 		} else {
 			db_config := config.GetDBConfig()
 			if os.Getenv("LOCAL") == "true" {
@@ -29,9 +45,9 @@ func main() {
 				db_config.Password = "pass"
 				db_config.Schema = "print"
 			}
-			db_repo, err = db.SetupDB(context.Background(), db_config, logger)
+			db_repo, err = db.SetupDB(context.Background(), db_config)
 			if err != nil {
-				logger.Fatal(err.Error())
+				logging.Agent.AddSimpleError("Загрузка конфигурации", "Не удалось загрузить конфигурацию приложения: "+err.Error())
 				os.Exit(1)
 			}
 			break
@@ -40,6 +56,8 @@ func main() {
 	}
 	transformer_ := transformer.NewTransformService(db_repo)
 	app.Init(db_repo, transformer_)
-	fmt.Println("App started!!!")
-	app.Run(app_config.ConfigureAppUrl())
+	logging.Agent.AddSimpleInfo("HTTP сервер", "Запуск на порту: "+ app_config.App.Port)
+	if err := app.Run(app_config.ConfigureAppUrl()); err != nil {
+		logging.Agent.AddSimpleError("HTTP сервер", "Ошибка: "+err.Error())
+	}
 }

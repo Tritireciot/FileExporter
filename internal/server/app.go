@@ -1,6 +1,7 @@
 package server
 
 import (
+	logging "PrintServer/agent"
 	"PrintServer/internal/db"
 	"PrintServer/internal/handlers"
 	"PrintServer/internal/transformer"
@@ -37,7 +38,13 @@ func (app *App) Init(db_repo db.DBRepo, transformer_ transformer.Transformer) {
 	app.InitializeRouter(db_repo, transformer_)
 }
 
-func (app *App) Run(address string) {
-	loggedRouter := app.createLoggingRouter(app.Logger.Writer())
-	app.Logger.Fatal(http.ListenAndServe(address, loggedRouter))
+func (app *App) Run(address string) error {
+	err := http.ListenAndServe(address, app.Router)
+	if err != nil && err != http.ErrServerClosed {
+		logging.Agent.AddSimpleError("Ошибка HTTP сервера", "")
+		return err
+	}
+
+	return nil
+
 }

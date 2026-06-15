@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"regexp"
+	"strings"
 )
 
 type Reshaper struct {
@@ -54,15 +55,26 @@ func (reshaper *Reshaper) ChangeBaseTags(ctx context.Context, template_content s
 	})
 }
 
-func (reshaper *Reshaper) ChangeRepeatTags(ctx context.Context, template_content string, repeatTags *map[string]string) ([]string, string) {
+func (reshaper *Reshaper) ChangeRepeatTags(ctx context.Context, template_content string, repeatTags *map[string]string, render_data map[string]bool) ([]string, string) {
 	repeats := []string{}
 	template_content = reshaper.tagRepeatPattern[0].ReplaceAllStringFunc(template_content, func(tag string) string {
 		match_tag := reshaper.tagRepeatPattern[0].FindStringSubmatch(tag)
 		field := match_tag[1]
+
+		res := []string{}
 		repeats = append(repeats, field)
 		(*repeatTags)[field] = getAlias(ctx, reshaper.db_repo, match_tag[0][1:len(match_tag[0])-1])
-		return fmt.Sprintf("{{ range $%s := .%s }}", field, field)
+		res = append(res, fmt.Sprintf("{{ range $%s := .%s }}", field, field))
+
+		element := strings.ToLower(match_tag[1]) + "_break"
+		if addBreak, ok := render_data[element]; ok && addBreak {
+			res = append(res, "{{if $hasContent}}\n\t<div style=\"page-break-before: always;\"></div>\n{{end}}{{ $hasContent = true }}\n")
+		}
+		
+		return strings.Join(res, "\n")
 	})
+
+	
 
 	return repeats, reshaper.tagRepeatPattern[1].ReplaceAllStringFunc(template_content, func(tag string) string {
 		return "{{ end }}"
@@ -70,9 +82,10 @@ func (reshaper *Reshaper) ChangeRepeatTags(ctx context.Context, template_content
 
 }
 
-func (reshaper *Reshaper) TransformTemplate(ctx context.Context, template_content string, requiredTags *map[string]any, repeatTags *map[string]string) string {
+func (reshaper *Reshaper) TransformTemplate(ctx context.Context, template_content string, requiredTags *map[string]any, repeatTags *map[string]string, render_data map[string]bool) string {
 	connections := IncludeRepeatStructure(template_content, requiredTags)
-	repeats, template_content := reshaper.ChangeRepeatTags(ctx, template_content, repeatTags)
+	template_content = "{{ $hasContent := false }}" + template_content
+	repeats, template_content := reshaper.ChangeRepeatTags(ctx, template_content, repeatTags, render_data)
 	template_content = reshaper.ChangeBaseTags(ctx, template_content, repeats, requiredTags)
 	CompleteConnections(connections, requiredTags, repeatTags)
 	return template_content

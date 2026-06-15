@@ -21,7 +21,7 @@ type Template struct {
 	Content    string         `json:"content"`
 	Subsystem  string         `json:"subsystem"`
 	IsActive   bool           `json:"is_active"`
-	RenderData map[string]any `json:"render_data"`
+	RenderData map[string]bool `json:"render_data"`
 	IsSingle   bool           `json:"is_single"`
 }
 
