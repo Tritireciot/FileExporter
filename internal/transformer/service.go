@@ -1,6 +1,7 @@
 package transformer
 
 import (
+	logging "PrintServer/agent"
 	"PrintServer/internal/db"
 	"bytes"
 	"context"
@@ -24,16 +25,12 @@ func NewTransformService(db_repo db.DBRepo) *TransformService {
 	}
 }
 
-func (service *TransformService) SaveTemplate(ctx context.Context, template *db.Template) error {
-	if err := service.db_repo.AddTemplate(ctx, template); err != nil {
-		return err
-	}
-	return nil
-}
-
 func execute(template_ *template.Template, data map[string]any) (string, error) {
 	var buffer bytes.Buffer
 	err := template_.Execute(&buffer, data)
+	if err != nil {
+		logging.Agent.AddSimpleError("Формирование итогового шаблона для печати", "Не удалось вставить данные: " + err.Error())
+	}
 	return buffer.String(), err
 
 }
@@ -90,10 +87,12 @@ func (service *TransformService) RenderTemplate(ctx context.Context, template_id
 	}
 
 	filter(template_.Subsystem, &raw_data, template_.RenderData)
+	logging.Agent.AddSimpleInfo("Подготовка шаблона печати", "Отфильтрованны данные")
 
 
 	byte_data, err := json.Marshal(raw_data)
 	if err != nil {
+		logging.Agent.AddSimpleError("Подготовка шаблона на печать", "Не удалось прочитать тело запроса: " + err.Error())
 		return "", "", err
 	}
 
@@ -105,9 +104,11 @@ func (service *TransformService) RenderTemplate(ctx context.Context, template_id
 	form_template, err := template.New(template_.Name).Parse(formatted_template)
 
 	if err != nil {
+		logging.Agent.AddSimpleError("Подготовка шаблона на печать", "Не удалось сформировать шаблон: " + err.Error())
 		return "", "", err
 	}
 	data := Translate(byte_data, requiredTags, repeatTags)
+	logging.Agent.AddSimpleInfo("Подготовка шаблона печати", "Сформированны данные: " + fmt.Sprint(data))
 	result_template, err := execute(form_template, data)
 	return template_.Name, result_template, err
 }

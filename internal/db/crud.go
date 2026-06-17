@@ -1,6 +1,7 @@
 package db
 
 import (
+	logging "PrintServer/agent"
 	"context"
 	"errors"
 	"fmt"
@@ -18,6 +19,7 @@ type ShortElement struct {
 func (repository *DBRepository) GetAllElements(ctx context.Context, element DBModel, subsystem string, isActive bool) (*[]ShortElement, error) {
 	subsystem_id, err := repository.GetSubsystemId(ctx, subsystem)
 	if subsystem_id == 0 {
+		logging.Agent.AddSimpleError("Получение элементов", "Несуществующая подсистема: " + subsystem + err.Error())
 		return nil, err
 	}
 	var sqr_query squirrel.SelectBuilder
@@ -34,6 +36,7 @@ func (repository *DBRepository) GetAllElements(ctx context.Context, element DBMo
 	sqr_query = sqr_query.Where(squirrel.Eq{Columns.Subsystem: subsystem_id})
 	query, args, err := sqr_query.ToSql()
 	if err != nil {
+		logging.Agent.AddSimpleError("Получение элементов", "Не удалось сформировать sql запрос: "+ err.Error())
 		return nil, err
 	}
 	var elements []ShortElement
@@ -41,6 +44,7 @@ func (repository *DBRepository) GetAllElements(ctx context.Context, element DBMo
 	rows, err := repository.pool.Query(ctx, query, args...)
 	if err != nil {
 		rows.Close()
+		logging.Agent.AddSimpleError("Получение элементов", "Не удалось сформировать sql запрос: "+ err.Error())
 		return nil, err
 	}
 	defer rows.Close()
@@ -52,6 +56,7 @@ func (repository *DBRepository) GetAllElements(ctx context.Context, element DBMo
 			err = rows.Scan(&short_element.Element_id, &short_element.Element_name)
 		}
 		if err != nil {
+			logging.Agent.AddSimpleError("Получение элементов", "Не удалось получить данные: "+ err.Error())
 			return nil, err
 		}
 		elements = append(elements, short_element)
@@ -77,6 +82,7 @@ func (repository *DBRepository) GetElement(
 	LeftJoin(fmt.Sprintf("%s ON %s.%s = %s.%s", Tables.Subsystems, element.GetTable(), Columns.Subsystem, Tables.Subsystems, Columns.ID)).
 	Where(squirrel.Eq{fmt.Sprintf("%s.%s", element.GetTable(), column): field}).ToSql()
 	if err != nil {
+		logging.Agent.AddSimpleError("Получение элемента", "Не удалось сформировать sql запрос: "+ err.Error())
 		return err
 	}
 	err = repository.pool.
@@ -85,8 +91,10 @@ func (repository *DBRepository) GetElement(
 
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
+			logging.Agent.AddSimpleError("Получение элемента", "Не найден: "+ err.Error())
 			return ErrElementNotFound
 		}
+		logging.Agent.AddSimpleError("Получение элемента", "Не удалось выполнить sql запрос: "+ err.Error())
 		return err
 	}
 
@@ -106,11 +114,13 @@ func (repository *DBRepository) DeleteElement(
 	}
 	query, args, err := repository.psql.Delete(element.GetTable()).Where(squirrel.Eq{column: field}).ToSql()
 	if err != nil {
+		logging.Agent.AddSimpleError("Удаление элемента", "Не удалось сформировать sql запрос: "+ err.Error())
 		return err
 	}
 	cmd, err := repository.pool.Exec(ctx, query, args...)
 
 	if err != nil {
+		logging.Agent.AddSimpleError("Удаление элемента", "Не удалось выполнить sql запрос: "+ err.Error())
 		return err
 	}
 
@@ -124,6 +134,7 @@ func (repository *DBRepository) DeleteElement(
 func (repository *DBRepository) GetSubsystemId(ctx context.Context, subsystem string) (subsystem_id int, err error) {
 	query, args, err := repository.psql.Select(Columns.ID).From(Tables.Subsystems).Where(squirrel.Eq{Columns.Subsystem: subsystem}).ToSql()
 	if err != nil {
+		logging.Agent.AddSimpleError("Получения Id подсистемы", "Не удалось сформировать sql запрос: "+ err.Error())
 		return
 	}
 
@@ -170,6 +181,7 @@ func (repository *DBRepository) AddTemplate(ctx context.Context, template *Templ
 
 	query, args, err := sqr_query.ToSql()
 	if err != nil {
+		logging.Agent.AddSimpleError("Добавление/обновление шаблона", "Не удалось сформировать sql запрос: "+ err.Error())
 		return err
 	}
 	err = repository.pool.QueryRow(ctx, query, args...).Scan(&template.ID)
@@ -180,6 +192,7 @@ func (repository *DBRepository) AddSubsystem(ctx context.Context, subsystem_name
 	query, args, err := repository.psql.Insert(Tables.Subsystems).Columns(Columns.Subsystem).
 	Values(subsystem_name).Suffix(fmt.Sprintf("ON CONFLICT (%s) DO NOTHING;", Columns.ID)).ToSql()
 	if err != nil {
+		logging.Agent.AddSimpleError("Добавление/обновление подсистемы", "Не удалось сформировать sql запрос: "+ err.Error())
 		return err
 	}
 
@@ -207,6 +220,7 @@ func (repository *DBRepository) AddTag(ctx context.Context, tag *Tag) error {
 		),
 	).Suffix(fmt.Sprintf("RETURNING %s;", Columns.ID)).ToSql()
 	if err != nil {
+		logging.Agent.AddSimpleError("Добавление/обновление тэга", "Не удалось сформировать sql запрос: "+ err.Error())
 		return err
 	}
 

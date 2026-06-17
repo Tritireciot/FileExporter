@@ -1,6 +1,7 @@
 package transformer
 
 import (
+	logging "PrintServer/agent"
 	"PrintServer/internal/db"
 	"context"
 	"fmt"
@@ -84,9 +85,12 @@ func (reshaper *Reshaper) ChangeRepeatTags(ctx context.Context, template_content
 
 func (reshaper *Reshaper) TransformTemplate(ctx context.Context, template_content string, requiredTags *map[string]any, repeatTags *map[string]string, render_data map[string]bool) string {
 	connections := IncludeRepeatStructure(template_content, requiredTags)
+	logging.Agent.AddSimpleInfo("Подготовка шаблона печати", "Сформированы связи повторяющихся тегов: " + fmt.Sprint(connections))
 	template_content = "{{ $hasContent := false }}" + template_content
 	repeats, template_content := reshaper.ChangeRepeatTags(ctx, template_content, repeatTags, render_data)
+	logging.Agent.AddSimpleInfo("Подготовка шаблона печати", "Заменены теги повторов: " + fmt.Sprint(repeats))
 	template_content = reshaper.ChangeBaseTags(ctx, template_content, repeats, requiredTags)
 	CompleteConnections(connections, requiredTags, repeatTags)
+	logging.Agent.AddSimpleInfo("Подготовка шаблона печати", "Заменены теги: " + fmt.Sprint(requiredTags))
 	return template_content
 }

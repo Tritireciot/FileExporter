@@ -35,6 +35,7 @@ func (app *App) InitializeRouter(db_repo db.DBRepo, transformer_ transformer.Tra
 func (app *App) Init(db_repo db.DBRepo, transformer_ transformer.Transformer) {
 	mainRouter := mux.NewRouter()
 	app.Router = mainRouter.PathPrefix("/api/core/print").Subrouter()
+	app.Router.Use(LoggingMiddleware)
 	app.InitializeRouter(db_repo, transformer_)
 }
 
