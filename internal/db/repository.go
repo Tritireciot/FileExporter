@@ -13,6 +13,7 @@ type DBRepo interface {
 	DeleteElement(ctx context.Context, element DBModel, column string) error
 	AddTemplate(ctx context.Context, template *Template) error
 	AddTag(ctx context.Context, tag *Tag) error
+	GetRawElement(ctx context.Context, element DBModel, column string) error
 }
 
 type DBRepository struct {

@@ -11,9 +11,55 @@ type DBModel interface {
 	GetColumns() []any
 	Validate() bool
 	Columns() []string
+	GetValueByColumn(column string) any
 }
 
-type Subsystem string
+type Subsystem struct {
+	ID         int
+	Subsystem  string
+	RequestPath string
+}
+
+func (subsystem *Subsystem) GetValueByColumn(column string) any {
+	switch column {
+		case Columns.ID:
+			return subsystem.ID
+		case Columns.Subsystem:
+			return subsystem.Subsystem
+		case Columns.RequestPath:
+			return subsystem.RequestPath
+	}
+	return nil
+}
+
+func (subsystem *Subsystem) GetTable() string {
+	return Tables.Subsystems
+}
+
+func (subsystem *Subsystem) GetName() string {
+	return subsystem.Subsystem
+}
+
+func (subsystem *Subsystem) GetID() int {
+	return subsystem.ID
+}
+
+func (subsystem *Subsystem) GetColumns() []any {
+	return []any{
+		&subsystem.ID, &subsystem.Subsystem, &subsystem.RequestPath, 
+	}
+}
+func (subsystem *Subsystem) Validate() bool {
+	return subsystem.Subsystem != "" && subsystem.RequestPath != ""
+}
+
+func (subsystem *Subsystem) Columns() []string {
+	return []string{
+		fmt.Sprintf("%s.%s", Tables.Subsystems, Columns.ID),
+		fmt.Sprintf("%s.%s", Tables.Subsystems, Columns.Subsystem),
+		fmt.Sprintf("%s.%s", Tables.Subsystems, Columns.RequestPath),
+	}
+}
 
 type Template struct {
 	ID         int
@@ -59,6 +105,22 @@ func (template *Template) Columns() []string {
 	}
 }
 
+func (template *Template) GetValueByColumn(column string) any {
+	switch column {
+		case Columns.ID:
+			return template.ID
+		case Columns.Name:
+			return template.Name
+		case Columns.Subsystem:
+			return template.Subsystem
+		case Columns.IsActive:
+			return template.IsActive
+		case Columns.IsSingle:
+			return template.IsSingle
+	}
+	return nil
+}
+
 type Tag struct {
 	ID          int
 	Name        string `json:"name"`
@@ -100,4 +162,20 @@ func (tag *Tag) Columns() []string {
 		fmt.Sprintf("%s.%s", Tables.Tags, Columns.Alias),
 		fmt.Sprintf("%s.%s", Tables.Tags, Columns.IsActive),
 	}
+}
+
+func (tag *Tag) GetValueByColumn(column string) any {
+	switch column {
+		case Columns.ID:
+			return tag.ID
+		case Columns.Name:
+			return tag.Name
+		case Columns.Subsystem:
+			return tag.Subsystem
+		case Columns.Alias:
+			return tag.Alias
+		case Columns.IsActive:
+			return tag.IsActive
+	}
+	return nil
 }

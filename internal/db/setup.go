@@ -78,8 +78,8 @@ func (repository *DBRepository) createFilledTables(ctx context.Context) error {
 	}
 	logging.Agent.AddSimpleInfo("Заполнение БД", "Таблица шаблонов создана")
 
-	repository.AddSubsystem(ctx, "news")
-	repository.AddSubsystem(ctx, "plan")
+	repository.AddSubsystem(ctx, "news", "http://mock_backend:8150/api/moc/news") // Temporary
+	repository.AddSubsystem(ctx, "plan", "http://mock_backend:8150/api/moc/plan") // Temporary
 
 
 	if err := repository.fillTemplatesTable(ctx, os.Getenv("TEMPLATES_PATH")); err != nil {

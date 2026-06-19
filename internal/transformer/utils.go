@@ -1,11 +1,16 @@
 package transformer
 
 import (
+	logging "PrintServer/agent"
 	"PrintServer/internal/db"
 	"context"
+	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
 	"regexp"
 	"strings"
+	"time"
 )
 
 func getAlias(ctx context.Context, db_repo db.DBRepo, tag_name string) string {
@@ -65,4 +70,34 @@ func CompleteConnections(connections map[string][]string, requiredTags *map[stri
 		}
 
 	}
+}
+
+func restRequest (request_context context.Context, targetURL string, body any) (err error, externalData any) {
+	
+	ctx, cancel := context.WithTimeout(request_context, 3*time.Second)
+	defer cancel()
+	
+
+	req, err := http.NewRequestWithContext(ctx, "POST", targetURL, nil)
+	if err != nil {
+		logging.Agent.AddSimpleError("REST запрос", err.Error())
+		return 
+	}
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		logging.Agent.AddSimpleError("REST запрос", err.Error())
+		return
+	}
+	logging.Agent.AddSimpleInfo("REST запрос", fmt.Sprint(resp.StatusCode))
+	defer resp.Body.Close()
+	byte_data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		logging.Agent.AddSimpleError("REST запрос", err.Error())
+		return
+	}
+	err = json.Unmarshal(byte_data, &externalData)
+	if err != nil {
+		logging.Agent.AddSimpleError("REST запрос", err.Error())
+	}
+	return 
 }

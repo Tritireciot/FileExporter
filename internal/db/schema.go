@@ -22,6 +22,7 @@ var Columns = struct {
 	IsActive	string
 	RenderData 	string
 	IsSingle	string
+	RequestPath string
 }{
 	ID:          "id",
 	Name:        "name",
@@ -32,4 +33,5 @@ var Columns = struct {
 	IsActive:	 "is_active",
 	RenderData:	 "render_data",
 	IsSingle: 	 "is_single",
+	RequestPath: "request_path",
 }

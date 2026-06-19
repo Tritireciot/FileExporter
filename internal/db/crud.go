@@ -65,6 +65,31 @@ func (repository *DBRepository) GetAllElements(ctx context.Context, element DBMo
 	return &elements, nil
 }
 
+func (repository *DBRepository) GetRawElement(
+	ctx context.Context,
+	element DBModel,
+	column string,
+) error {
+	query, args, err := repository.psql.Select(element.Columns()...).From(element.GetTable()).Where(squirrel.Eq{fmt.Sprintf("%s.%s", element.GetTable(), column): element.GetValueByColumn(column)}).ToSql()
+	if err != nil {
+		logging.Agent.AddSimpleError("Получение элемента", "Не удалось сформировать sql запрос: "+ err.Error())
+		return err
+	}
+	err = repository.pool.
+		QueryRow(ctx, query, args...).
+		Scan(element.GetColumns()...)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			logging.Agent.AddSimpleError("Получение элемента", "Не найден: "+ err.Error())
+			return ErrElementNotFound
+		}
+		logging.Agent.AddSimpleError("Получение элемента", "Не удалось выполнить sql запрос: "+ err.Error())
+		return err
+	}
+
+	return nil
+}
+
 func (repository *DBRepository) GetElement(
 	ctx context.Context,
 	element DBModel,
@@ -73,10 +98,10 @@ func (repository *DBRepository) GetElement(
 
 	var field any
 
-	if column == Columns.Name {
-		field = element.GetName()
-	} else {
+	if column == Columns.ID {
 		field = element.GetID()
+	} else {
+		field = element.GetName()
 	}
 	query, args, err := repository.psql.Select(element.Columns()...).From(element.GetTable()).
 	LeftJoin(fmt.Sprintf("%s ON %s.%s = %s.%s", Tables.Subsystems, element.GetTable(), Columns.Subsystem, Tables.Subsystems, Columns.ID)).
@@ -188,9 +213,9 @@ func (repository *DBRepository) AddTemplate(ctx context.Context, template *Templ
 	return err
 }
 
-func (repository *DBRepository) AddSubsystem(ctx context.Context, subsystem_name string) error {
-	query, args, err := repository.psql.Insert(Tables.Subsystems).Columns(Columns.Subsystem).
-	Values(subsystem_name).Suffix(fmt.Sprintf("ON CONFLICT (%s) DO NOTHING;", Columns.ID)).ToSql()
+func (repository *DBRepository) AddSubsystem(ctx context.Context, subsystem_name string, subsystem_path string) error {
+	query, args, err := repository.psql.Insert(Tables.Subsystems).Columns(Columns.Subsystem, Columns.RequestPath).
+	Values(subsystem_name, subsystem_path).Suffix(fmt.Sprintf("ON CONFLICT (%s) DO NOTHING;", Columns.ID)).ToSql()
 	if err != nil {
 		logging.Agent.AddSimpleError("Добавление/обновление подсистемы", "Не удалось сформировать sql запрос: "+ err.Error())
 		return err
@@ -289,12 +314,14 @@ func (repository *DBRepository) createTemplatesTables(ctx context.Context) error
 func (repository *DBRepository) createSubsystemsTables(ctx context.Context) error {
 	query := fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s (
 		%s SERIAL PRIMARY KEY,
+		%s TEXT NOT NULL,
 		%s TEXT NOT NULL
 		);
 	`,
 		Tables.Subsystems,
 		Columns.ID,
 		Columns.Subsystem,
+		Columns.RequestPath,
 		
 	)
 	_, err := repository.pool.Exec(ctx, query)

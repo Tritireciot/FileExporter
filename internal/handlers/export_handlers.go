@@ -23,7 +23,7 @@ func (handler *ExportHandler) TransformTemplate(writer http.ResponseWriter, requ
 	}
 	defer request.Body.Close()
 	ctx := request.Context()
-	title, export_doc, err := handler.transformer.RenderTemplate(ctx, export_form.TemplateId, export_form.Data)
+	title, export_doc, err := handler.transformer.RenderTemplate(ctx, export_form.TemplateId, export_form.Data, export_form.Subsystem)
 	if err != nil {
 		unknownError(writer, err)
 		return

@@ -10,7 +10,7 @@ import (
 	"html/template"
 )
 type Transformer interface {
-	RenderTemplate(ctx context.Context, template_id int, raw_data any) (string, string, error)
+	RenderTemplate(ctx context.Context, template_id int, raw_data any, subsystem string) (string, string, error)
 }
 
 type TransformService struct {
@@ -77,20 +77,30 @@ func filter(subsystem string, raw_data *any, render_data map[string]bool) {
 	}
 }
 
-func (service *TransformService) RenderTemplate(ctx context.Context, template_id int, raw_data any) (string, string, error) {
+func (service *TransformService) RenderTemplate(ctx context.Context, template_id int, raw_data any, subsystem string) (string, string, error) {
 
-	template_ := &db.Template{ID: template_id}
-	err := service.db_repo.GetElement(ctx, template_, db.Columns.ID)
+	subsystem_ := &db.Subsystem{Subsystem: subsystem}
+	err := service.db_repo.GetRawElement(ctx, subsystem_, db.Columns.Subsystem)
 
 	if err != nil {
 		return "", "", err
 	}
 
-	filter(template_.Subsystem, &raw_data, template_.RenderData)
+	err, template_data := restRequest(ctx, subsystem_.RequestPath, raw_data)
+
+	template_ := &db.Template{ID: template_id}
+	err = service.db_repo.GetElement(ctx, template_, db.Columns.ID)
+	logging.Agent.AddSimpleInfo("Подготовка шаблона печати", fmt.Sprint(template_data))
+
+	if err != nil {
+		return "", "", err
+	}
+
+	filter(template_.Subsystem, &template_data, template_.RenderData)
 	logging.Agent.AddSimpleInfo("Подготовка шаблона печати", "Отфильтрованны данные")
 
 
-	byte_data, err := json.Marshal(raw_data)
+	byte_data, err := json.Marshal(template_data)
 	if err != nil {
 		logging.Agent.AddSimpleError("Подготовка шаблона на печать", "Не удалось прочитать тело запроса: " + err.Error())
 		return "", "", err
@@ -100,7 +110,6 @@ func (service *TransformService) RenderTemplate(ctx context.Context, template_id
 	repeatTags := map[string]string{}
 
 	formatted_template := service.reshaper.TransformTemplate(ctx, template_.Content, &requiredTags, &repeatTags, template_.RenderData)
-
 	form_template, err := template.New(template_.Name).Parse(formatted_template)
 
 	if err != nil {
