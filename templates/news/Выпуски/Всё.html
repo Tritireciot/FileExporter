@@ -1,10 +1,15 @@
 <!DOCTYPE html>
 		<html>
 		 <head>
-		  <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+		  <meta http-equiv="content-type" content="text/html;charset=utf-8" charset='utf-8'/>
 		  <title>#RunDown.Name#</title>
 		</head>
 		 <body style = "font-family:Arial;font-size:12pt;color:black;">
+		<style>
+		.story-content {
+			white-space: pre-line; /* Заставит браузер переносить строки по символу \n */
+		}
+		</style>
 		 <p style="text-align: right;">Выпуск #RunDown.Name#</p>
 		<hr />
 		<table style="width: 100%; margin-left: auto; margin-right: auto;">
@@ -66,7 +71,7 @@
 		</tr>
 		</tbody>
 		</table>
-		<p style="word-wrap:break-word;">#Story.Text#</p>
+		<p style="word-wrap:break-word;" class="story-content">#Story.Text#</p>
 		<table width="100%">
 		<tbody>
 		<#Repeat#Media#>

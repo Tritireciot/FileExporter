@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"strings"
 )
 type Transformer interface {
 	RenderTemplate(ctx context.Context, template_id int, raw_data any) (string, string, error)
@@ -35,6 +36,17 @@ func execute(template_ *template.Template, data map[string]any) (string, error) 
 
 }
 
+func framesToTime(frames int) string {
+	fps := 25
+	rest_frames := frames % fps
+	seconds := frames / fps
+	rest_seconds := seconds % 60
+	minutes := seconds / 60
+	rest_minutes := minutes % 60
+	hours := minutes / 60
+	return fmt.Sprintf("%02d:%02d:%02d:%02d", hours, rest_minutes, rest_seconds, rest_frames)
+}
+
 func filter(subsystem string, raw_data *any, render_data map[string]bool) {
 	if subsystem == "news" && raw_data != nil {
 		if rundown_data, ok := (*raw_data).(map[string]any); ok {
@@ -42,6 +54,13 @@ func filter(subsystem string, raw_data *any, render_data map[string]bool) {
 			rundown, ok := rundown_data["rundown"].(map[string]any)
 			if !ok {
 				return
+			}
+
+			for key := range rundown {
+				logging.Agent.AddSimpleInfo("Info", key)
+				if strings.Contains(key, "durat") {
+					rundown[key] = framesToTime(int(rundown[key].(float64)))
+				}
 			}
 
 			content, ok := rundown["content"].([]any)
@@ -57,6 +76,8 @@ func filter(subsystem string, raw_data *any, render_data map[string]bool) {
 					continue 
 				}
 
+
+
 				sndPrompt, _ := object["snd_prompt"].(float64)
 				skipFlag, _ := object["skip_flag"].(float64)
 
@@ -68,7 +89,13 @@ func filter(subsystem string, raw_data *any, render_data map[string]bool) {
 					fmt.Println("skip_flag", render_data["skip_flag"], skipFlag)
 					continue
 				}
-				
+				story := object["story"].(map[string]any)
+				for key := range story {
+					if strings.Contains(key, "durat") {
+						story[key] = framesToTime(int(story[key].(float64)))
+					}
+				}
+				object["story"] = story
 				filtered_content = append(filtered_content, object)
 			}
 
