@@ -1,10 +1,11 @@
 package handlers
 
 import (
-	"PrintServer/internal/db"
 	"PrintServer/internal/transformer"
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"net/url"
 )
 
 type ExportHandler struct {
@@ -22,12 +23,43 @@ func (handler *ExportHandler) TransformTemplate(writer http.ResponseWriter, requ
 		return
 	}
 	defer request.Body.Close()
+
+	var contentType string
+	var fileBytes []byte
+	var err error
+
 	ctx := request.Context()
-	title, export_doc, err := handler.transformer.RenderTemplate(ctx, export_form.TemplateId, export_form.Data)
+	fileName, export_doc, err := handler.transformer.RenderTemplate(ctx, export_form.TemplateId, export_form.Data)
 	if err != nil {
 		unknownError(writer, err)
 		return
 	}
-	writer.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(writer).Encode(db.Template{ID: export_form.TemplateId, Name: title, Content: export_doc, Subsystem: export_form.Subsystem})
+
+	switch export_form.Format {
+		case "pdf":
+			contentType = "application/pdf"
+			fileName += ".pdf"
+			fileBytes, err =  handler.transformer.PDFFromTemplate(export_doc)
+		default:
+			contentType = "text/html"
+			fileName += ".html"
+			fileBytes = []byte(export_doc)
+	}
+
+	if err != nil {
+		unknownError(writer, err)
+		return
+	}
+
+	encodedFileName := url.QueryEscape(fileName)
+
+	writer.Header().Set("Content-Type", contentType)
+	writer.Header().Set("Content-Length", fmt.Sprintf("%d", len(fileBytes)))
+
+	writer.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename*=UTF-8''%s", encodedFileName))
+
+	writer.Header().Set("X-File-Name", encodedFileName)
+	writer.Header().Set("Access-Control-Expose-Headers", "X-File-Name, Content-Disposition")
+
+	writer.Write(fileBytes)
 }

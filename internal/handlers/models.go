@@ -3,7 +3,8 @@ package handlers
 type ExportModel struct {
 	TemplateId int            `json:"template_id"`
 	Data       any 			  `json:"data"`
-	Subsystem string 		  `json:"subsystem"`
+	Subsystem  string 		  `json:"subsystem"`
+	Format     string		  `json:"format"`
 }
 
 

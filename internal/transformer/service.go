@@ -8,21 +8,65 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"os"
+	"path/filepath"
 	"strings"
 )
 type Transformer interface {
 	RenderTemplate(ctx context.Context, template_id int, raw_data any) (string, string, error)
+	PDFFromTemplate(htmlContent string) ([]byte, error)
 }
 
 type TransformService struct {
 	db_repo  db.DBRepo
 	reshaper Reshaper
+	pdfExec  string
+}
+
+func setupPDFexecutor() (string, error) {
+	tempDir := filepath.Join(os.TempDir(), "go-weasyprint-engine")
+	var exePath string
+
+	if _, err := os.Stat(tempDir); os.IsNotExist(err) {
+		if err := unzipBytes(weasyprintZipBytes, tempDir); err != nil {
+			return "", fmt.Errorf("ошибка распаковки движка: %v", err)
+		}
+	}
+
+	err := filepath.Walk(tempDir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() && info.Name() == "weasyprint" {
+			exePath = path
+			return filepath.SkipDir
+		}
+		return nil
+	})
+	if err != nil {
+		return "", fmt.Errorf("ошибка поиска бинарника: %v", err)
+	}
+	if exePath == "" {
+		return exePath, fmt.Errorf("бинарник weasyprint не найден")
+	}
+
+	if err := os.Chmod(exePath, 0755); err != nil {
+		return "", fmt.Errorf("ошибка прав chmod: %v", err)
+	}
+
+	return exePath, nil
 }
 
 func NewTransformService(db_repo db.DBRepo) *TransformService {
+	pdfexec, err := setupPDFexecutor()
+	if err != nil {
+		logging.Agent.AddSimpleError("Создание TransformService", "Не удалось создать " + err.Error())
+		return nil
+	}
 	return &TransformService{
 		db_repo:  db_repo,
 		reshaper: *NewReshaper(db_repo),
+		pdfExec: pdfexec,
 	}
 }
 

@@ -18,7 +18,12 @@ WORKDIR /app
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
+    fontconfig \
+    libfontconfig1 \
+    fonts-liberation \
     && rm -rf /var/lib/apt/lists/*
+
+ENV FONTCONFIG_PATH=/etc/fonts
 
 COPY --from=builder /app/app .
 
