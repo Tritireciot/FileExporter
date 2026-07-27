@@ -20,7 +20,7 @@ func (repository *DBRepository) GetAllElements(ctx context.Context, element DBMo
 	subsystem_id, err := repository.GetSubsystemId(ctx, subsystem)
 	if subsystem_id == 0 {
 		logging.Agent.AddSimpleError("Получение элементов", "Несуществующая подсистема: " + subsystem + err.Error())
-		return nil, err
+		return &[]ShortElement{}, err
 	}
 	var sqr_query squirrel.SelectBuilder
 	if _, ok := element.(*Template); ok {
@@ -57,7 +57,7 @@ func (repository *DBRepository) GetAllElements(ctx context.Context, element DBMo
 		}
 		if err != nil {
 			logging.Agent.AddSimpleError("Получение элементов", "Не удалось получить данные: "+ err.Error())
-			return nil, err
+			return  &[]ShortElement{}, err
 		}
 		elements = append(elements, short_element)
 	}

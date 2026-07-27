@@ -19,7 +19,7 @@ func (handler *TagsHandler) GetAllTags(writer http.ResponseWriter, request *http
 	subsystem_name := request.URL.Query().Get("subsystem")
 	ctx := request.Context()
 	tags_list, err := handler.repo.GetAllElements(ctx, &db.Tag{}, subsystem_name, true)
-	if err != nil {
+	if err != nil && tags_list == nil {
 		http.Error(writer, err.Error(), http.StatusBadRequest)
 		return
 	}

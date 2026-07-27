@@ -21,7 +21,7 @@ func (handler *TemplateHandler) GetAllTemplates(writer http.ResponseWriter, requ
 	active, _ := validateFlag(request, "active")
 	ctx := request.Context()
 	template_list, err := handler.repo.GetAllElements(ctx, &db.Template{}, subsystem_name, active)
-	if err != nil {
+	if err != nil && template_list == nil {
 		unknownError(writer, err)
 		return
 	}
