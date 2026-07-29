@@ -15,6 +15,7 @@ import (
 type Transformer interface {
 	RenderTemplate(ctx context.Context, template_id int, raw_data any) (string, string, error)
 	PDFFromTemplate(htmlContent string) ([]byte, error)
+	DOCXFromTemplate(htmlContent string) ([]byte, error)
 }
 
 type TransformService struct {

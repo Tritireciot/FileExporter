@@ -6,7 +6,10 @@ require (
 	github.com/Masterminds/squirrel v1.5.4
 	github.com/gorilla/mux v1.8.1
 	github.com/jackc/pgx/v4 v4.18.3
+	github.com/mmonterroca/docxgo/v2 v2.5.1
+	github.com/tdewolff/parse/v2 v2.8.13
 	github.com/tidwall/gjson v1.18.0
+	golang.org/x/net v0.21.0
 )
 
 require (
@@ -32,3 +35,5 @@ require (
 	golang.org/x/crypto v0.20.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 )
+
+replace github.com/mmonterroca/docxgo/v2 => ./docxgo

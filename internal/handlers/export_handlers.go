@@ -40,6 +40,10 @@ func (handler *ExportHandler) TransformTemplate(writer http.ResponseWriter, requ
 			contentType = "application/pdf"
 			fileName += ".pdf"
 			fileBytes, err =  handler.transformer.PDFFromTemplate(export_doc)
+		case "docx":
+			contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+			fileName += ".docx"
+			fileBytes, err = handler.transformer.DOCXFromTemplate(export_doc)
 		default:
 			contentType = "text/html"
 			fileName += ".html"

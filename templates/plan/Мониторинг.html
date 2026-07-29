@@ -8,7 +8,6 @@
 
         <table class="dynamic-table">
             <thead>
-                <!-- 1. ШАПКА ТАБЛИЦЫ (6 колонок) -->
                 <tr>
                     <th class="th">Время</th>
                     <th class="th">Название</th>
@@ -22,34 +21,34 @@
                 <#Repeat#Monitor#>          
                 <tr>
                     <td class="td-column fill-height">
-                        <div class="cell-item">#Monitor.StartTime# - #Monitor.EndTime#</div>
+                        #Monitor.StartTime# - #Monitor.EndTime#
                     </td>
 
                     <td class="td-column fill-height">
-                        <div class="cell-item">#Monitor.Name#</div>
+                        #Monitor.Name#
                     </td>
 
-                    <td class="td-column">
+                    <td class="td-column list-column">
                         <#Repeat#Infopovods#>
-                            <div class="cell-item">#Infopovods.Title#</div>
+                            #Infopovods.Title#<hr class="line"/>
                         </#Repeat#Infopovods#>
                     </td>
 
-                    <td class="td-column">
+                    <td class="td-column list-column">
                         <#Repeat#FilmCrews#>
-                            <div class="cell-item">#FilmCrews.Name# - #FilmCrews.Position#</div>
+                            #FilmCrews.Name# - #FilmCrews.Position#<hr class="line"/>
                         </#Repeat#FilmCrews#>
                     </td>
 
-                    <td class="td-column">
+                    <td class="td-column list-column">
                         <#Repeat#Equipment#>
-                            <div class="cell-item">#Equipment.Name# #Equipment.Type#</div>
+                            #Equipment.Name# #Equipment.Type#<hr class="line"/>
                         </#Repeat#Equipment#>
                     </td>
 
-                    <td class="td-column">
+                    <td class="td-column list-column">
                         <#Repeat#Transport#>
-                            <div class="cell-item">#Transport.Name# #Transport.Type#</div>
+                            #Transport.Name# #Transport.Type#<hr class="line"/>
                         </#Repeat#Transport#>
                     </td>
                 </tr>
@@ -74,21 +73,29 @@
   border: 2px solid #000;
 }
 
+/* Базовые ячейки с текстом (Время, Название) */
 .td-column {
   border: 1px solid #ccc;
   background: #fff;
-  vertical-align: top; /* Чтобы содержимое колонок выравнивалось по верхнему краю */
-  padding: 0;          /* Сбрасываем внутренние отступы ячейки, так как они есть у cell-item */
+  vertical-align: top;
+  padding: 10px; 
 }
 
-/* Стили для ячеек внутри колонок-списков */
-.cell-item {
-  padding: 10px;
-  border-bottom: 1px solid #eee;
-  box-sizing: border-box;
+/* Ячейки со списками элементов */
+.list-column {
+  padding: 10px 10px 0 10px; /* Нижний отступ убираем, так как его даст последняя линия */
 }
-.cell-item:last-child {
-  border-bottom: none;
+
+/* Тонкая линия-разделитель между текстовыми строками */
+.line {
+  border: none;
+  border-top: 1px solid #eee;
+  margin: 10px -10px 10px -10px; /* Растягиваем линию ровно до краев ячейки */
+}
+
+/* Скрываем самую последнюю линию в ячейке, чтобы сработал аналог last-child */
+.line:last-child {
+  display: none;
 }
 
 .fill-height {
