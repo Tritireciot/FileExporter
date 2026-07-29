@@ -151,7 +151,7 @@ paths:
             type: integer
       responses:
         '200':
-          description: Тэг удален
+          description: c Тэг удален
           content:
             application/json:
               schema:
@@ -163,7 +163,7 @@ paths:
       tags:
         - export
       summary: Вывод на печать шаблона
-      description: Вывод на печать шаблона
+      description: Вывод на печать шаблона. Поддерживаемые форматы PDF, HTML. По умолчанию в виде HTML.
       requestBody: 
         content: 
           application/json:
@@ -279,6 +279,10 @@ components:
           type: boolean
     ExportTemplate:
       type: object
+      required:
+        - name
+        - data
+        - susbsystem
       properties: 
         template_id:
           type: integer
@@ -286,6 +290,10 @@ components:
           type: object
         susbsystem:
           type: string
+        format:
+          type: string
+          description: "Опционально"
+          
       
 
     

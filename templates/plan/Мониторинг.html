@@ -4,64 +4,66 @@
 		<meta http-equiv="content-type" content="text/html;charset=utf-8"/>
 	</head>
     
-    <body style = "font-family:Arial;font-size:12pt;color:black;">
-        <div class="dynamic-table">
-  <!-- 1. ШАПКА ТАБЛИЦЫ (6 колонок) -->
-  <div class="th">Время</div>
-  <div class="th">Название</div>
-  <div class="th">Инфоповоды</div>
-  <div class="th">Состав</div>
-  <div class="th">Оборудование</div>
-  <div class="th">Транспорт</div>
+    <body style="font-family:Arial;font-size:12pt;color:black;">
 
-  <#Repeat#Monitor#>          
-    <div class="td-column fill-height">
-        <div class="cell-item">#Monitor.StartTime# - #Monitor.EndTime#</div>
-    </div>
+        <table class="dynamic-table">
+            <thead>
+                <!-- 1. ШАПКА ТАБЛИЦЫ (6 колонок) -->
+                <tr>
+                    <th class="th">Время</th>
+                    <th class="th">Название</th>
+                    <th class="th">Инфоповоды</th>
+                    <th class="th">Состав</th>
+                    <th class="th">Оборудование</th>
+                    <th class="th">Транспорт</th>
+                </tr>
+            </thead>
+            <tbody>
+                <#Repeat#Monitor#>          
+                <tr>
+                    <td class="td-column fill-height">
+                        <div class="cell-item">#Monitor.StartTime# - #Monitor.EndTime#</div>
+                    </td>
 
-    <div class="td-column fill-height">
-        <div class="cell-item">#Monitor.Name#</div>
-    </div>
+                    <td class="td-column fill-height">
+                        <div class="cell-item">#Monitor.Name#</div>
+                    </td>
 
+                    <td class="td-column">
+                        <#Repeat#Infopovods#>
+                            <div class="cell-item">#Infopovods.Title#</div>
+                        </#Repeat#Infopovods#>
+                    </td>
 
-    <div class="td-column">
-        <#Repeat#Infopovods#>
-            <div class="cell-item">#Infopovods.Title#</div>
-        </#Repeat#Infopovods#>
-    </div>
+                    <td class="td-column">
+                        <#Repeat#FilmCrews#>
+                            <div class="cell-item">#FilmCrews.Name# - #FilmCrews.Position#</div>
+                        </#Repeat#FilmCrews#>
+                    </td>
 
+                    <td class="td-column">
+                        <#Repeat#Equipment#>
+                            <div class="cell-item">#Equipment.Name# #Equipment.Type#</div>
+                        </#Repeat#Equipment#>
+                    </td>
 
-    <div class="td-column">
-        <#Repeat#FilmCrews#>
-            <div class="cell-item">#FilmCrews.Name# - #FilmCrews.Position#</div>
-        </#Repeat#FilmCrews#>
-    </div>
-
-
-    <div class="td-column">
-        <#Repeat#Equipment#>
-            <div class="cell-item">#Equipment.Name# #Equipment.Type#</div>
-        </#Repeat#Equipment#>
-    </div>
-
-
-    <div class="td-column">
-        <#Repeat#Transport#>
-            <div class="cell-item">#Transport.Name# #Transport.Type#</div>
-        </#Repeat#Transport#>
-    </div>
-  </#Repeat#Monitor#>   
-</div>
+                    <td class="td-column">
+                        <#Repeat#Transport#>
+                            <div class="cell-item">#Transport.Name# #Transport.Type#</div>
+                        </#Repeat#Transport#>
+                    </td>
+                </tr>
+                </#Repeat#Monitor#>   
+            </tbody>
+        </table>
 
 <style>
-
 .dynamic-table {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  width: 100%;
+  border-collapse: collapse;
   border: 1px solid #ccc;
   font-family: sans-serif;
 }
-
 
 .th {
   background: #333;
@@ -72,22 +74,15 @@
   border: 2px solid #000;
 }
 
-
 .td-column {
-  display: flex;
-  flex-direction: column;
   border: 1px solid #ccc;
   background: #fff;
-}
-.td-column:last-child {
-  border-right: none; 
+  vertical-align: top; /* Чтобы содержимое колонок выравнивалось по верхнему краю */
+  padding: 0;          /* Сбрасываем внутренние отступы ячейки, так как они есть у cell-item */
 }
 
-
+/* Стили для ячеек внутри колонок-списков */
 .cell-item {
-  flex: 1; 
-  display: flex;
-  align-items: center; 
   padding: 10px;
   border-bottom: 1px solid #eee;
   box-sizing: border-box;
@@ -95,7 +90,6 @@
 .cell-item:last-child {
   border-bottom: none;
 }
-
 
 .fill-height {
   background: #f9f9f9;
