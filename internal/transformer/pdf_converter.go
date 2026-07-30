@@ -3,7 +3,6 @@ package transformer
 import (
 	"archive/zip"
 	"bytes"
-	_ "embed"
 	"fmt"
 	"io"
 	"os"
@@ -11,11 +10,11 @@ import (
 	"path/filepath"
 )
 
-//go:embed standalone-linux-64.zip
-var weasyprintZipBytes []byte
-
 func (service *TransformService) PDFFromTemplate(htmlContent string) ([]byte, error) {
 	cmd := exec.Command(service.pdfExec, "-", "-")
+
+	toolDir := filepath.Dir(service.pdfExec)
+	cmd.Env = append(os.Environ(), "LD_LIBRARY_PATH="+toolDir)
 
 	stdoutPipe, err := cmd.StdoutPipe()
 	if err != nil {

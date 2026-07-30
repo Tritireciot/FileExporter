@@ -5,13 +5,19 @@ import (
 	"PrintServer/internal/db"
 	"bytes"
 	"context"
+	"embed"
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
 )
+
+//go:embed all:weasyprint-linux
+var weasyPrint embed.FS
+
 type Transformer interface {
 	RenderTemplate(ctx context.Context, template_id int, raw_data any) (string, string, error)
 	PDFFromTemplate(htmlContent string) ([]byte, error)
@@ -25,37 +31,38 @@ type TransformService struct {
 }
 
 func setupPDFexecutor() (string, error) {
-	tempDir := filepath.Join(os.TempDir(), "go-weasyprint-engine")
-	var exePath string
+	targetDir := filepath.Join(os.TempDir(), "weasyprint-linux")
+	executablePath := filepath.Join(targetDir, "weasyprint")
 
-	if _, err := os.Stat(tempDir); os.IsNotExist(err) {
-		if err := unzipBytes(weasyprintZipBytes, tempDir); err != nil {
-			return "", fmt.Errorf("ошибка распаковки движка: %v", err)
-		}
+	if _, err := os.Stat(executablePath); err == nil {
+		return executablePath, nil
 	}
 
-	err := filepath.Walk(tempDir, func(path string, info os.FileInfo, err error) error {
+	err := fs.WalkDir(weasyPrint, "weasyprint-linux", func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
-		if !info.IsDir() && info.Name() == "weasyprint" {
-			exePath = path
-			return filepath.SkipDir
+
+		relPath, _ := filepath.Rel("weasyprint-linux", path)
+		outPath := filepath.Join(targetDir, relPath)
+
+		if d.IsDir() {
+			return os.MkdirAll(outPath, 0755)
 		}
-		return nil
+
+		data, err := weasyPrint.ReadFile(path)
+		if err != nil {
+			return err
+		}
+
+		return os.WriteFile(outPath, data, 0755)
 	})
+
 	if err != nil {
-		return "", fmt.Errorf("ошибка поиска бинарника: %v", err)
-	}
-	if exePath == "" {
-		return exePath, fmt.Errorf("бинарник weasyprint не найден")
+		return "", err
 	}
 
-	if err := os.Chmod(exePath, 0755); err != nil {
-		return "", fmt.Errorf("ошибка прав chmod: %v", err)
-	}
-
-	return exePath, nil
+	return executablePath, nil
 }
 
 func NewTransformService(db_repo db.DBRepo) *TransformService {
