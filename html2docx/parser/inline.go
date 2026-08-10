@@ -1,9 +1,9 @@
 package parser
 
 import (
+	"PrintServer/html2docx/converters"
 	"PrintServer/html2docx/css"
 	"PrintServer/html2docx/html"
-	"PrintServer/html2docx/utils"
 	"strings"
 
 	docx "github.com/mmonterroca/docxgo/v2"
@@ -20,7 +20,7 @@ func (p *DocumentParser) parseInlineElements(paragraph domain.Paragraph, node *n
 
 		styleModel.ApplyToRun(&run)
 
-		finalText := styleModel.TransformText(node.Data)
+		finalText := styleModel.TransformText(strings.TrimSpace(node.Data))
 
 		if state.Link != "" {
 			linkField := docx.NewHyperlinkField(state.Link, finalText)
@@ -32,19 +32,24 @@ func (p *DocumentParser) parseInlineElements(paragraph domain.Paragraph, node *n
 	}
 
 	if node.Type == nethtml.ElementNode {
-		childRawStyles := utils.CopyMap(currentRawStyles)
+		childRawStyles := currentRawStyles.Copy()
 
-		p.templateStyles.CombineStyles(node, childRawStyles)
+		p.templateStyles.CombineStyles(node, &childRawStyles)
 
 		switch html.Tag(node.Data) {
 		case html.LinkTag:
 			if href, ok := html.GetAttribute(node, html.HREFAttr); ok {
 				state.Link = href
-				childRawStyles["color"] = "blue"
 			}
 		case html.BrTag:
 			run, _ := paragraph.AddRun()
 			run.AddBreak(domain.BreakTypeLine)
+		case html.ImgTag:
+			if source, ok := html.GetAttribute(node, html.SourceAttr); ok {
+				if processedImage, err := converters.ConvertImage(source); err == nil {
+					paragraph.AddImageFromBytesWithSize(processedImage.Data, processedImage.Format, processedImage.Size)
+				}
+			}
 		}
 
 		for child := node.FirstChild; child != nil; child = child.NextSibling {

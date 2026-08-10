@@ -2,6 +2,65 @@
 <html>
 	<head>
 		<meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+        <style>
+            .dynamic-table {
+                width: 100%;
+                border-collapse: collapse;
+                border: 1px solid #ccc;
+                font-family: sans-serif;
+            }
+
+            .th {
+                background: #333;
+                color: white;
+                padding: 12px 10px;
+                font-weight: bold;
+                text-align: center;
+                border: 2px solid #000;
+            }
+
+            .td-column {
+                border: 1px solid #ccc;
+                background: #fff;
+                vertical-align: top;
+                padding: 10px; 
+            }
+
+            .list-column {
+                padding: 0 !important; 
+                background: #fff;
+            }
+
+            .list-item {
+                display: block;
+                padding: 10px;
+                border-bottom: 1px solid #eee; 
+                box-sizing: border-box;
+            }
+
+            .list-item:last-child {
+                border-bottom: none;
+            }
+
+            .fill-height {
+                background: #f9f9f9;
+            }
+
+            .sub-table {
+                width: 100%;
+                border-collapse: collapse;
+                border: none;
+            }
+
+            .sub-td {
+                padding: 10px;
+                border-bottom: 1px solid #eee;
+            }
+
+            .sub-table tr:last-child .sub-td {
+                border-bottom: none;
+            }
+        </style>
 	</head>
     
     <body style="font-family:Arial;font-size:12pt;color:black;">
@@ -28,79 +87,49 @@
                         #Monitor.Name#
                     </td>
 
+                    <!-- Вместо <hr> мы оборачиваем каждый элемент цикла в <div class="list-item"> -->
                     <td class="td-column list-column">
-                        <#Repeat#Infopovods#>
-                            #Infopovods.Title#<hr class="line"/>
-                        </#Repeat#Infopovods#>
+                        <table class="sub-table">
+                            <#Repeat#Infopovods#>
+                                <tr>
+                                    <td class="sub-td">#Infopovods.Title#</td>
+                                </tr>
+                            </#Repeat#Infopovods#>
+                        </table>
                     </td>
 
                     <td class="td-column list-column">
-                        <#Repeat#FilmCrews#>
-                            #FilmCrews.Name# - #FilmCrews.Position#<hr class="line"/>
-                        </#Repeat#FilmCrews#>
+                        <table class="sub-table">
+                            <#Repeat#FilmCrews#>
+                                <tr>
+                                    <td class="sub-td">#FilmCrews.Name# - #FilmCrews.Position#</td>
+                                </tr>
+                            </#Repeat#FilmCrews#>
+                        </table>
                     </td>
 
                     <td class="td-column list-column">
-                        <#Repeat#Equipment#>
-                            #Equipment.Name# #Equipment.Type#<hr class="line"/>
-                        </#Repeat#Equipment#>
+                        <table class="sub-table">
+                            <#Repeat#Equipment#>
+                                <tr>
+                                    <td class="sub-td">#Equipment.Name# #Equipment.Type#</td>
+                                </tr>
+                            </#Repeat#Equipment#>
+                        </table>
                     </td>
 
                     <td class="td-column list-column">
-                        <#Repeat#Transport#>
-                            #Transport.Name# #Transport.Type#<hr class="line"/>
-                        </#Repeat#Transport#>
+                        <table class="sub-table">
+                            <#Repeat#Transport#>
+                                <tr>
+                                    <td class="sub-td">#Transport.Name# #Transport.Type#</td>
+                                </tr>
+                            </#Repeat#Transport#>
+                        </table>
                     </td>
                 </tr>
                 </#Repeat#Monitor#>   
             </tbody>
         </table>
-
-<style>
-.dynamic-table {
-  width: 100%;
-  border-collapse: collapse;
-  border: 1px solid #ccc;
-  font-family: sans-serif;
-}
-
-.th {
-  background: #333;
-  color: white;
-  padding: 12px 10px;
-  font-weight: bold;
-  text-align: center;
-  border: 2px solid #000;
-}
-
-/* Базовые ячейки с текстом (Время, Название) */
-.td-column {
-  border: 1px solid #ccc;
-  background: #fff;
-  vertical-align: top;
-  padding: 10px; 
-}
-
-/* Ячейки со списками элементов */
-.list-column {
-  padding: 10px 10px 0 10px; /* Нижний отступ убираем, так как его даст последняя линия */
-}
-
-/* Тонкая линия-разделитель между текстовыми строками */
-.line {
-  border: none;
-  border-top: 1px solid #eee;
-  margin: 10px -10px 10px -10px; /* Растягиваем линию ровно до краев ячейки */
-}
-
-/* Скрываем самую последнюю линию в ячейке, чтобы сработал аналог last-child */
-.line:last-child {
-  display: none;
-}
-
-.fill-height {
-  background: #f9f9f9;
-}
-</style>
     </body>
 </html>

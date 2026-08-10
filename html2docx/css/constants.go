@@ -70,6 +70,7 @@ const (
 	MarginRight         StyleProperty = "margin-right"
 	MarginLeft          StyleProperty = "margin-left"
 	Size                StyleProperty = "size"
+	ListStyleType       StyleProperty = "list-style-type"
 )
 
 // Styles Values
@@ -129,6 +130,9 @@ const (
 	CenterAlign  StyleValue = "center"
 	TopAlign     StyleValue = "top"
 	BottomAlign  StyleValue = "bottom"
+
+	SuperAlign StyleValue = "super"
+	SubAlign   StyleValue = "sub"
 )
 
 // Text Transform
@@ -137,4 +141,17 @@ const (
 	UpperCase  StyleValue = "uppercase"
 	LowerCase  StyleValue = "lowercase"
 	Capitalize StyleValue = "capitalize"
+)
+
+// List Style Type
+
+const (
+	ListStyleDisc               StyleValue = "disc"
+	ListStyleCircle             StyleValue = "circle"
+	ListStyleSquare             StyleValue = "square"
+	ListStyleDecimal            StyleValue = "decimal"
+	ListStyleDecimalLeadingZero StyleValue = "decimal-leading-zero"
+	ListStyleUpperRoman         StyleValue = "upper-roman"
+	ListStyleLowerAlpha         StyleValue = "lower-alpha"
+	ListStyleUpperAlpha         StyleValue = "upper-alpha"
 )

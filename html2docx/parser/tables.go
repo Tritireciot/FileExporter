@@ -3,7 +3,6 @@ package parser
 import (
 	"PrintServer/html2docx/css"
 	"PrintServer/html2docx/html"
-	"PrintServer/html2docx/utils"
 	"fmt"
 	"strconv"
 
@@ -14,8 +13,8 @@ import (
 func (p *DocumentParser) parseTableTags(node *nethtml.Node, virtualTable *[][]CellData, row *int, col *int, rawStyles css.StyleMap) {
 	tagName := html.Tag(node.Data)
 
-	currentRawStyle := utils.CopyMap(rawStyles)
-	p.templateStyles.CombineStyles(node, currentRawStyle)
+	currentRawStyle := rawStyles.Copy()
+	p.templateStyles.CombineStyles(node, &currentRawStyle)
 
 	if tagName.IsTable() {
 		html.IterateOverChildren(node, func(child *nethtml.Node) {
@@ -54,7 +53,17 @@ func (p *DocumentParser) parseTableTags(node *nethtml.Node, virtualTable *[][]Ce
 				cell := previous_row[*col]
 				if cell.Col == *col {
 					for cell.Merge[0] > merge_row {
-						current_row = append(current_row, CellData{Row: *row, Col: *col, Merge: []int{cell.Merge[0] - 1, cell.Merge[1]}, Skip: true, CellStyle: cell.CellStyle, TextStyle: cell.TextStyle})
+						current_row = append(
+							current_row,
+							CellData{
+								Row:       *row,
+								Col:       *col,
+								Merge:     []int{cell.Merge[0] - 1, cell.Merge[1]},
+								Skip:      true,
+								CellStyle: cell.CellStyle,
+								TextStyle: cell.TextStyle,
+							},
+						)
 						*col += 1
 						if len((*virtualTable)[*row-1]) == *col {
 							break
@@ -65,15 +74,10 @@ func (p *DocumentParser) parseTableTags(node *nethtml.Node, virtualTable *[][]Ce
 			}
 		}
 
-		textStyle := utils.CopyMap(currentRawStyle)
+		textStyle := currentRawStyle.Copy()
 		style := BuildStyleModel(currentRawStyle)
 
-		var cellText string
-		if node.FirstChild != nil && node.FirstChild.Type == nethtml.TextNode {
-			cellText = node.FirstChild.Data
-		}
-
-		current_row = append(current_row, CellData{Row: *row, Col: *col, Data: cellText, CellStyle: style, TextStyle: textStyle})
+		current_row = append(current_row, CellData{Row: *row, Col: *col, Data: node.FirstChild, CellStyle: style, TextStyle: textStyle})
 
 		if rowspan, ok := html.GetAttribute(node, html.RowSpanAttr); ok {
 			rowspan_int, _ := strconv.Atoi(rowspan)
@@ -93,18 +97,19 @@ func (p *DocumentParser) parseTableTags(node *nethtml.Node, virtualTable *[][]Ce
 	}
 }
 
-func (p *DocumentParser) handleTable(node *nethtml.Node, rawStyles css.StyleMap) {
+func (p *DocumentParser) handleTable(node *nethtml.Node, rawStyles css.StyleMap, source Source) {
 	var virtualTable [][]CellData
 	row, col := 0, 0
+	currentRawStyle := rawStyles.Copy()
+	p.templateStyles.CombineStyles(node, &currentRawStyle)
 	html.IterateOverChildren(node, func(child *nethtml.Node) {
-		p.parseTableTags(child, &virtualTable, &row, &col, rawStyles)
+		p.parseTableTags(child, &virtualTable, &row, &col, currentRawStyle)
 	})
-	table, err := p.docs.AddTable(row, col)
+	table, err := source.AddTable(row, col)
 	if err != nil || table == nil {
 		fmt.Printf("Ошибка создания таблицы: %v, размеры: %d x %d\n", err, row, col)
 		return
 	}
-	table.SetStyle(domain.TableStyleNormal)
 	table.SetWidth(domain.TableWidth{Type: domain.WidthPct, Value: 50 * 100})
 
 	for i, table_row := range virtualTable {
@@ -114,15 +119,21 @@ func (p *DocumentParser) handleTable(node *nethtml.Node, rawStyles css.StyleMap)
 			cell.CellStyle.ApplyToCell(&docs_cell)
 			docs_cell.Merge(cell.Merge[1], cell.Merge[0])
 
-			paragraph, _ := docs_cell.AddParagraph()
-			cell.CellStyle.ApplyToParagraph(&paragraph)
-
-			p.parseInlineElements(
-				paragraph,
-				&nethtml.Node{Type: nethtml.TextNode, Data: cell.Data},
-				TagStyleState{},
-				cell.TextStyle,
+			html.IterateOverSiblings(
+				cell.Data, func(cell_subnode *nethtml.Node) {
+					p.parseNode(cell_subnode, cell.TextStyle, docs_cell)
+				},
 			)
+
+			//paragraph, _ := docs_cell.AddParagraph()
+			//cell.CellStyle.ApplyToParagraph(&paragraph)
+
+			//p.parseInlineElements(
+			//	paragraph,
+			//	&nethtml.Node{Type: nethtml.TextNode, Data: cell.Data},
+			//	TagStyleState{},
+			//	cell.TextStyle,
+			//)
 		}
 	}
 }

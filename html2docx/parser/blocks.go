@@ -1,23 +1,23 @@
 package parser
 
 import (
+	"PrintServer/html2docx/converters"
 	"PrintServer/html2docx/css"
 	"PrintServer/html2docx/html"
-	"encoding/base64"
-	"strings"
 
 	"github.com/mmonterroca/docxgo/v2/domain"
 	nethtml "golang.org/x/net/html"
 )
 
-func (p *DocumentParser) handleDefaultBlock(node *nethtml.Node, tagName html.Tag, state TagStyleState, tagStyle css.StyleMap) {
-	paragraph, _ := p.docs.AddParagraph()
+func (p *DocumentParser) handleDefaultBlock(node *nethtml.Node, tagName html.Tag, state TagStyleState, tagStyle css.StyleMap, source_doc Source) {
+	paragraph, _ := source_doc.AddParagraph()
 
 	switch tagName {
 	case html.LinkTag:
 		if href, ok := html.GetAttribute(node, html.HREFAttr); ok {
 			state.Link = href
-			tagStyle["color"] = "blue"
+			tagStyle.Order = append(tagStyle.Order, css.Color)
+			tagStyle.Styles[css.Color] = css.CssBlue
 		}
 	case html.DDTag:
 		state.TextPrefix = "        "
@@ -32,9 +32,8 @@ func (p *DocumentParser) handleDefaultBlock(node *nethtml.Node, tagName html.Tag
 		return
 	case html.ImgTag:
 		if source, ok := html.GetAttribute(node, html.SourceAttr); ok {
-			if strings.HasPrefix(source, "data:image/png;base64,") {
-				imgBytes, _ := base64.StdEncoding.DecodeString(strings.TrimPrefix(source, "data:image/png;base64,"))
-				paragraph.AddImageFromBytes(imgBytes, domain.ImageFormatPNG)
+			if processedImage, err := converters.ConvertImage(source); err == nil {
+				paragraph.AddImageFromBytesWithSize(processedImage.Data, processedImage.Format, processedImage.Size)
 			}
 		}
 		return

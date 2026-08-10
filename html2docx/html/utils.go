@@ -39,6 +39,13 @@ func IterateOverChildren(parentNode *nethtml.Node, iterateFunc func(node *nethtm
 	}
 }
 
+func IterateOverSiblings(node *nethtml.Node, iterateFunc func(node *nethtml.Node)) {
+	for next_node := node; next_node != nil; next_node = next_node.NextSibling {
+		iterateFunc(next_node)
+	}
+
+}
+
 func GetAttribute(node *nethtml.Node, attrName HTMLAttr) (string, bool) {
 	for _, attr := range node.Attr {
 		if attr.Key == string(attrName) {

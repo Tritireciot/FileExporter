@@ -6,9 +6,9 @@ import (
 )
 
 func Translate(currentRawStyles css.StyleMap, currentStyles *StyleModel) {
-	for prop, value := range currentRawStyles {
+	for _, prop := range currentRawStyles.Order {
 		if styleFunc, ok := parsers[prop]; ok {
-			styleFunc(value, currentStyles)
+			styleFunc(currentRawStyles.Styles[prop], currentStyles)
 		} else {
 			fmt.Println("None Parser for:", prop)
 		}

@@ -46,6 +46,8 @@ const (
 	BlockQuoteTag Tag = "blockquote"
 	HrTag         Tag = "hr"
 	ImgTag        Tag = "img"
+	SubTag        Tag = "sub"
+	SupTag        Tag = "sup"
 )
 
 var ContainerTags []Tag = []Tag{

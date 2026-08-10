@@ -22,6 +22,17 @@ var VerticalAlignment = map[css.StyleValue]domain.VerticalAlignment{
 	css.BottomAlign: domain.VerticalAlignBottom,
 }
 
+type RunAlign func(run *domain.Run, value css.StyleValue)
+
+var VerticalAlignmentRun = map[css.StyleValue]RunAlign{
+	css.SubAlign: func(run *domain.Run, value css.StyleValue) {
+		(*run).SetSubscript(value == css.SubAlign)
+	},
+	css.SuperAlign: func(run *domain.Run, value css.StyleValue) {
+		(*run).SetSuperscript(value == css.SuperAlign)
+	},
+}
+
 var TextDecorationStyle = map[css.StyleValue]domain.UnderlineStyle{
 	css.Solid:     domain.UnderlineSingle,
 	css.Dashed:    domain.UnderlineDashed,

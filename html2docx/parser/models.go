@@ -6,17 +6,18 @@ import (
 	"strings"
 
 	"github.com/mmonterroca/docxgo/v2/domain"
+	nethtml "golang.org/x/net/html"
 )
 
 type TagStyleState struct {
-	ElementModel StyleModel
-	Link         string
-	TextPrefix   string
-	Order        int
+	Link       string
+	TextPrefix string
+	Order      int
+	ListLevel  int
 }
 
 type CellData struct {
-	Data      string
+	Data      *nethtml.Node
 	Row       int
 	Col       int
 	Merge     []int
@@ -122,10 +123,10 @@ var TextTransforms = map[css.StyleValue]TextTransform{
 func BuildStyleModel(rawStyles css.StyleMap) StyleModel {
 	var model StyleModel
 
-	for property, value := range rawStyles {
+	for _, property := range rawStyles.Order {
 
 		if parseFunc, exists := parsers[property]; exists {
-			parseFunc(value, &model)
+			parseFunc(rawStyles.Styles[property], &model)
 		}
 	}
 

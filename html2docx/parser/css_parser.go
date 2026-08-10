@@ -3,6 +3,7 @@ package parser
 import (
 	"PrintServer/html2docx/css"
 	"PrintServer/html2docx/html"
+	"fmt"
 	"strings"
 
 	"github.com/mmonterroca/docxgo/v2/domain"
@@ -48,14 +49,104 @@ func CollectGlobalStyles(css_string string, templateStyles *css.GlobalStyles) {
 	}
 }
 
-func NewTemplateStyles(rootNode *nethtml.Node) *css.GlobalStyles {
-	templateStyles := css.GlobalStyles{
-		Classes: make(map[string]css.StyleMap),
-		IDs:     make(map[string]css.StyleMap),
-		Tags:    make(map[string]css.StyleMap),
+func checkNode(node *nethtml.Node, styleNode *css.StyleNode) bool {
+	if node.Type != nethtml.ElementNode {
+		return false
 	}
 
-	templateStyles.DefaultStyle = css.StyleMap{}
+	// Самая первая проверка: совпадает ли вообще базовый целевой тег/класс
+	if !css.CheckSelector(node, styleNode) {
+		return false
+	}
+
+	currentStyleNode := styleNode
+	currentNode := node
+	for currentStyleNode != nil {
+		if currentStyleNode.Modifier != "" {
+			checker, ok := css.SelectorCheckers[currentStyleNode.Modifier]
+			if !ok {
+				return false
+			}
+			ok, _ = checker(currentNode, currentStyleNode)
+			if !ok {
+				return false
+			}
+		}
+
+		if currentStyleNode.Parent == nil {
+			break
+		}
+		checker, ok := css.SelectorCheckers[currentStyleNode.Connection]
+		if !ok {
+			return false
+		}
+
+		ok, currentNode = checker(currentNode, currentStyleNode)
+		if !ok {
+			return false
+		}
+
+		currentStyleNode = currentStyleNode.Parent
+	}
+
+	return true
+}
+
+func modifyNode(node *nethtml.Node, ComplexStyles []*css.StyleNode) {
+	for _, styleNode := range ComplexStyles {
+		if checkNode(node, styleNode) {
+			var styleStr string
+			var attrIndex int = -1
+
+			for i, attribute := range node.Attr {
+				if html.HTMLAttr(attribute.Key) == html.StyleAttr {
+					styleStr = attribute.Val
+					attrIndex = i
+					break
+				}
+			}
+
+			styleStr += styleNode.StyleContent.String()
+			if attrIndex != -1 {
+				node.Attr[attrIndex].Val = styleStr
+				fmt.Println(node.Attr[attrIndex].Namespace)
+			} else if styleStr != "" {
+				node.Attr = append(node.Attr, nethtml.Attribute{Key: string(html.StyleAttr), Val: styleStr})
+			}
+
+		}
+	}
+
+	html.IterateOverChildren(node, func(child *nethtml.Node) {
+		modifyNode(child, ComplexStyles)
+	})
+
+}
+
+func preprocessComplexStyles(rootNode *nethtml.Node, ComplexStyles []*css.StyleNode) {
+
+	bodyTag := html.FindTag(rootNode, html.BodyTag)
+	html.IterateOverChildren(bodyTag[0], func(node *nethtml.Node) {
+		modifyNode(node, ComplexStyles)
+	})
+
+}
+
+func NewTemplateStyles(rootNode *nethtml.Node) *css.GlobalStyles {
+	templateStyles := css.GlobalStyles{
+		Classes: css.ClassRule{
+			Order:       make([]string, 0),
+			ClassStyles: make(map[string]css.StyleMap),
+		},
+		IDs:           make(map[string]css.StyleMap),
+		Tags:          make(map[string]css.StyleMap),
+		ComplexStyles: make([]*css.StyleNode, 0),
+	}
+
+	templateStyles.DefaultStyle = css.StyleMap{
+		Styles: make(map[css.StyleProperty]css.StyleValue),
+		Order:  make([]css.StyleProperty, 0),
+	}
 
 	templateStyles.Page.Size = domain.PageSizeA4
 	templateStyles.Page.Orientation = domain.OrientationPortrait
@@ -65,6 +156,8 @@ func NewTemplateStyles(rootNode *nethtml.Node) *css.GlobalStyles {
 	html.IterateOverTags(styleTags, func(node *nethtml.Node) {
 		CollectGlobalStyles(strings.TrimSpace(node.FirstChild.Data), &templateStyles)
 	})
+
+	preprocessComplexStyles(rootNode, templateStyles.ComplexStyles)
 
 	return &templateStyles
 }

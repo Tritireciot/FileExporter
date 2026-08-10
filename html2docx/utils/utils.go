@@ -49,6 +49,14 @@ func CopyMap[K comparable, V any](originMap map[K]V) map[K]V {
 	return copyMap
 }
 
+func CopySlice[V any](originSlice []V) []V {
+	copySlice := make([]V, 0)
+	for _, value := range originSlice {
+		copySlice = append(copySlice, value)
+	}
+	return copySlice
+}
+
 func Pointer[T any](variable T) *T {
 	return &variable
 }

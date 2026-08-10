@@ -7,20 +7,16 @@ import (
 	nethtml "golang.org/x/net/html"
 )
 
-func (templateStyles GlobalStyles) CombineStyles(node *nethtml.Node, currentStyles StyleMap) {
+func (templateStyles GlobalStyles) CombineStyles(node *nethtml.Node, currentStyles *StyleMap) {
 	tagName := node.Data
 
 	if defaultStyles, ok := DefaultTagStyles[html.Tag(tagName)]; ok {
-		for prop, value := range defaultStyles {
-			currentStyles[prop] = value
-		}
+		currentStyles.Update(defaultStyles)
 	}
 
 	for tag, tagStyle := range templateStyles.Tags {
 		if tag == tagName {
-			for prop, value := range tagStyle {
-				currentStyles[prop] = value
-			}
+			currentStyles.Update(tagStyle)
 		}
 	}
 	classStr := ""
@@ -38,20 +34,16 @@ func (templateStyles GlobalStyles) CombineStyles(node *nethtml.Node, currentStyl
 		}
 	}
 	if classStr != "" {
-		for className, classStyle := range templateStyles.Classes {
+		for _, className := range templateStyles.Classes.Order {
 			if strings.Contains(classStr, className) {
-				for prop, value := range classStyle {
-					currentStyles[prop] = value
-				}
+				currentStyles.Update(templateStyles.Classes.ClassStyles[className])
 			}
 		}
 	}
 
 	if tagID != "" {
 		if tagStyle, ok := templateStyles.Tags[tagID]; ok {
-			for prop, value := range tagStyle {
-				currentStyles[prop] = value
-			}
+			currentStyles.Update(tagStyle)
 		}
 	}
 

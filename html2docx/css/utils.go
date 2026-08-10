@@ -7,7 +7,7 @@ import (
 	parceCSS "github.com/tdewolff/parse/v2/css"
 )
 
-func ParseLocalTagStyle(parceCSS_string string, tagStyles StyleMap) {
+func ParseLocalTagStyle(parceCSS_string string, tagStyles *StyleMap) {
 	parser := parceCSS.NewParser(parse.NewInputString(parceCSS_string), true)
 	for {
 		grammar_type, _, data := parser.Next()
@@ -17,7 +17,8 @@ func ParseLocalTagStyle(parceCSS_string string, tagStyles StyleMap) {
 
 		switch grammar_type {
 		case parceCSS.DeclarationGrammar:
-			tagStyles[StyleProperty(string(data))] = StyleValue(TokensToString(parser.Values()))
+			tagStyles.Order = append(tagStyles.Order, StyleProperty(string(data)))
+			tagStyles.Styles[StyleProperty(string(data))] = StyleValue(TokensToString(parser.Values()))
 		}
 	}
 }
@@ -25,9 +26,10 @@ func ParseLocalTagStyle(parceCSS_string string, tagStyles StyleMap) {
 func InsertSelectorStyles(styleMap map[string]StyleMap, selectorStr, property, value string) {
 	selectorStyles, ok := styleMap[selectorStr]
 	if !ok {
-		selectorStyles = StyleMap{}
+		selectorStyles = StyleMap{Styles: make(map[StyleProperty]StyleValue), Order: make([]StyleProperty, 0)}
 	}
-	selectorStyles[StyleProperty(property)] = StyleValue(value)
+	selectorStyles.Order = append(selectorStyles.Order, StyleProperty(property))
+	selectorStyles.Styles[StyleProperty(property)] = StyleValue(value)
 	styleMap[selectorStr] = selectorStyles
 }
 

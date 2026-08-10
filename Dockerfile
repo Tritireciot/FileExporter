@@ -21,6 +21,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     fontconfig \
     libfontconfig1 \
     fonts-liberation \
+    fonts-noto-color-emoji \
     && rm -rf /var/lib/apt/lists/*
 
 ENV FONTCONFIG_PATH=/etc/fonts

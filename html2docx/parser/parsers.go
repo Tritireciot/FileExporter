@@ -112,6 +112,9 @@ var parsers = map[css.StyleProperty]PropertyParser{
 		if align, ok := converters.VerticalAlignment[value]; ok {
 			model.CellOps = append(model.CellOps, func(cell *domain.TableCell) { (*cell).SetVerticalAlignment(align) })
 		}
+		if align, ok := converters.VerticalAlignmentRun[value]; ok {
+			model.RunOps = append(model.RunOps, func(run *domain.Run) { align(run, value) })
+		}
 	},
 
 	css.TextTransform: func(value css.StyleValue, model *StyleModel) {
@@ -121,6 +124,17 @@ var parsers = map[css.StyleProperty]PropertyParser{
 	css.TextDecorationStyle: func(value css.StyleValue, model *StyleModel) {
 		if decorationStyle, ok := converters.TextDecorationStyle[value]; ok && decorationStyle != domain.UnderlineNone {
 			model.RunOps = append(model.RunOps, func(run *domain.Run) { (*run).SetUnderline(decorationStyle) })
+		}
+	},
+	css.ListStyleType: func(value css.StyleValue, model *StyleModel) {
+		if numID, ok := converters.ListStyleToNumID[value]; ok {
+			model.ParagraphOps = append(model.ParagraphOps, func(p *domain.Paragraph) {
+				ref := domain.NumberingReference{
+					ID:    numID,
+					Level: 0,
+				}
+				(*p).SetNumbering(ref)
+			})
 		}
 	},
 }
