@@ -180,7 +180,9 @@ func (service *TransformService) RenderTemplate(ctx context.Context, template_id
 
 	formatted_template := service.reshaper.TransformTemplate(ctx, template_.Content, &requiredTags, &repeatTags, template_.RenderData)
 
-	form_template, err := template.New(template_.Name).Parse(formatted_template)
+	form_template, err := template.New(template_.Name).Funcs(template.FuncMap{
+		"DashedYMDtoPrintDate": DashedYMDtoPrintDate,
+	}).Parse(formatted_template)
 
 	if err != nil {
 		logging.Agent.AddSimpleError("Подготовка шаблона на печать", "Не удалось сформировать шаблон: " + err.Error())

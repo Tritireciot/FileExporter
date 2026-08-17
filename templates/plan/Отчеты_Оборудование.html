@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Отчет по использованию оборудования</title>
+    <style>
+        @page {
+            size: A4 portrait;
+            margin-top: 5mm;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            color: #333333;
+            margin: 0;
+            padding: 0;
+        }
+
+        h2 {
+            font-size: 14px;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #333333;
+            padding-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .equipment-block {
+            margin-bottom: 20px;
+            page-break-inside: avoid;
+        }
+
+        .equipment-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #000000;
+        }
+
+        table {
+            width: 100%;
+            max-width: 450px; /* Ограничиваем вертикальную таблицу по ширине для читаемости */
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            color: #000000;
+            font-weight: bold;
+            font-size: 14px;
+            border: 1px solid #cccccc;
+            padding: 6px 4px;
+            text-align: center;
+        }
+
+        td {
+            border: 1px solid #cccccc;
+            padding: 5px 4px;
+            text-align: center;
+        }
+
+        tfoot tr {
+            background-color: #f9f9f9;
+            font-weight: bold;
+        }
+
+        .highlight-col {
+            background-color: #f9f9f9;
+            font-weight: bold;
+        }
+
+        .text-right {
+            text-align: right;
+            padding-right: 6px;
+        }
+
+        /* Стили для таблицы глобальных итогов */
+        .total-table {
+            max-width: 500px;
+            margin-top: 15px;
+        }
+        .total-table th {
+            background-color: #e6e6e6;
+        }
+        .total-table tfoot tr {
+            background-color: #d9d9d9;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================= ЧАСТЬ 1: БЛОКИ ПО КАЖДОМУ ОБОРУДОВАНИЮ ================= -->
+    <h2>Использование оборудования по позициям</h2>
+
+    <#Repeat#ReportEquipment#>
+    <div class="equipment-block">
+        <!-- Название текущего оборудования -->
+        <div class="equipment-title">
+            Оборудование: #ReportEquipment.Name#
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 50%;">Дата</th>
+                    <th style="width: 50%;">Количество использований</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Вложенный цикл по датам использования этого оборудования -->
+                <#Repeat#EquipmentDate#>
+                <tr>
+                    <td class="highlight-col">#EquipmentDate.Date#</td>
+                    <td>#EquipmentDate.Count#</td>
+                </tr>
+                </#Repeat#EquipmentDate#>
+                <tr>
+                    <td class="text-right">Итого для этой позиции:</td>
+                    <td>#ReportEquipment.Total#</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    </#Repeat#Equipment#>
+
+
+    
+    <h2>Сводные итоги использования всего оборудования по дням</h2>
+    
+    <table class="total-table">
+        <thead>
+            <tr>
+                <th style="width: 50%;">Дата</th>
+                <th style="width: 50%;">Суммарное количество использований за день</th>
+            </tr>
+        </thead>
+        <tbody>
+            <#Repeat#EquipmentTotalDate#>
+            <tr>
+                <td class="highlight-col">#EquipmentTotalDate.Date#</td>
+                <td>#EquipmentTotalDate.Count#</td>
+            </tr>
+            </#Repeat#EquipmentTotalDate#>
+            <tr>
+                <td class="text-right">ВСЕГО ЗА ПЕРИОД:</td>
+                <td>#EquipmentTotal.Total#</td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+</html>

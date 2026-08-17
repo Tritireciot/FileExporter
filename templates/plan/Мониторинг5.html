@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Сводный отчет по категориям за месяц</title>
+    <style>
+        @page {
+            size: A4 landscape;
+            margin: 10mm;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 11px;
+            color: #333333;
+            margin: 0;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        tr {
+            page-break-inside: avoid;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            color: #000000;
+            font-weight: bold;
+            font-size: 10px;
+            border: 1px solid #cccccc;
+            padding: 8px 4px;
+            text-align: center;
+        }
+
+        td {
+            border: 1px solid #cccccc;
+            padding: 6px 4px;
+            text-align: center;
+        }
+
+        .highlight-col {
+            background-color: #f9f9f9;
+            font-weight: bold;
+        }
+
+        tfoot tr {
+            background-color: #e6e6e6;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Сводный учет рабочего времени по дням</h2>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 10%;">Дата</th>
+                <th>Карантин</th>
+                <th>По графику</th>
+                <th>Отпуск</th>
+                <th>Больничный</th>
+                <th>Доп. рабочий день</th>
+                <th>Доп. выходной</th>
+                <th style="width: 12%;">Итог за день</th>
+            </tr>
+        </thead>
+        <tbody>
+            <#Repeat#ReportUnit#>
+            <tr>
+                <td class="highlight-col">#ReportUnit.Date#</td>
+                <td>#ReportUnit.Quarantine#</td>
+                <td>#ReportUnit.OnSchedule#</td>
+                <td>#ReportUnit.Vacation#</td>
+                <td>#ReportUnit.Sick#</td>
+                <td>#ReportUnit.ExtraWorkDay#</td>
+                <td>#ReportUnit.ExtraDayOff#</td>
+                <td class="highlight-col">#ReportUnit.Total#</td>
+            </tr>
+            </#Repeat#ReportUnit#>
+        </tbody>
+    </table>
+
+</body>
+</html>

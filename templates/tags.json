@@ -212,148 +212,495 @@
         "alias": "rundown.content.%d.story.media_content"
     },
     {
+        "name": "#Monitoring.Date#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "date"
+    },
+    {
         "name": "#Repeat#Monitor#",
         "description": "",
         "subsystem": "plan",
-        "alias": ""
+        "alias": "requests"
     },
     {
         "name": "#Monitor.ID#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.id_entity_object"
+        "alias": "requests.%d.id_entity_object"
     },
     {
         "name": "#Monitor.CustomID#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.custom_id"
+        "alias": "requests.%d.custom_id"
     },
     {
         "name": "#Monitor.StartTime#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.start_time"
+        "alias": "requests.%d.start_time"
     },
     {
         "name": "#Monitor.EndTime#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.end_time"
+        "alias": "requests.%d.end_time"
     },
     {
         "name": "#Monitor.Name#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.name"
+        "alias": "requests.%d.name"
     },
     {
         "name": "#Monitor.StatusID#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.id_status"
+        "alias": "requests.%d.id_status"
     },
     {
         "name": "#Repeat#Infopovods#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.infopovods"
+        "alias": "requests.%d.infopovods"
     },
     {
         "name": "#Infopovods.ID#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.infopovods.%d.id"
+        "alias": "requests.%d.infopovods.%d.id"
     },
     {
         "name": "#Infopovods.Title#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.infopovods.%d.value"
+        "alias": "requests.%d.infopovods.%d.value"
     },
     {
         "name": "#Repeat#Locations#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.locations"
+        "alias": "requests.%d.locations"
     },
     {
         "name": "#Locations.Locations#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.locations.%d"
+        "alias": "requests.%d.locations.%d"
     },
     {
         "name": "#Repeat#FilmCrews#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.film_crews"
+        "alias": "requests.%d.film_crews"
     },
     {
         "name": "#FilmCrews.ID#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.film_crews.%d.id"
+        "alias": "requests.%d.film_crews.%d.id"
     },
     {
         "name": "#FilmCrews.Name#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.film_crews.%d.value"
+        "alias": "requests.%d.film_crews.%d.value"
     },
     {
         "name": "#FilmCrews.Position#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.film_crews.%d.position"
+        "alias": "requests.%d.film_crews.%d.position"
     },
     {
         "name": "#Repeat#Equipment#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.equipment"
+        "alias": "requests.%d.equipment"
     },
     {
         "name": "#Equipment.ID#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.equipment.%d.id"
+        "alias": "requests.%d.equipment.%d.id"
     },
     {
         "name": "#Equipment.Name#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.equipment.%d.value"
+        "alias": "requests.%d.equipment.%d.value"
     },
     {
         "name": "#Equipment.Type#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.equipment.%d.equipment_type"
+        "alias": "requests.%d.equipment.%d.equipment_type"
     },
     {
         "name": "#Repeat#Transport#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.transport"
+        "alias": "requests.%d.transport"
     },
     {
         "name": "#Transport.ID#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.transport.%d.id"
+        "alias": "requests.%d.transport.%d.id"
     },
     {
         "name": "#Transport.Name#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.transport.%d.value"
+        "alias": "requests.%d.transport.%d.value"
     },
     {
         "name": "#Transport.Type#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.transport.%d.transport_type"
+        "alias": "requests.%d.transport.%d.transport_type"
+    },
+    {
+        "name": "#Reports.AverageDutyHours#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "summary.duty_hours_avg"
+    },
+    {
+        "name": "#Reports.SummaryDutyHours#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "summary.duty_hours_sum"
+    },
+    {
+        "name": "#Reports.AverageTotalHours#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "summary.total_hours_avg"
+    },
+    {
+        "name": "#Reports.SummaryTotalHours#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "summary.total_hours_sum"
+    },
+    {
+        "name": "#Reports.AverageShootingHours#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "summary.shooting_hours_avg"
+    },
+    {
+        "name": "#Reports.SummaryShootingHours#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "summary.shooting_hours_sum"
+    },
+    {
+        "name": "#Repeat#Employees#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees"
+    },
+    {
+        "name": "#Employees.Schedule#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.value.schedule"
+    },
+    {
+        "name": "#Employees.DaysOff#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.value.days_off"
+    },
+    {
+        "name": "#Employees.SickDays#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.value.sick_days"
+    },
+    {
+        "name": "#Employees.WorkDays#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.value.work_days"
+    },
+    {
+        "name": "#Employees.DutyHours#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.value.duty_hours"
+    },
+    {
+        "name": "#Employees.TotalHours#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.value.total_hours"
+    },
+    {
+        "name": "#Employees.VacationDays#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.value.vacation_days"
+    },
+    {
+        "name": "#Employees.ShootingHours#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.value.shooting_hours"
+    },
+    {
+        "name": "#Employees.ShootingsCount#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.value.shootings_count"
+    },
+    {
+        "name": "#Employees.BusinessTripDays#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.value.business_trip_days"
+    },
+    {
+        "name": "#Employees.Employee#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.fio"
+    },
+    {
+        "name": "#Employees.Position#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.position"
+    },
+    {
+        "name": "#Reports.PastShiftsSum#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "summary.past_shifts_sum"
+    },
+    {
+        "name": "#Reports.TotalShiftsSum#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "summary.total_shifts_sum"
+    },
+    {
+        "name": "#Reports.ExtraDaysOffSum#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "summary.extra_days_off_sum"
+    },
+    {
+        "name": "#Reports.ExtraWorkDaysSum#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "summary.extra_work_days_sum"
+    },
+    {
+        "name": "#Reports.CurrentMonthShiftsSum#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "summary.current_month_shifts_sum"
+    },
+    {
+        "name": "#Employees.PastShifts#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.value.past_shifts"
+    },
+    {
+        "name": "#Employees.TotalShifts#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.value.total_shifts"
+    },
+    {
+        "name": "#Employees.ExtraDaysOff#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.value.extra_days_off"
+    },
+    {
+        "name": "#Employees.ExtraWorkDays#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.value.extra_work_days"
+    },
+    {
+        "name": "#Employees.CurrentMonthShifts#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.value.current_month_shifts"
+    },
+    {
+        "name": "#Repeat#ProvidedDaysOff#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.value.provided_days_off_dates"
+    },
+    {
+        "name": "#ProvidedDaysOff.ProvidedDayOff#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.value.provided_days_off_dates.%d"
+    },
+    {
+        "name": "#Repeat#ReportUnit#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": ""
+    },
+    {
+        "name": "#ReportUnit.Date#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.date"
+    },
+    {
+        "name": "#ReportUnit.Quarantine#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.quarantine"
+    },
+    {
+        "name": "#ReportUnit.OnSchedule#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.on_schedule"
+    },
+    {
+        "name": "#ReportUnit.Vacation#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.vacation"
+    },
+    {
+        "name": "#ReportUnit.Sick#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.sick"
+    },
+    {
+        "name": "#ReportUnit.ExtraDayOff#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.extra_day_off"
+    },
+    {
+        "name": "#ReportUnit.ExtraWorkDay#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.extra_work_day"
+    },
+    {
+        "name": "#ReportUnit.Total#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.total"
+    },
+    {
+        "name": "#Repeat#Program#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": ""
+    },
+    {
+        "name": "#Program.ID#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.id_program"
+    },
+    {
+        "name": "#Program.Name#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.name"
+    },
+    {
+        "name": "#Repeat#ProgramDate#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.value"
+    },
+    {
+        "name": "#ProgramDate.Date#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.value.%d.date"
+    },
+    {
+        "name": "#ProgramDate.Count#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.value.%d.count"
+    },
+    {
+        "name": "#Repeat#ReportEquipment#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "rows"
+    },
+    {
+        "name": "#ReportEquipment.ID#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "rows.%d.id_equipment"
+    },
+    {
+        "name": "#ReportEquipment.Name#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "rows.%d.name"
+    },
+    {
+        "name": "#ReportEquipment.Total#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "rows.%d.total"
+    },
+    {
+        "name": "#Repeat#EquipmentDate#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "rows.%d.value"
+    },
+    {
+        "name": "#EquipmentDate.Date#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "rows.%d.value.%d.date"
+    },
+    {
+        "name": "#EquipmentDate.Count#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "rows.%d.value.%d.count"
+    },
+    {
+        "name": "#EquipmentTotal.Total#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "totals.total"
+    },
+    {
+        "name": "#Repeat#EquipmentTotalDate#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "totals.value"
+    },
+    {
+        "name": "#EquipmentTotalDate.Date#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "totals.value.%d.date"
+    },
+    {
+        "name": "#EquipmentTotalDate.Count#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "totals.value.%d.count"
     }
-
 ]

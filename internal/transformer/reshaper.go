@@ -18,7 +18,7 @@ type Reshaper struct {
 func NewReshaper(db_repo db.DBRepo) *Reshaper {
 	return &Reshaper{
 		db_repo:    db_repo,
-		tagPattern: regexp.MustCompile(`#([A-Za-z]+)\.([A-Za-z]+)#`),
+		tagPattern: regexp.MustCompile(`#([A-Za-z]+)\.([A-Za-z]+)(?:\s*\|\s*([A-Za-z]+))?#`),
 		tagRepeatPattern: [2]*regexp.Regexp{
 			regexp.MustCompile(`<#Repeat#([A-Za-z]+)#>`),
 			regexp.MustCompile(`</#Repeat#([A-Za-z]+)#>`),
@@ -38,16 +38,19 @@ func contains(slice []string, element string) bool {
 func (reshaper *Reshaper) ChangeBaseTags(ctx context.Context, template_content string, repeats []string, requiredTags *map[string]any) string {
 	return reshaper.tagPattern.ReplaceAllStringFunc(template_content, func(tag string) string {
 		match_tag := reshaper.tagPattern.FindStringSubmatch(tag)
-		entity, field := match_tag[1], match_tag[2]
+		entity, field, funcName := match_tag[1], match_tag[2], match_tag[3]
 		if sub_map, ok := (*requiredTags)[entity]; ok {
 			switch typed_sub_map := sub_map.(type) {
 			case map[string]any:
-				typed_sub_map[field] = getAlias(ctx, reshaper.db_repo, match_tag[0])
+				typed_sub_map[field] = getAlias(ctx, reshaper.db_repo, fmt.Sprintf("#%s.%s#", entity, field))
 				sub_map = typed_sub_map
 			}
 			(*requiredTags)[entity] = sub_map
 		} else {
-			(*requiredTags)[entity] = map[string]any{field: getAlias(ctx, reshaper.db_repo, match_tag[0])}
+			(*requiredTags)[entity] = map[string]any{field: getAlias(ctx, reshaper.db_repo, fmt.Sprintf("#%s.%s#", entity, field))}
+		}
+		if funcName != "" {
+			field += " | " + funcName
 		}
 		if contains(repeats, entity) {
 			return fmt.Sprintf("{{ $%s.%s }}", entity, field)

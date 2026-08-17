@@ -3,6 +3,19 @@
 	<head>
 		<meta http-equiv="content-type" content="text/html;charset=utf-8"/>
         <style>
+            @page {
+                margin: 0mm;
+            }
+
+            .date-text {
+                text-align: end;
+                margin-top: 0;
+            }
+            body {
+                margin: 0;
+                padding: 0;
+                font-size: 10pt;
+            }
             .dynamic-table {
                 width: 100%;
                 border-collapse: collapse;
@@ -64,13 +77,14 @@
 	</head>
     
     <body style="font-family:Arial;font-size:12pt;color:black;">
-
+        <h2 class="date-text">#Monitoring.Date | DashedYMDtoPrintDate#</h2>
         <table class="dynamic-table">
             <thead>
                 <tr>
                     <th class="th">Время</th>
                     <th class="th">Название</th>
                     <th class="th">Инфоповоды</th>
+                    <th class="th">Адрес</th>
                     <th class="th">Состав</th>
                     <th class="th">Оборудование</th>
                     <th class="th">Транспорт</th>
@@ -86,8 +100,6 @@
                     <td class="td-column fill-height">
                         #Monitor.Name#
                     </td>
-
-                    <!-- Вместо <hr> мы оборачиваем каждый элемент цикла в <div class="list-item"> -->
                     <td class="td-column list-column">
                         <table class="sub-table">
                             <#Repeat#Infopovods#>
@@ -95,6 +107,15 @@
                                     <td class="sub-td">#Infopovods.Title#</td>
                                 </tr>
                             </#Repeat#Infopovods#>
+                        </table>
+                    </td>
+                    <td class="td-column list-column">
+                        <table class="sub-table">
+                            <#Repeat#Locations#>
+                                <tr>
+                                    <td class="sub-td">#Locations.Locations#</td>
+                                </tr>
+                            </#Repeat#Locations#>
                         </table>
                     </td>
 

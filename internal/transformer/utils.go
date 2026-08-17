@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+	"time"
 )
 
 func getAlias(ctx context.Context, db_repo db.DBRepo, tag_name string) string {
@@ -65,4 +66,19 @@ func CompleteConnections(connections map[string][]string, requiredTags *map[stri
 		}
 
 	}
+}
+
+var ruMonths = [...]string{
+	"", "Января", "Февраля", "Марта", "Апреля", "Мая", "Июня",
+	"Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря",
+}
+
+func DashedYMDtoPrintDate(dateStr  string) string {
+	t, err := time.Parse("2006-01-02", dateStr)
+	if err != nil {
+		return dateStr 
+	}
+
+	return t.Format("2") + " " + ruMonths[t.Month()] + " " + t.Format("2006")
+
 }
