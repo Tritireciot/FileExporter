@@ -2,13 +2,13 @@ FROM golang:1.19-alpine AS builder
 
 WORKDIR /app
 
-COPY docxgo docxgo
+COPY . .
 COPY go.mod go.sum ./
 RUN go mod download
 
 
 COPY /internal/.. .
-RUN CGO_ENABLED=0 GOOS=linux go build -o app .
+RUN CGO_ENABLED=0 GOOS=linux go build -o app ./PrintServer
 
 
 FROM ubuntu:22.04

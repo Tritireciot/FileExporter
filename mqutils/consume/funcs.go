@@ -1,8 +1,8 @@
 package consume
 
 import (
-	logging "PrintServer/agent"
-	"PrintServer/mqutils"
+	logging "AutoplayX/agent"
+	"AutoplayX/mqutils"
 	"context"
 	"fmt"
 	"sync"

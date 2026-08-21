@@ -7,13 +7,13 @@ func assertMaps(actual map[string]any, expected map[string]any) bool {
 	for key, raw_value := range actual {
 		if value, ok := actual[key].(map[string]any); ok {
 			if expected_value, ok := expected[key].(map[string]any); ok {
-				if !assertMaps(value, expected_value){
+				if !assertMaps(value, expected_value) {
 					return false
 				}
 			} else {
 				return false
 			}
-		} else if value, ok := actual[key].([]map[string]any); ok{
+		} else if value, ok := actual[key].([]map[string]any); ok {
 			if expected_value, ok := expected[key].([]map[string]any); ok {
 				if len(value) != len(expected_value) {
 					return false
@@ -26,7 +26,7 @@ func assertMaps(actual map[string]any, expected map[string]any) bool {
 			} else {
 				return false
 			}
-		} else if value, ok := actual[key].([]string); ok{
+		} else if value, ok := actual[key].([]string); ok {
 			if expected_value, ok := expected[key].([]string); ok {
 				if len(value) != len(expected_value) {
 					return false
@@ -46,9 +46,8 @@ func assertMaps(actual map[string]any, expected map[string]any) bool {
 			}
 		}
 	}
-	return  true
+	return true
 }
-
 
 var ComplexTemplate string = `<#Repeat#Story#>
 			<hr />

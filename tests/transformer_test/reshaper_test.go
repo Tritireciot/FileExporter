@@ -1,7 +1,7 @@
 package transformer
 
 import (
-	"PrintServer/internal/transformer"
+	"PrintServer/PrintServer/transformer"
 	"testing"
 )
 
@@ -47,6 +47,7 @@ func TestChangeRepeatTags(t *testing.T) {
 			test_context,
 			set.TestTemplate,
 			&repeatTags,
+			map[string]bool{},
 		)
 		if len(repeats) != len(set.ExpectedRepeats) {
 			t.Errorf("Wrong repeats expected: %v got: %v", set.ExpectedRepeats, repeats)
@@ -241,7 +242,7 @@ func TestChangeBaseTags(t *testing.T) {
 		requiredTags := map[string]any{}
 		repeatTags := map[string]string{}
 		transformer.IncludeRepeatStructure(set.TestTemplate, &requiredTags)
-		repeats, template_content := test_reshaper.ChangeRepeatTags(test_context, set.TestTemplate, &repeatTags)
+		repeats, template_content := test_reshaper.ChangeRepeatTags(test_context, set.TestTemplate, &repeatTags, map[string]bool{})
 		template_content = test_reshaper.ChangeBaseTags(test_context, template_content, repeats, &requiredTags)
 		if template_content != set.ExpectedTemplate {
 			t.Errorf("Wrong reshape expected:\n %v \n got:\n %v \n", set.ExpectedTemplate, template_content)
@@ -339,7 +340,7 @@ func TestCompleteConnections(t *testing.T) {
 		requiredTags := map[string]any{}
 		repeatTags := map[string]string{}
 		connections := transformer.IncludeRepeatStructure(set.TestTemplate, &requiredTags)
-		repeats, template_content := test_reshaper.ChangeRepeatTags(test_context, set.TestTemplate, &repeatTags)
+		repeats, template_content := test_reshaper.ChangeRepeatTags(test_context, set.TestTemplate, &repeatTags, map[string]bool{})
 		test_reshaper.ChangeBaseTags(test_context, template_content, repeats, &requiredTags)
 		transformer.CompleteConnections(connections, &requiredTags, &repeatTags)
 

@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"PrintServer/internal/db"
-	"PrintServer/internal/server"
+	"PrintServer/PrintServer/db"
+	"PrintServer/PrintServer/server"
 	"context"
 	"errors"
 )

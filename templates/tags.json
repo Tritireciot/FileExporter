@@ -557,49 +557,49 @@
         "name": "#ReportUnit.Date#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.date"
+        "alias": "requests.%d.date"
     },
     {
         "name": "#ReportUnit.Quarantine#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.quarantine"
+        "alias": "requests.%d.quarantine"
     },
     {
         "name": "#ReportUnit.OnSchedule#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.on_schedule"
+        "alias": "requests.%d.on_schedule"
     },
     {
         "name": "#ReportUnit.Vacation#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.vacation"
+        "alias": "requests.%d.vacation"
     },
     {
         "name": "#ReportUnit.Sick#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.sick"
+        "alias": "requests.%d.sick"
     },
     {
         "name": "#ReportUnit.ExtraDayOff#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.extra_day_off"
+        "alias": "requests.%d.extra_day_off"
     },
     {
         "name": "#ReportUnit.ExtraWorkDay#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.extra_work_day"
+        "alias": "requests.%d.extra_work_day"
     },
     {
         "name": "#ReportUnit.Total#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.total"
+        "alias": "requests.%d.total"
     },
     {
         "name": "#Repeat#Program#",
@@ -611,52 +611,52 @@
         "name": "#Program.ID#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.id_program"
+        "alias": "requests.%d.id_program"
     },
     {
         "name": "#Program.Name#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.name"
+        "alias": "requests.%d.name"
     },
     {
         "name": "#Repeat#ProgramDate#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.value"
+        "alias": "requests.%d.value"
     },
     {
         "name": "#ProgramDate.Date#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.value.%d.date"
+        "alias": "requests.%d.value.%d.date"
     },
     {
         "name": "#ProgramDate.Count#",
         "description": "",
         "subsystem": "plan",
-        "alias": "%d.value.%d.count"
+        "alias": "requests.%d.value.%d.count"
     },
     {
-        "name": "#Repeat#ReportEquipment#",
+        "name": "#Repeat#Equipment#",
         "description": "",
         "subsystem": "plan",
         "alias": "rows"
     },
     {
-        "name": "#ReportEquipment.ID#",
+        "name": "#Equipment.ID#",
         "description": "",
         "subsystem": "plan",
         "alias": "rows.%d.id_equipment"
     },
     {
-        "name": "#ReportEquipment.Name#",
+        "name": "#Equipment.Name#",
         "description": "",
         "subsystem": "plan",
         "alias": "rows.%d.name"
     },
     {
-        "name": "#ReportEquipment.Total#",
+        "name": "#Equipment.Total#",
         "description": "",
         "subsystem": "plan",
         "alias": "rows.%d.total"

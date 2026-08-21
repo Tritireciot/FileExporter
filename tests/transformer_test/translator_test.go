@@ -1,7 +1,7 @@
 package transformer
 
 import (
-	"PrintServer/internal/transformer"
+	"PrintServer/PrintServer/transformer"
 	"os"
 	"testing"
 )

@@ -13,7 +13,7 @@ services:
       - 8153:8153
     depends_on:
       db:
-        condition: service_started
+        condition: service_healthy
     networks:
       - app
 
@@ -31,6 +31,11 @@ services:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - app
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d backend-db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 
 volumes:

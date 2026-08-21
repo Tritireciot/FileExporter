@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"PrintServer/internal/server"
+	"PrintServer/PrintServer/server"
 	"log"
 	"os"
 	"testing"

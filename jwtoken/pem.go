@@ -6,7 +6,7 @@ import (
 	"encoding/pem"
 )
 
-//---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 // Запакаем в PEM для последующего экспорта
 func CreatePEM(key *rsa.PrivateKey) (private *pem.Block, public *pem.Block) {
 	// dump private key to file
@@ -21,12 +21,12 @@ func CreatePEM(key *rsa.PrivateKey) (private *pem.Block, public *pem.Block) {
 	return privateKeyBlock, publicKeyBlock
 }
 
-//---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 func LoadPrivateEM(private *pem.Block) (*rsa.PrivateKey, error) {
 	return x509.ParsePKCS1PrivateKey(private.Bytes)
 }
 
-//---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 func LoadPublicEM(public *pem.Block) (*rsa.PublicKey, error) {
 	return x509.ParsePKCS1PublicKey(public.Bytes)
 }

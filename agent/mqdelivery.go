@@ -1,7 +1,7 @@
 package logging
 
 import (
-	"PrintServer/mqutils"
+	"AutoplayX/mqutils"
 	"context"
 	"encoding/json"
 

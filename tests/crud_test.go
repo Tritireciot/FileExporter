@@ -1,7 +1,7 @@
 package db
 
 import (
-	"PrintServer/internal/db"
+	"PrintServer/PrintServer/db"
 	"PrintServer/pgutils"
 	"context"
 	"log"
@@ -14,20 +14,20 @@ import (
 var test_db_repo *db.DBRepository
 var test_context context.Context
 var test_tag = db.Tag{Name: "Test", Description: "Test", Subsystem: "news", Alias: "Test", IsActive: true}
-var test_template = db.Template{Name: "Test", Content: "Test", Subsystem: "news", IsActive: true, RenderData: map[string]any{}}
+var test_template = db.Template{Name: "Test", Content: "Test", Subsystem: "news", IsActive: true, RenderData: map[string]bool{}}
 
 func createDBRepository() *db.DBRepository {
 	logger := log.New(os.Stdout, "[SERVICE] ", log.LstdFlags)
 	db_config := pgutils.DatabaseConfig{
-		Host: "db",
-		Port: 5432,
-		User: "user",
+		Host:     "db",
+		Port:     5432,
+		User:     "user",
 		Password: "pass",
-		DBname: "backend-db",
-		Schema: "print",
+		DBname:   "backend-db",
+		Schema:   "print",
 	}
 
-	db_repo, err := db.SetupDB(context.Background(), &db_config, logger)
+	db_repo, err := db.SetupDB(context.Background(), &db_config)
 	if err != nil {
 		logger.Fatal(err.Error())
 		return nil

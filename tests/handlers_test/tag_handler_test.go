@@ -6,38 +6,37 @@ import (
 	"testing"
 )
 
-
 func TestAddTagHandler(t *testing.T) {
 	test_data := []struct {
-		ExpectedStatus int
+		ExpectedStatus   int
 		ExpectedResponse *map[string]any
-		RequestBody *map[string]any
+		RequestBody      *map[string]any
 	}{
 		{
 			http.StatusOK,
 			&map[string]any{
-				"ID": float64(DBRepoMock.ExpectedId),
-				"name": "test",
+				"ID":          float64(DBRepoMock.ExpectedId),
+				"name":        "test",
 				"description": "test",
-				"subsystem": "test",
-				"alias": "test",
-				"is_active": false,
+				"subsystem":   "test",
+				"alias":       "test",
+				"is_active":   false,
 			},
 			&map[string]any{
-				"name": "test",
+				"name":        "test",
 				"description": "test",
-				"subsystem": "test",
-				"alias": "test",
+				"subsystem":   "test",
+				"alias":       "test",
 			},
 		},
 		{
 			http.StatusInternalServerError,
 			nil,
 			&map[string]any{
-				"name":  DBRepoMock.ErrorName,
+				"name":        DBRepoMock.ErrorName,
 				"description": "test",
-				"subsystem": "test",
-				"alias": "test",
+				"subsystem":   "test",
+				"alias":       "test",
 			},
 		},
 		{
@@ -53,7 +52,7 @@ func TestAddTagHandler(t *testing.T) {
 			t,
 			MockApp,
 			"POST",
-			"/api/core/print/db/add_tag", 
+			"/api/core/print/db/add_tag",
 			set.RequestBody,
 		)
 		checkStatusCode(t, recorder, set.ExpectedStatus)
@@ -65,29 +64,29 @@ func TestAddTagHandler(t *testing.T) {
 
 func TestDeleteTagHandler(t *testing.T) {
 	test_data := []struct {
-		ID int
-		ExpectedStatus int
+		ID               int
+		ExpectedStatus   int
 		ExpectedResponse *map[string]any
 	}{
 		{
-			DBRepoMock.ExpectedId, 
+			DBRepoMock.ExpectedId,
 			http.StatusOK,
 			&map[string]any{
 				"ID": float64(DBRepoMock.ExpectedId),
 			},
 		},
 		{
-			DBRepoMock.UnknownId, 
+			DBRepoMock.UnknownId,
 			http.StatusNotFound,
 			nil,
 		},
 		{
-			DBRepoMock.ErrorId, 
+			DBRepoMock.ErrorId,
 			http.StatusInternalServerError,
 			nil,
 		},
 		{
-			-1, 
+			-1,
 			http.StatusUnprocessableEntity,
 			nil,
 		},
@@ -98,7 +97,7 @@ func TestDeleteTagHandler(t *testing.T) {
 			t,
 			MockApp,
 			"DELETE",
-			fmt.Sprintf("/api/core/print/db/delete_tag?id=%d", set.ID), 
+			fmt.Sprintf("/api/core/print/db/delete_tag?id=%d", set.ID),
 			nil,
 		)
 		checkStatusCode(t, recorder, set.ExpectedStatus)
@@ -110,7 +109,7 @@ func TestDeleteTagHandler(t *testing.T) {
 
 func TestGetAllTagsHandler(t *testing.T) {
 	test_data := []struct {
-		ExpectedStatus int
+		ExpectedStatus   int
 		ExpectedResponse []map[string]any
 	}{
 		{
@@ -127,7 +126,7 @@ func TestGetAllTagsHandler(t *testing.T) {
 			t,
 			MockApp,
 			"GET",
-			"/api/core/print/db/get_all_tags", 
+			"/api/core/print/db/get_all_tags",
 			nil,
 		)
 		checkStatusCode(t, recorder, set.ExpectedStatus)

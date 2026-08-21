@@ -8,35 +8,35 @@ import (
 
 func TestGetTemplateHandler(t *testing.T) {
 	test_data := []struct {
-		ID int
-		ExpectedStatus int
+		ID               int
+		ExpectedStatus   int
 		ExpectedResponse *map[string]any
 	}{
 		{
-			DBRepoMock.ExpectedId, 
+			DBRepoMock.ExpectedId,
 			http.StatusOK,
 			&map[string]any{
-				"ID": float64(DBRepoMock.ExpectedId),
-				"name": DBRepoMock.ExpectedStub,
-				"content": DBRepoMock.ExpectedStub,
-				"subsystem": DBRepoMock.ExpectedStub,
-				"is_active": true,
+				"ID":          float64(DBRepoMock.ExpectedId),
+				"name":        DBRepoMock.ExpectedStub,
+				"content":     DBRepoMock.ExpectedStub,
+				"subsystem":   DBRepoMock.ExpectedStub,
+				"is_active":   true,
 				"render_data": nil,
-				"is_single": false,
+				"is_single":   false,
 			},
 		},
 		{
-			DBRepoMock.UnknownId, 
+			DBRepoMock.UnknownId,
 			http.StatusNotFound,
 			nil,
 		},
 		{
-			DBRepoMock.ErrorId, 
+			DBRepoMock.ErrorId,
 			http.StatusInternalServerError,
 			nil,
 		},
 		{
-			-1, 
+			-1,
 			http.StatusUnprocessableEntity,
 			nil,
 		},
@@ -47,7 +47,7 @@ func TestGetTemplateHandler(t *testing.T) {
 			t,
 			MockApp,
 			"GET",
-			fmt.Sprintf("/api/core/print/db/get_template?id=%d", set.ID), 
+			fmt.Sprintf("/api/core/print/db/get_template?id=%d", set.ID),
 			nil,
 		)
 		checkStatusCode(t, recorder, set.ExpectedStatus)
@@ -57,27 +57,26 @@ func TestGetTemplateHandler(t *testing.T) {
 	}
 }
 
-
 func TestAddTemplateHandler(t *testing.T) {
 	test_data := []struct {
-		ExpectedStatus int
+		ExpectedStatus   int
 		ExpectedResponse *map[string]any
-		RequestBody *map[string]any
+		RequestBody      *map[string]any
 	}{
 		{
 			http.StatusOK,
 			&map[string]any{
-				"ID": float64(DBRepoMock.ExpectedId),
-				"name": "test",
-				"content": "test",
-				"subsystem": "news",
-				"is_active": false,
+				"ID":          float64(DBRepoMock.ExpectedId),
+				"name":        "test",
+				"content":     "test",
+				"subsystem":   "news",
+				"is_active":   false,
 				"render_data": nil,
-				"is_single": false,
+				"is_single":   false,
 			},
 			&map[string]any{
-				"name":  "test",
-				"content": "test",
+				"name":      "test",
+				"content":   "test",
 				"subsystem": "news",
 			},
 		},
@@ -85,8 +84,8 @@ func TestAddTemplateHandler(t *testing.T) {
 			http.StatusInternalServerError,
 			nil,
 			&map[string]any{
-				"name":  DBRepoMock.ErrorName,
-				"content": "test",
+				"name":      DBRepoMock.ErrorName,
+				"content":   "test",
 				"subsystem": "news",
 			},
 		},
@@ -103,7 +102,7 @@ func TestAddTemplateHandler(t *testing.T) {
 			t,
 			MockApp,
 			"POST",
-			"/api/core/print/db/add_template", 
+			"/api/core/print/db/add_template",
 			set.RequestBody,
 		)
 		checkStatusCode(t, recorder, set.ExpectedStatus)
@@ -115,29 +114,29 @@ func TestAddTemplateHandler(t *testing.T) {
 
 func TestDeleteTemplateHandler(t *testing.T) {
 	test_data := []struct {
-		ID int
-		ExpectedStatus int
+		ID               int
+		ExpectedStatus   int
 		ExpectedResponse *map[string]any
 	}{
 		{
-			DBRepoMock.ExpectedId, 
+			DBRepoMock.ExpectedId,
 			http.StatusOK,
 			&map[string]any{
 				"ID": float64(DBRepoMock.ExpectedId),
 			},
 		},
 		{
-			DBRepoMock.UnknownId, 
+			DBRepoMock.UnknownId,
 			http.StatusNotFound,
 			nil,
 		},
 		{
-			DBRepoMock.ErrorId, 
+			DBRepoMock.ErrorId,
 			http.StatusInternalServerError,
 			nil,
 		},
 		{
-			-1, 
+			-1,
 			http.StatusUnprocessableEntity,
 			nil,
 		},
@@ -148,7 +147,7 @@ func TestDeleteTemplateHandler(t *testing.T) {
 			t,
 			MockApp,
 			"DELETE",
-			fmt.Sprintf("/api/core/print/db/delete_template?id=%d", set.ID), 
+			fmt.Sprintf("/api/core/print/db/delete_template?id=%d", set.ID),
 			nil,
 		)
 		checkStatusCode(t, recorder, set.ExpectedStatus)
@@ -160,7 +159,7 @@ func TestDeleteTemplateHandler(t *testing.T) {
 
 func TestGetAllTemplatesHandler(t *testing.T) {
 	test_data := []struct {
-		ExpectedStatus int
+		ExpectedStatus   int
 		ExpectedResponse []map[string]any
 	}{
 		{
@@ -177,7 +176,7 @@ func TestGetAllTemplatesHandler(t *testing.T) {
 			t,
 			MockApp,
 			"GET",
-			"/api/core/print/db/get_all_templates?subsystem=news", 
+			"/api/core/print/db/get_all_templates?subsystem=news",
 			nil,
 		)
 		checkStatusCode(t, recorder, set.ExpectedStatus)

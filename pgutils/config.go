@@ -16,11 +16,10 @@ type DatabaseConfig struct {
 }
 
 func (cfg *DatabaseConfig) String() string {
-	return fmt.Sprintf("DataBase configuration:\n\tHost: %s\n\tPort: %d\n\tUsername: %s\n\tPassword: %s\n\tDBname: %s\n\tSchema: %s\n",
+	return fmt.Sprintf("DataBase configuration:\n\tHost: %s\n\tPort: %d\n\tUsername: %s\n\t\n\tDBname: %s\n\tSchema: %s\n",
 		cfg.Host,
 		cfg.Port,
 		cfg.User,
-		cfg.Password,
 		cfg.DBname,
 		cfg.Schema)
 }

@@ -1,7 +1,7 @@
 package mqutils
 
 import (
-	"PrintServer/deploy"
+	"AutoplayX/deploy"
 	"context"
 	"time"
 
