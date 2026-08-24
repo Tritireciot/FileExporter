@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{{ $hasContent := false }}<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -15,6 +15,20 @@
             color: #333333;
             margin: 0;
             padding: 0;
+        }
+
+        /* Блок одной программы */
+        .program-block {
+            margin-bottom: 25px;
+            page-break-inside: avoid; /* Чтобы таблица одной программы не разрывалась некрасиво */
+        }
+
+        .program-title {
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            color: #000000;
         }
 
         table {
@@ -39,6 +53,11 @@
             text-align: center;
         }
 
+        .highlight-col {
+            background-color: #f9f9f9;
+            font-weight: bold;
+        }
+
         .tableLabel {
             text-align: left;
         }
@@ -50,22 +69,22 @@
         <thead>
             <tr>
                 <th class="tableLabel">Программы</th>
-                <#At#Program[0]#>
-                    <#Repeat#ProgramDate#>
-                        <th>#ProgramDate.Date | Weekday#</th>
-                    </#Repeat#ProgramDate#>
-                </#At#Program#>
+                {{ with $Program := index .Program 0 }}
+                    {{ range $ProgramDate := .ProgramDate }}
+                        <th>{{ $ProgramDate.Date | Weekday }}</th>
+                    {{ end }}
+                {{ end }}
             </tr>
         </thead>
         <tbody>
-            <#Repeat#Program#>
-                <tr>
-                    <td class="tableLabel">#Program.Name#</td>
-                    <#Repeat#ProgramDate#>
-                        <td>#ProgramDate.Count#</td>
-                    </#Repeat#ProgramDate#>
-                </tr>
-            </#Repeat#Program#>
+            <tr>
+                {{ range $Program := .Program }}
+                    <td>{{ $Program.Name }}</td>
+                    {{ range $ProgramDate := .ProgramDate }}
+                        <th>{{ $ProgramDate.Count }}</th>
+                    {{ end }}
+                {{ end }}
+            </tr>
         </tbody>
     </table>
 

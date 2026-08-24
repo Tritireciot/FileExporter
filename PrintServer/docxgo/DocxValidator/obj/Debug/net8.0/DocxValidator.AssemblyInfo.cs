@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DocxValidator")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+81868e507ba467ad1058553d3ddd5e99c5e1d0c3")]
 [assembly: System.Reflection.AssemblyProductAttribute("DocxValidator")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DocxValidator")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

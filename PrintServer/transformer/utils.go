@@ -73,6 +73,10 @@ var ruMonths = [...]string{
 	"Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря",
 }
 
+var ruShortWeekDays = [...]string{
+	"Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб",
+}
+
 func DashedYMDtoPrintDate(dateStr string) string {
 	t, err := time.Parse("2006-01-02", dateStr)
 	if err != nil {
@@ -80,5 +84,15 @@ func DashedYMDtoPrintDate(dateStr string) string {
 	}
 
 	return t.Format("2") + " " + ruMonths[t.Month()] + " " + t.Format("2006")
+
+}
+
+func ShortWeekday(dateStr string) string {
+	t, err := time.Parse("02.01.2006", dateStr)
+	if err != nil {
+		return dateStr
+	}
+
+	return t.Format("2") + " " + ruShortWeekDays[t.Weekday()]
 
 }

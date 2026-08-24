@@ -177,8 +177,10 @@ func (service *TransformService) RenderTemplate(ctx context.Context, template_id
 
 	formatted_template := service.reshaper.TransformTemplate(ctx, template_.Content, &requiredTags, &repeatTags, template_.RenderData)
 
+	logging.Agent.AddSimpleInfo("Подготовка шаблона печати", "Шаблон: " + formatted_template)
 	form_template, err := template.New(template_.Name).Funcs(template.FuncMap{
 		"DashedYMDtoPrintDate": DashedYMDtoPrintDate,
+		"Weekday": ShortWeekday,
 	}).Parse(formatted_template)
 
 	if err != nil {

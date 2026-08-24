@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Projects\\AutoplayX.Print2\\1.0\\Server\\PrintServer\\docxgo\\DocxValidator\\DocxValidator.csproj": {}
+    "C:\\FileExporter\\FileExporter\\PrintServer\\docxgo\\DocxValidator\\DocxValidator.csproj": {}
   },
   "projects": {
-    "C:\\Projects\\AutoplayX.Print2\\1.0\\Server\\PrintServer\\docxgo\\DocxValidator\\DocxValidator.csproj": {
+    "C:\\FileExporter\\FileExporter\\PrintServer\\docxgo\\DocxValidator\\DocxValidator.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Projects\\AutoplayX.Print2\\1.0\\Server\\PrintServer\\docxgo\\DocxValidator\\DocxValidator.csproj",
+        "projectUniqueName": "C:\\FileExporter\\FileExporter\\PrintServer\\docxgo\\DocxValidator\\DocxValidator.csproj",
         "projectName": "DocxValidator",
-        "projectPath": "C:\\Projects\\AutoplayX.Print2\\1.0\\Server\\PrintServer\\docxgo\\DocxValidator\\DocxValidator.csproj",
+        "projectPath": "C:\\FileExporter\\FileExporter\\PrintServer\\docxgo\\DocxValidator\\DocxValidator.csproj",
         "packagesPath": "C:\\Users\\valchuk\\.nuget\\packages\\",
-        "outputPath": "C:\\Projects\\AutoplayX.Print2\\1.0\\Server\\PrintServer\\docxgo\\DocxValidator\\obj\\",
+        "outputPath": "C:\\FileExporter\\FileExporter\\PrintServer\\docxgo\\DocxValidator\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\valchuk\\AppData\\Roaming\\NuGet\\NuGet.Config"

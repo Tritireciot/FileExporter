@@ -70,7 +70,7 @@ func (repository *DBRepository) isDBFilled(ctx context.Context) (bool, error) {
 		From("information_schema.tables").
 		Where(squirrel.Eq{
 			"table_schema": "print",
-			"table_name":   Tables.Templates, // ваша переменная "templates"
+			"table_name":   "templates",
 		}).
 		ToSql()
 
@@ -89,7 +89,7 @@ func (repository *DBRepository) isDBFilled(ctx context.Context) (bool, error) {
 	}
 
 	dataExistsQuery, args, err := repository.psql.Select("1").
-		From("print." + Tables.Templates).
+		From(Tables.Templates).
 		Limit(1).
 		ToSql()
 

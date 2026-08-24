@@ -85,7 +85,6 @@ func fillRepeatedTag(json_data []byte, list_json_path string, list_schema []map[
 				list_json_subpath := json_path[:strings.LastIndex(json_path, ".%d")]
 				subschema, ok := temp_schema[field].(map[string]any)
 				if !ok {
-					fmt.Println("No")
 					break
 				}
 				for j := range gjson.GetBytes(json_data, fmt.Sprintf(list_json_subpath, i)).Array() {

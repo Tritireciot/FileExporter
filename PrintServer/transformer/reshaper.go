@@ -12,16 +12,18 @@ import (
 type Reshaper struct {
 	db_repo          db.DBRepo
 	tagPattern       *regexp.Regexp
-	tagRepeatPattern [2]*regexp.Regexp
+	tagRepeatPattern [4]*regexp.Regexp
 }
 
 func NewReshaper(db_repo db.DBRepo) *Reshaper {
 	return &Reshaper{
 		db_repo:    db_repo,
 		tagPattern: regexp.MustCompile(`#([A-Za-z]+)\.([A-Za-z]+)(?:\s*\|\s*([A-Za-z]+))?#`),
-		tagRepeatPattern: [2]*regexp.Regexp{
+		tagRepeatPattern: [4]*regexp.Regexp{
 			regexp.MustCompile(`<#Repeat#([A-Za-z]+)#>`),
 			regexp.MustCompile(`</#Repeat#([A-Za-z]+)#>`),
+			regexp.MustCompile(`<#At#([A-Za-z0-9_]+)\[([0-9]+)\]#>`),
+			regexp.MustCompile(`</#At#([A-Za-z]+)#>`),
 		},
 	}
 }
@@ -61,6 +63,15 @@ func (reshaper *Reshaper) ChangeBaseTags(ctx context.Context, template_content s
 
 func (reshaper *Reshaper) ChangeRepeatTags(ctx context.Context, template_content string, repeatTags *map[string]string, render_data map[string]bool) ([]string, string) {
 	repeats := []string{}
+
+	template_content = reshaper.tagRepeatPattern[2].ReplaceAllStringFunc(template_content, func(tag string) string {
+		match_tag := reshaper.tagRepeatPattern[2].FindStringSubmatch(tag)
+		field := match_tag[1]
+		pos := match_tag[2]
+
+		return fmt.Sprintf("{{ with $%s := index .%s %s }}", field, field, pos)
+	})
+
 	template_content = reshaper.tagRepeatPattern[0].ReplaceAllStringFunc(template_content, func(tag string) string {
 		match_tag := reshaper.tagRepeatPattern[0].FindStringSubmatch(tag)
 		field := match_tag[1]
@@ -78,9 +89,15 @@ func (reshaper *Reshaper) ChangeRepeatTags(ctx context.Context, template_content
 		return strings.Join(res, "\n")
 	})
 
-	return repeats, reshaper.tagRepeatPattern[1].ReplaceAllStringFunc(template_content, func(tag string) string {
+	template_content = reshaper.tagRepeatPattern[1].ReplaceAllStringFunc(template_content, func(tag string) string {
 		return "{{ end }}"
 	})
+
+	template_content = reshaper.tagRepeatPattern[3].ReplaceAllStringFunc(template_content, func(tag string) string {
+		return "{{ end }}"
+	})
+
+	return repeats, template_content
 
 }
 
