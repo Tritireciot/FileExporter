@@ -5,7 +5,6 @@ import (
 	logging "PrintServer/agent"
 	"bytes"
 	"context"
-	"embed"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -15,8 +14,6 @@ import (
 	"strings"
 )
 
-//go:embed all:weasyprint-linux
-var weasyPrint embed.FS
 
 type Transformer interface {
 	RenderTemplate(ctx context.Context, template_id int, raw_data any) (string, string, error)
@@ -31,19 +28,19 @@ type TransformService struct {
 }
 
 func setupPDFexecutor() (string, error) {
-	targetDir := filepath.Join(os.TempDir(), "weasyprint-linux")
-	executablePath := filepath.Join(targetDir, "weasyprint")
+	targetDir := filepath.Join(os.TempDir(), embedDirName)
+	executablePath := filepath.Join(targetDir, executableName)
 
 	if _, err := os.Stat(executablePath); err == nil {
 		return executablePath, nil
 	}
 
-	err := fs.WalkDir(weasyPrint, "weasyprint-linux", func(path string, d fs.DirEntry, err error) error {
+	err := fs.WalkDir(weasyPrint, embedDirName, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
 
-		relPath, _ := filepath.Rel("weasyprint-linux", path)
+		relPath, _ := filepath.Rel(embedDirName, path)
 		outPath := filepath.Join(targetDir, relPath)
 
 		if d.IsDir() {

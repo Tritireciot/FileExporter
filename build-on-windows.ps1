@@ -51,10 +51,10 @@ Remove-Item "$workingDir/python" -Recurse -Force | Out-Null
 Remove-Item "$workingDir/msys64" -Recurse -Force | Out-Null
 
 Set-Location  "./dist/"
-Move-Item -Path "./weasyprint" -Destination "./weasyprint-linux"
+Move-Item -Path "./weasyprint" -Destination "./weasyprint-windows"
 New-Item -Path "version-$version"
 
-Set-Location  "./weasyprint-linux"
+Set-Location  "./weasyprint-windows"
 Write-Host "*** Testing weasyprint"
 Invoke-Expression ".\weasyprint.exe --info"
 
@@ -62,26 +62,26 @@ $targetGoPackageDir = "../PrintServer/transformer"
 
 Set-Location "./dist/"
 
-# Переименовываем собранную папку dist/weasyprint в weasyprint-linux
+# Переименовываем собранную папку dist/weasyprint в weasyprint-windows
 Write-Host "*** Preparing executable folder..."
-Move-Item -Path "./weasyprint" -Destination "./weasyprint-linux"
+Move-Item -Path "./weasyprint" -Destination "./weasyprint-windows"
 
 # Краткий тест работоспособности бинарника
-Set-Location "./weasyprint-linux"
+Set-Location "./weasyprint-windows"
 Write-Host "*** Testing weasyprint executable..."
 Invoke-Expression ".\weasyprint.exe --info"
 Set-Location "../" # возвращаемся в папку dist
 
 # 2. Очищаем старую сборку в Go-пакете, если она там осталась с прошлого раза
-$finalDestination = Join-Path $targetGoPackageDir "weasyprint-linux"
+$finalDestination = Join-Path $targetGoPackageDir "weasyprint-windows"
 if (Test-Path $finalDestination) {
     Write-Host "   ⚠️ Removing old build from Go package..."
     Remove-Item $finalDestination -Recurse -Force | Out-Null
 }
 
-# 3. Мгновенно перемещаем папку weasyprint-linux напрямую в ваш Go-проект
-Write-Host "🚚 Moving compiled weasyprint-linux directly to Go package..."
-Move-Item -Path "./weasyprint-linux" -Destination $targetGoPackageDir
+# 3. Мгновенно перемещаем папку weasyprint-windows напрямую в ваш Go-проект
+Write-Host "🚚 Moving compiled weasyprint-windows directly to Go package..."
+Move-Item -Path "./weasyprint-windows" -Destination $targetGoPackageDir
 
 # Возвращаемся в корень проекта
 Set-Location "../"
@@ -91,5 +91,4 @@ Write-Host "🧹 Cleaning up temporary build directories..."
 if (Test-Path "./dist") { Remove-Item -Path "./dist" -Recurse -Force | Out-Null }
 if (Test-Path "./build") { Remove-Item -Path "./build" -Recurse -Force | Out-Null }
 if (Test-Path $workingDir) { Remove-Item -Path $workingDir -Recurse -Force | Out-Null }
-
-Write-Host "✅ Папка weasyprint-linux успешно перемещена в $targetGoPackageDir и готова к //go:embed!" -ForegroundColor Green
+if (Test-Path weasyprint.spec) { Remove-Item -Path weasyprint.spec -Recurse -Force | Out-Null }
