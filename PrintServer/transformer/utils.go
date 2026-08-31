@@ -1,23 +1,86 @@
 package transformer
 
 import (
-	"PrintServer/PrintServer/db"
-	"context"
+	"AutoplayX/paths"
+	"PrintServer/PrintServer/config"
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
 	"regexp"
 	"strings"
 	"time"
 )
 
-func getAlias(ctx context.Context, db_repo db.DBRepo, tag_name string) string {
-	tag := db.Tag{Name: tag_name}
-	err := db_repo.GetElement(ctx, &tag, db.Columns.Name)
+type TagAlias struct {
+	Name string `json:"name"`
+	Alias string `json:"alias"`
+}
+
+func getAliases(tag_names []string, subsystem string) ([]TagAlias, error) {
+	client := &http.Client{}
+	jsonData, err := json.Marshal(tag_names)
 	if err != nil {
-		fmt.Println(tag_name)
-		fmt.Println("Error in getting alias: ", err.Error())
-		return ""
+		return nil, err
 	}
-	return tag.Alias
+	req, err := http.NewRequest(
+		"POST", 
+		fmt.Sprintf(
+			"http://%s/api/%s/config/svc/print/db/tags_aliases", 
+			config.GetSubAccess().GetPath(), 
+			subsystem,
+		), 
+		bytes.NewReader(jsonData),
+	)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set(paths.SubAccessTokenTag, config.SubAccessCommKey)
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var aliases []TagAlias
+
+	err = json.Unmarshal(body, &aliases)
+	return aliases, err
+}
+
+func getTemplate(template *Template) error {
+	client := &http.Client{}
+	req, err := http.NewRequest(
+		"GET", 
+		fmt.Sprintf(
+			"http://%s/api/%s/config/svc/print/db/get_template?id=%d", 
+			config.GetSubAccess().GetPath(), 
+			template.Subsystem,
+			template.ID,
+		), 
+		nil,
+	)
+	if err != nil {
+		return err
+	}
+	req.Header.Set(paths.SubAccessTokenTag, config.SubAccessCommKey)
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+	err = json.Unmarshal(body, template)
+	return err
+	
 }
 
 func modifyStructure(entity_stack []string, requiredTags *map[string]any, connections *map[string][]string) {

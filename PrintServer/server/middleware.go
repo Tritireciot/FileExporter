@@ -1,8 +1,11 @@
 package server
 
 import (
+	"AutoplayX/jwtoken"
+	"PrintServer/PrintServer/config"
 	logging "PrintServer/agent"
 	"bytes"
+	"context"
 	"fmt"
 	"net/http"
 )
@@ -64,5 +67,33 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 			),
 		)
 
+	})
+}
+
+func GetReqUserClaims(req *http.Request) (jwtoken.UserClaims, error) {
+	tokenHeader := ""
+	if c, err := req.Cookie("Authorization"); err == nil {
+		tokenHeader = c.Value
+	} else {
+		tokenHeader = req.Header.Get("Authorization")
+	}
+
+	return jwtoken.GetUserClaims(&config.PublicKey, jwtoken.ParseHeaderToken(tokenHeader))
+}
+
+func handlersMiddlewareJWTRSA(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Проверка на наличие сетевого ключа
+		// Открываем токен
+		uclaims, err := GetReqUserClaims(r)
+		if err != nil || !uclaims.Valid() {
+			code := http.StatusUnauthorized
+			http.Error(w, http.StatusText(code), code)
+			return
+		}
+		// Добавляем и рассылаем всем
+		ctx := context.WithValue(r.Context(), "uclaims", uclaims)
+
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

@@ -2,7 +2,6 @@ package main
 
 import (
 	"PrintServer/PrintServer/config"
-	"PrintServer/PrintServer/db"
 	"PrintServer/PrintServer/server"
 	"PrintServer/PrintServer/transformer"
 	"context"
@@ -41,35 +40,17 @@ func main() {
 
 	app := server.App{}
 	app_config := config.LoadConfig()
-	var db_repo *db.DBRepository
 	for {
 		if err := config.GetConfig(); err != nil {
 			logging.Agent.AddSimpleError("Загрузка конфигурации", "Не удалось загрузить конфигурацию приложения: "+err.Error())
 		} else {
-			db_config := config.GetDBConfig()
-			if os.Getenv("LOCAL") == "true" {
-				db_config.DBname = "backend-db"
-				db_config.Host = "db"
-				db_config.User = "user"
-				db_config.Password = "pass"
-				db_config.Schema = "print"
-			}
-			db_repo, err = db.SetupDB(context.Background(), db_config)
-			if err != nil {
-				logging.Agent.AddSimpleError("Загрузка конфигурации", "Не удалось загрузить конфигурацию приложения: "+err.Error())
-				return
-			}
 			break
 		}
 		time.Sleep(time.Second * 5)
 	}
 
-	if db_repo != nil {
-		defer db_repo.TearDown()
-	}
-
-	transformer_ := transformer.NewTransformService(db_repo)
-	app.Init(db_repo, transformer_)
+	transformer_ := transformer.NewTransformService()
+	app.Init(transformer_)
 	go func() {
 		logging.Agent.AddSimpleInfo("HTTP сервер", "Запуск на порту: "+app_config.App.Port)
 		if err := app.Run(app_config.ConfigureAppUrl()); err != nil && err != http.ErrServerClosed {

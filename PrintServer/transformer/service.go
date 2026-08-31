@@ -1,77 +1,31 @@
 package transformer
 
 import (
-	"PrintServer/PrintServer/db"
 	logging "PrintServer/agent"
 	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"io/fs"
-	"os"
-	"path/filepath"
 	"strings"
 )
 
 
 type Transformer interface {
-	RenderTemplate(ctx context.Context, template_id int, raw_data any) (string, string, error)
+	RenderTemplate(ctx context.Context, template_id int, subsystem string, raw_data any) (string, string, error)
 	PDFFromTemplate(htmlContent string) ([]byte, error)
 	DOCXFromTemplate(htmlContent string) ([]byte, error)
 }
 
 type TransformService struct {
-	db_repo  db.DBRepo
 	reshaper Reshaper
 	pdfExec  string
 }
 
-func setupPDFexecutor() (string, error) {
-	targetDir := filepath.Join(os.TempDir(), embedDirName)
-	executablePath := filepath.Join(targetDir, executableName)
-
-	if _, err := os.Stat(executablePath); err == nil {
-		return executablePath, nil
-	}
-
-	err := fs.WalkDir(weasyPrint, embedDirName, func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-
-		relPath, _ := filepath.Rel(embedDirName, path)
-		outPath := filepath.Join(targetDir, relPath)
-
-		if d.IsDir() {
-			return os.MkdirAll(outPath, 0755)
-		}
-
-		data, err := weasyPrint.ReadFile(path)
-		if err != nil {
-			return err
-		}
-
-		return os.WriteFile(outPath, data, 0755)
-	})
-
-	if err != nil {
-		return "", err
-	}
-
-	return executablePath, nil
-}
-
-func NewTransformService(db_repo db.DBRepo) *TransformService {
-	pdfexec, err := setupPDFexecutor()
-	if err != nil {
-		logging.Agent.AddSimpleError("Создание TransformService", "Не удалось создать "+err.Error())
-		return nil
-	}
+func NewTransformService() *TransformService {
 	return &TransformService{
-		db_repo:  db_repo,
-		reshaper: *NewReshaper(db_repo),
-		pdfExec:  pdfexec,
+		reshaper: *NewReshaper(),
+		pdfExec:  "",
 	}
 }
 
@@ -151,12 +105,13 @@ func filter(subsystem string, raw_data *any, render_data map[string]bool) {
 	}
 }
 
-func (service *TransformService) RenderTemplate(ctx context.Context, template_id int, raw_data any) (string, string, error) {
+func (service *TransformService) RenderTemplate(ctx context.Context, template_id int, subsystem string, raw_data any) (string, string, error) {
 
-	template_ := &db.Template{ID: template_id}
-	err := service.db_repo.GetElement(ctx, template_, db.Columns.ID)
+	template_ := Template{ID: template_id, Subsystem: subsystem}
+	err := getTemplate(&template_)
 
 	if err != nil {
+		logging.Agent.AddSimpleError("Подготовка шаблона на печать", "Не удалось получить шаблон: "+err.Error())
 		return "", "", err
 	}
 
@@ -172,7 +127,11 @@ func (service *TransformService) RenderTemplate(ctx context.Context, template_id
 	requiredTags := map[string]any{}
 	repeatTags := map[string]string{}
 
-	formatted_template := service.reshaper.TransformTemplate(ctx, template_.Content, &requiredTags, &repeatTags, template_.RenderData)
+	formatted_template, err := service.reshaper.TransformTemplate(template_, &requiredTags, &repeatTags)
+	if err != nil {
+		logging.Agent.AddSimpleError("Подготовка шаблона на печать", "Не удалось сформировать шаблон: "+err.Error())
+		return "", "", err
+	}
 
 	logging.Agent.AddSimpleInfo("Подготовка шаблона печати", "Шаблон: " + formatted_template)
 	form_template, err := template.New(template_.Name).Funcs(template.FuncMap{

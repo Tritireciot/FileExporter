@@ -77,6 +77,13 @@ func GetEvironmentPort(envtag string, defaultPort int) int {
 	}
 }
 
+func GetSubAccess() deploy.AccessConfig {
+	if len(SubAccess) < 1 {
+		log.Fatal("No subaccess configuration!")
+	}
+	return SubAccess[0]
+}
+
 func GetDBConfig() *pgutils.DatabaseConfig {
 	if len(DbConfig) < 1 {
 		log.Fatal("No database configuration!")

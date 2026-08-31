@@ -29,17 +29,13 @@ func (handler *ExportHandler) TransformTemplate(writer http.ResponseWriter, requ
 	var err error
 
 	ctx := request.Context()
-	fileName, export_doc, err := handler.transformer.RenderTemplate(ctx, export_form.TemplateId, export_form.Data)
+	fileName, export_doc, err := handler.transformer.RenderTemplate(ctx, export_form.TemplateId, export_form.Subsystem, export_form.Data)
 	if err != nil {
 		unknownError(writer, err)
 		return
 	}
 
 	switch export_form.Format {
-	case "pdf":
-		contentType = "application/pdf"
-		fileName += ".pdf"
-		fileBytes, err = handler.transformer.PDFFromTemplate(export_doc)
 	case "docx":
 		contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 		fileName += ".docx"

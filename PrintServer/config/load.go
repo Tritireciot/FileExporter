@@ -17,8 +17,5 @@ func LoadConfig() Config {
 			Host: "0.0.0.0",
 			Port: getEnv("HTTP_PORT", "8153"),
 		},
-		DB: DataBaseConfig{
-			DB_URL: getEnv("DATABASE_URL", "postgres://user:pass@db:5432/backend-db"),
-		},
 	}
 }
