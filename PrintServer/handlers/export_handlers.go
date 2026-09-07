@@ -28,8 +28,7 @@ func (handler *ExportHandler) TransformTemplate(writer http.ResponseWriter, requ
 	var fileBytes []byte
 	var err error
 
-	ctx := request.Context()
-	fileName, export_doc, err := handler.transformer.RenderTemplate(ctx, export_form.TemplateId, export_form.Subsystem, export_form.Data)
+	fileName, export_doc, err := handler.transformer.RenderTemplate(export_form.TemplateId, export_form.Subsystem, export_form.Data)
 	if err != nil {
 		unknownError(writer, err)
 		return

@@ -3,7 +3,6 @@ package transformer
 import (
 	logging "PrintServer/agent"
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -12,7 +11,7 @@ import (
 
 
 type Transformer interface {
-	RenderTemplate(ctx context.Context, template_id int, subsystem string, raw_data any) (string, string, error)
+	RenderTemplate(template_id int, subsystem string, raw_data any) (string, string, error)
 	PDFFromTemplate(htmlContent string) ([]byte, error)
 	DOCXFromTemplate(htmlContent string) ([]byte, error)
 }
@@ -105,14 +104,14 @@ func filter(subsystem string, raw_data *any, render_data map[string]bool) {
 	}
 }
 
-func (service *TransformService) RenderTemplate(ctx context.Context, template_id int, subsystem string, raw_data any) (string, string, error) {
+func (service *TransformService) RenderTemplate(template_id int, subsystem string, raw_data any) (string, string, error) {
 
 	template_ := Template{ID: template_id, Subsystem: subsystem}
 	err := getTemplate(&template_)
 
 	if err != nil {
 		logging.Agent.AddSimpleError("Подготовка шаблона на печать", "Не удалось получить шаблон: "+err.Error())
-		return "", "", err
+		return "", "", &TemplateNotFoundError{id: template_id}
 	}
 
 	filter(template_.Subsystem, &raw_data, template_.RenderData)

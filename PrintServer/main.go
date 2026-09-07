@@ -21,8 +21,8 @@ func main() {
 	host, _ := os.Hostname()
 
 	logging.InitAXAgent(logging.Config{}, logging.AXLocation{
-		Subsystem: "Print",
-		App:       "Service",
+		Subsystem: "Core",
+		App:       "Print",
 		Host:      host,
 		ProcessId: uint32(os.Getpid()),
 	})
