@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Отчет по использованию оборудования</title>
+    <style>
+        @page {
+            size: A4 landscape;
+            margin-top: 5mm;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            color: #333333;
+            margin: 0;
+            padding: 0;
+        }
+
+        h2 {
+            font-size: 14px;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+        }
+
+        .equipment-block {
+            margin-bottom: 20px;
+            page-break-inside: avoid;
+        }
+
+        .equipment-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #000000;
+        }
+
+        table {
+            width: 100%;
+            max-width: 450px; /* Ограничиваем вертикальную таблицу по ширине для читаемости */
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            color: #000000;
+            font-weight: bold;
+            font-size: 14px;
+            border: 1px solid #cccccc;
+            padding: 6px 4px;
+            text-align: center;
+        }
+
+        td {
+            border: 1px solid #cccccc;
+            padding: 5px 4px;
+            text-align: center;
+        }
+
+
+        .tableLabel {
+            text-align: left;
+        }
+
+        .highlight-col {
+            background-color: #f9f9f9;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h2>Использование оборудования</h2>
+    <table>
+        <thead>
+            <tr>
+                <th class="tableLabel">Оборудования</th>
+                <#Repeat#EquipmentTotalDate#>
+                    <th>#EquipmentTotalDate.Date | Weekday#</th>
+                </#Repeat#EquipmentTotalDate#>
+                <th>Итого</th>
+            </tr>
+        </thead>
+        <tbody>
+            <#Repeat#ReportEquipment#>
+                <tr>
+                    <td class="tableLabel">#ReportEquipment.Name#</td>
+                    <#Repeat#EquipmentDate#>
+                        <td>#EquipmentDate.Count#</td>
+                    </#Repeat#EquipmentDate#>
+                    <td>#ReportEquipment.Total#</td>
+                </tr>
+            </#Repeat#ReportEquipment#>
+            <tr>
+                <td class="tableLabel highlight-col">Итого:</td>
+                <#Repeat#EquipmentTotalDate#>
+                    <td class="highlight-col">#EquipmentTotalDate.Count#</td>
+                </#Repeat#EquipmentTotalDate#>
+                <td class="highlight-col">#EquipmentTotal.Total#</td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+</html>

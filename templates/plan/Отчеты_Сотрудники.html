@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Сводный отчет по категориям за месяц</title>
+    <style>
+        @page {
+            size: A4 landscape;
+            margin: 10mm;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 11px;
+            color: #333333;
+            margin: 0;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        tr {
+            page-break-inside: avoid;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            color: #000000;
+            font-weight: bold;
+            font-size: 10px;
+            border: 1px solid #cccccc;
+            padding: 8px 4px;
+            text-align: center;
+        }
+
+        td {
+            border: 1px solid #cccccc;
+            padding: 6px 4px;
+            text-align: center;
+        }
+
+        .highlight-col {
+            background-color: #f9f9f9;
+            font-weight: bold;
+        }
+
+        .tableLabel {
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Сводный учет рабочего времени по дням</h2>
+    <table>
+        <thead>
+            <tr>
+                <th class="tableLabel" style="width: 10%;">Категории</th>
+                <#Repeat#ReportUnit#>
+                    <th>#ReportUnit.Date | Weekday#</th>
+                </#Repeat#ReportUnit#>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="tableLabel">Карантин</td>
+                <#Repeat#ReportUnit#>
+                    <td>#ReportUnit.Quarantine#</td>
+                </#Repeat#ReportUnit#>
+            </tr>
+            
+            <tr>
+                <td class="tableLabel">По графику</td>
+                <#Repeat#ReportUnit#>
+                    <td>#ReportUnit.OnSchedule#</td>
+                </#Repeat#ReportUnit#>
+            </tr>
+            
+
+            <tr>
+                <td class="tableLabel">Отпуск</td>
+                <#Repeat#ReportUnit#>
+                    <td>#ReportUnit.Vacation#</td>
+                </#Repeat#ReportUnit#>
+            </tr>
+
+            <tr>
+                <td class="tableLabel">Больничный</td>
+                <#Repeat#ReportUnit#>
+                    <td>#ReportUnit.Sick#</td>
+                </#Repeat#ReportUnit#>
+            </tr>
+
+            <tr>
+                <td class="tableLabel">Дополнительный рабочий день</td>
+                <#Repeat#ReportUnit#>
+                    <td>#ReportUnit.ExtraWorkDay#</td>
+                </#Repeat#ReportUnit#>
+            </tr>
+
+            <tr>
+                <td class="tableLabel">Дополнительный выходной</td>
+                <#Repeat#ReportUnit#>
+                    <td>#ReportUnit.ExtraDayOff#</td>
+                </#Repeat#ReportUnit#>
+            </tr>
+
+            <tr>
+                <td class="highlight-col tableLabel">Итог</td>
+                <#Repeat#ReportUnit#>
+                    <td class="highlight-col">#ReportUnit.Total#</td>
+                </#Repeat#ReportUnit#>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+</html>

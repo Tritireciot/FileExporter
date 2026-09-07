@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+        <style>
+            @page {
+                margin: 0mm;
+            }
+
+            .date-text {
+                text-align: end;
+                margin-top: 0;
+            }
+            body {
+                margin: 0;
+                padding: 0;
+                font-size: 10pt;
+            }
+            .dynamic-table {
+                width: 100%;
+                border-collapse: collapse;
+                border: 1px solid #ccc;
+                font-family: sans-serif;
+            }
+
+            .th {
+                background: #333;
+                color: white;
+                padding: 12px 10px;
+                font-weight: bold;
+                text-align: center;
+                border: 2px solid #000;
+            }
+
+            .td-column {
+                border: 1px solid #ccc;
+                background: #fff;
+                vertical-align: top;
+                padding: 10px; 
+            }
+
+            .list-column {
+                padding: 0 !important; 
+                background: #fff;
+            }
+
+            .list-item {
+                display: block;
+                padding: 10px;
+                border-bottom: 1px solid #eee; 
+                box-sizing: border-box;
+            }
+
+            .list-item:last-child {
+                border-bottom: none;
+            }
+
+            .fill-height {
+                background: #f9f9f9;
+            }
+
+            .sub-table {
+                width: 100%;
+                border-collapse: collapse;
+                border: none;
+            }
+
+            .sub-td {
+                padding: 10px;
+                border-bottom: 1px solid #eee;
+            }
+
+            .sub-table tr:last-child .sub-td {
+                border-bottom: none;
+            }
+        </style>
+	</head>
+    
+    <body style="font-family:Arial;font-size:12pt;color:black;">
+        <h2 class="date-text">#Monitoring.Date | DashedYMDtoPrintDate#</h2>
+        <table class="dynamic-table">
+            <thead>
+                <tr>
+                    <th class="th">Время</th>
+                    <th class="th">Название</th>
+                    <th class="th">Инфоповоды</th>
+                    <th class="th">Адрес</th>
+                    <th class="th">Состав</th>
+                    <th class="th">Оборудование</th>
+                    <th class="th">Транспорт</th>
+                </tr>
+            </thead>
+            <tbody>
+                <#Repeat#Monitor#>          
+                <tr>
+                    <td class="td-column fill-height">
+                        #Monitor.StartTime# - #Monitor.EndTime#
+                    </td>
+
+                    <td class="td-column fill-height">
+                        #Monitor.Name#
+                    </td>
+                    <td class="td-column list-column">
+                        <table class="sub-table">
+                            <#Repeat#Infopovods#>
+                                <tr>
+                                    <td class="sub-td">#Infopovods.Title#</td>
+                                </tr>
+                            </#Repeat#Infopovods#>
+                        </table>
+                    </td>
+                    <td class="td-column list-column">
+                        <table class="sub-table">
+                            <#Repeat#Locations#>
+                                <tr>
+                                    <td class="sub-td">#Locations.Locations#</td>
+                                </tr>
+                            </#Repeat#Locations#>
+                        </table>
+                    </td>
+
+                    <td class="td-column list-column">
+                        <table class="sub-table">
+                            <#Repeat#FilmCrews#>
+                                <tr>
+                                    <td class="sub-td">#FilmCrews.Name# - #FilmCrews.Position#</td>
+                                </tr>
+                            </#Repeat#FilmCrews#>
+                        </table>
+                    </td>
+
+                    <td class="td-column list-column">
+                        <table class="sub-table">
+                            <#Repeat#Equipment#>
+                                <tr>
+                                    <td class="sub-td">#Equipment.Name# #Equipment.Type#</td>
+                                </tr>
+                            </#Repeat#Equipment#>
+                        </table>
+                    </td>
+
+                    <td class="td-column list-column">
+                        <table class="sub-table">
+                            <#Repeat#Transport#>
+                                <tr>
+                                    <td class="sub-td">#Transport.Name# #Transport.Type#</td>
+                                </tr>
+                            </#Repeat#Transport#>
+                        </table>
+                    </td>
+                </tr>
+                </#Repeat#Monitor#>   
+            </tbody>
+        </table>
+    </body>
+</html>

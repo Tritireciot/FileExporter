@@ -1,0 +1,706 @@
+[
+    {
+        "name": "#RunDown.ID#",
+        "description": "ID выпуска",
+        "subsystem": "news",
+        "alias": "rundown_id"
+    },
+    {
+        "name": "#RunDown.Name#",
+        "description": "Название выпуска",
+        "subsystem": "news",
+        "alias": "rundown.title"
+    },
+    {
+        "name": "#RunDown.AirDate#",
+        "description": "Дата планового эфира выпуска",
+        "subsystem": "news",
+        "alias": "rundown.air_date"
+    },
+    {
+        "name": "#RunDown.AirTime#",
+        "description": "Время планового эфира выпуска",
+        "subsystem": "news",
+        "alias": "rundown.air_date"
+    },
+    {
+        "name": "#RunDown.DurationPlan#",
+        "description": "Плановая длительность выпуска",
+        "subsystem": "news",
+        "alias": "rundown.duration"
+    },
+    {
+        "name": "#RunDown.DurationFact#",
+        "description": "Фактическая длительность выпуска",
+        "subsystem": "news",
+        "alias": "rundown.fact_duration"
+    },
+    {
+        "name": "#RunDown.SumDurationPlan#",
+        "description": "Суммарная плановая длительность выпуска",
+        "subsystem": "news",
+        "alias": "rundown.sum_plan_durat"
+    },
+    {
+        "name": "#RunDown.Author#",
+        "description": "Автор выпуска",
+        "subsystem": "news",
+        "alias": "rundown.author"
+    },
+    {
+        "name": "#RunDown.State#",
+        "description": "Статус выпуска",
+        "subsystem": "news",
+        "alias": "command"
+    },
+
+    {
+        "name": "#Story.Pos#",
+        "description": "Номер события в выпуске",
+        "subsystem": "news",
+        "alias": "rundown.content.%d.pos"
+    },
+    {
+        "name": "#Story.ID#",
+        "description": "ID события",
+        "subsystem": "news",
+        "alias": "rundown.content.%d.story.id"
+    },
+    {
+        "name": "#Story.Name#",
+        "description": "Название события",
+        "subsystem": "news",
+        "alias": "rundown.content.%d.story.name"
+    },
+    {
+        "name": "#Story.Type#",
+        "description": "Название типа события",
+        "subsystem": "news",
+        "alias": "rundown.content.%d.story.type"
+    },
+    {
+        "name": "#Story.Source#",
+        "description": "Источник события (только при печати из выпуска)",
+        "subsystem": "news",
+        "alias": "rundown.content.%d.story.source"
+    },
+    {
+        "name": "#Story.Presenter#",
+        "description": "Начитка события",
+        "subsystem": "news",
+        "alias": "rundown.content.%d.story.presenter"
+    },
+    {
+        "name": "#Story.Author#",
+        "description": "Автор события",
+        "subsystem": "news",
+        "alias": "rundown.content.%d.story.author"
+    },
+    {
+        "name": "#Story.VideoEditor#",
+        "description": "Монтажер события",
+        "subsystem": "news",
+        "alias": "rundown.content.%d.story.video_editor"
+    },
+    {
+        "name": "#Story.Version#",
+        "description": "Текущая версия события",
+        "subsystem": "news",
+        "alias": "rundown.content.%d.story.version"
+    },
+    {
+        "name": "#Story.DurationPlan#",
+        "description": "Плановый хронометраж события",
+        "subsystem": "news",
+        "alias": "rundown.content.%d.story.plan_durat"
+    },
+    {
+        "name": "#Story.DurationFact#",
+        "description": "Фактический хронометраж события",
+        "subsystem": "news",
+        "alias": "rundown.content.%d.story.fact_duration"
+    },
+    {
+        "name": "#Story.StartPlan#",
+        "description": "Смещение от начала выпуска по плановой длительности",
+        "subsystem": "news",
+        "alias": "rundown.content.%d.story.plan_start"
+    },
+    {
+        "name": "#Story.StartFact#",
+        "description": "Смещение от начала выпуска по фактической длительности",
+        "subsystem": "news",
+        "alias": "rundown.content.%d.story.fact_start"
+    },
+    {
+        "name": "#Story.Skip#",
+        "description": "Состояние пропуска (если пропущено, выведет слово «Пропущено», иначе - пусто)",
+        "subsystem": "news",
+        "alias": "rundown.content.%d.skip_flag"
+    },
+    {
+        "name": "#Story.State#",
+        "description": "Статус события",
+        "subsystem": "news",
+        "alias": "rundown.content.%d.story.status"
+    },
+    {
+        "name": "#Story.VideoState#",
+        "description": "Видео статус события",
+        "subsystem": "news",
+        "alias": "rundown.content.%d.story.status_video"
+    },
+    {
+        "name": "#Story.Text#",
+        "description": "Текст события",
+        "subsystem": "news",
+        "alias": "rundown.content.%d.story.text.text"
+    },
+
+    {
+        "name": "#Media.Pos#",
+        "description": "Номер контента по порядку в событии",
+        "subsystem": "news",
+        "alias": "rundown.content.%d.story.media_content.%d.pos"
+    },
+    {
+        "name": "#Media.ID#",
+        "description": "ID клипа/графики",
+        "subsystem": "news",
+        "alias": "rundown.content.%d.story.media_content.%d.asset_id"
+    },
+    {
+        "name": "#Media.Name#",
+        "description": "Название клипа/графики",
+        "subsystem": "news",
+        "alias": "rundown.content.%d.story.media_content.%d.name"
+    },
+    {
+        "name": "#Media.Start#",
+        "description": "Смещение от начала события клипа/графики",
+        "subsystem": "news",
+        "alias": "rundown.content.%d.story.media_content.%d.mark_in"
+    },
+    {
+        "name": "#Media.Duration#",
+        "description": "Длительность клипа/графики",
+        "subsystem": "news",
+        "alias": "rundown.content.%d.story.media_content.%d.duration"
+    },
+    {
+        "name": "#Media.Params#",
+        "description": "Параметры (для графики выводятся значения параметров через косую черту)",
+        "subsystem": "news",
+        "alias": "rundown.content.%d.story.media_content.%d"
+    },
+    {
+        "name": "#Media.Type#",
+        "description": "Параметры (для графики выводятся значения параметров через косую черту)",
+        "subsystem": "news",
+        "alias": "rundown.content.%d.story.media_content.%d.type"
+    },
+    {
+        "name": "#Repeat#Story#",
+        "description": "Блок данных события, выводимый для каждого события в списке",
+        "subsystem": "news",
+        "alias": "rundown.content"
+    },
+    {
+        "name": "#Repeat#Media#",
+        "description": "Блок данных медиа, выводимый для каждого клипа/графики в списке",
+        "subsystem": "news",
+        "alias": "rundown.content.%d.story.media_content"
+    },
+    {
+        "name": "#Monitoring.Date#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "date"
+    },
+    {
+        "name": "#Repeat#Monitor#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "requests"
+    },
+    {
+        "name": "#Monitor.ID#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "requests.%d.id_entity_object"
+    },
+    {
+        "name": "#Monitor.CustomID#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "requests.%d.custom_id"
+    },
+    {
+        "name": "#Monitor.StartTime#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "requests.%d.start_time"
+    },
+    {
+        "name": "#Monitor.EndTime#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "requests.%d.end_time"
+    },
+    {
+        "name": "#Monitor.Name#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "requests.%d.name"
+    },
+    {
+        "name": "#Monitor.StatusID#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "requests.%d.id_status"
+    },
+    {
+        "name": "#Repeat#Infopovods#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "requests.%d.infopovods"
+    },
+    {
+        "name": "#Infopovods.ID#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "requests.%d.infopovods.%d.id"
+    },
+    {
+        "name": "#Infopovods.Title#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "requests.%d.infopovods.%d.value"
+    },
+    {
+        "name": "#Repeat#Locations#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "requests.%d.locations"
+    },
+    {
+        "name": "#Locations.Locations#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "requests.%d.locations.%d"
+    },
+    {
+        "name": "#Repeat#FilmCrews#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "requests.%d.film_crews"
+    },
+    {
+        "name": "#FilmCrews.ID#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "requests.%d.film_crews.%d.id"
+    },
+    {
+        "name": "#FilmCrews.Name#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "requests.%d.film_crews.%d.value"
+    },
+    {
+        "name": "#FilmCrews.Position#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "requests.%d.film_crews.%d.position"
+    },
+    {
+        "name": "#Repeat#Equipment#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "requests.%d.equipment"
+    },
+    {
+        "name": "#Equipment.ID#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "requests.%d.equipment.%d.id"
+    },
+    {
+        "name": "#Equipment.Name#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "requests.%d.equipment.%d.value"
+    },
+    {
+        "name": "#Equipment.Type#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "requests.%d.equipment.%d.equipment_type"
+    },
+    {
+        "name": "#Repeat#Transport#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "requests.%d.transport"
+    },
+    {
+        "name": "#Transport.ID#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "requests.%d.transport.%d.id"
+    },
+    {
+        "name": "#Transport.Name#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "requests.%d.transport.%d.value"
+    },
+    {
+        "name": "#Transport.Type#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "requests.%d.transport.%d.transport_type"
+    },
+    {
+        "name": "#Reports.AverageDutyHours#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "summary.duty_hours_avg"
+    },
+    {
+        "name": "#Reports.SummaryDutyHours#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "summary.duty_hours_sum"
+    },
+    {
+        "name": "#Reports.AverageTotalHours#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "summary.total_hours_avg"
+    },
+    {
+        "name": "#Reports.SummaryTotalHours#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "summary.total_hours_sum"
+    },
+    {
+        "name": "#Reports.AverageShootingHours#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "summary.shooting_hours_avg"
+    },
+    {
+        "name": "#Reports.SummaryShootingHours#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "summary.shooting_hours_sum"
+    },
+    {
+        "name": "#Repeat#Employees#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees"
+    },
+    {
+        "name": "#Employees.Schedule#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.value.schedule"
+    },
+    {
+        "name": "#Employees.DaysOff#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.value.days_off"
+    },
+    {
+        "name": "#Employees.SickDays#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.value.sick_days"
+    },
+    {
+        "name": "#Employees.WorkDays#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.value.work_days"
+    },
+    {
+        "name": "#Employees.DutyHours#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.value.duty_hours"
+    },
+    {
+        "name": "#Employees.TotalHours#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.value.total_hours"
+    },
+    {
+        "name": "#Employees.VacationDays#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.value.vacation_days"
+    },
+    {
+        "name": "#Employees.ShootingHours#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.value.shooting_hours"
+    },
+    {
+        "name": "#Employees.ShootingsCount#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.value.shootings_count"
+    },
+    {
+        "name": "#Employees.BusinessTripDays#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.value.business_trip_days"
+    },
+    {
+        "name": "#Employees.Employee#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.fio"
+    },
+    {
+        "name": "#Employees.Position#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.position"
+    },
+    {
+        "name": "#Reports.PastShiftsSum#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "summary.past_shifts_sum"
+    },
+    {
+        "name": "#Reports.TotalShiftsSum#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "summary.total_shifts_sum"
+    },
+    {
+        "name": "#Reports.ExtraDaysOffSum#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "summary.extra_days_off_sum"
+    },
+    {
+        "name": "#Reports.ExtraWorkDaysSum#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "summary.extra_work_days_sum"
+    },
+    {
+        "name": "#Reports.CurrentMonthShiftsSum#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "summary.current_month_shifts_sum"
+    },
+    {
+        "name": "#Employees.PastShifts#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.value.past_shifts"
+    },
+    {
+        "name": "#Employees.TotalShifts#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.value.total_shifts"
+    },
+    {
+        "name": "#Employees.ExtraDaysOff#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.value.extra_days_off"
+    },
+    {
+        "name": "#Employees.ExtraWorkDays#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.value.extra_work_days"
+    },
+    {
+        "name": "#Employees.CurrentMonthShifts#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.value.current_month_shifts"
+    },
+    {
+        "name": "#Repeat#ProvidedDaysOff#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.value.provided_days_off_dates"
+    },
+    {
+        "name": "#ProvidedDaysOff.ProvidedDayOff#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "employees.%d.value.provided_days_off_dates.%d"
+    },
+    {
+        "name": "#Repeat#ReportUnit#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": ""
+    },
+    {
+        "name": "#ReportUnit.Date#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.date"
+    },
+    {
+        "name": "#ReportUnit.Quarantine#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.quarantine"
+    },
+    {
+        "name": "#ReportUnit.OnSchedule#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.on_schedule"
+    },
+    {
+        "name": "#ReportUnit.Vacation#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.vacation"
+    },
+    {
+        "name": "#ReportUnit.Sick#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.sick"
+    },
+    {
+        "name": "#ReportUnit.ExtraDayOff#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.extra_day_off"
+    },
+    {
+        "name": "#ReportUnit.ExtraWorkDay#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.extra_work_day"
+    },
+    {
+        "name": "#ReportUnit.Total#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.total"
+    },
+    {
+        "name": "#Repeat#Program#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": ""
+    },
+    {
+        "name": "#Program.ID#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.id_program"
+    },
+    {
+        "name": "#Program.Name#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.name"
+    },
+    {
+        "name": "#Repeat#ProgramDate#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.value"
+    },
+    {
+        "name": "#ProgramDate.Date#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.value.%d.date"
+    },
+    {
+        "name": "#ProgramDate.Count#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "%d.value.%d.count"
+    },
+    {
+        "name": "#Repeat#ReportEquipment#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "rows"
+    },
+    {
+        "name": "#ReportEquipment.ID#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "rows.%d.id_equipment"
+    },
+    {
+        "name": "#ReportEquipment.Name#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "rows.%d.name"
+    },
+    {
+        "name": "#ReportEquipment.Total#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "rows.%d.total"
+    },
+    {
+        "name": "#Repeat#EquipmentDate#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "rows.%d.value"
+    },
+    {
+        "name": "#EquipmentDate.Date#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "rows.%d.value.%d.date"
+    },
+    {
+        "name": "#EquipmentDate.Count#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "rows.%d.value.%d.count"
+    },
+    {
+        "name": "#EquipmentTotal.Total#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "totals.total"
+    },
+    {
+        "name": "#Repeat#EquipmentTotalDate#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "totals.value"
+    },
+    {
+        "name": "#EquipmentTotalDate.Date#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "totals.value.%d.date"
+    },
+    {
+        "name": "#EquipmentTotalDate.Count#",
+        "description": "",
+        "subsystem": "plan",
+        "alias": "totals.value.%d.count"
+    }
+]

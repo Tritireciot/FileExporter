@@ -1,0 +1,42 @@
+services:
+  backend:
+    container_name: backend
+    build:
+      context: ./
+      dockerfile: Dockerfile.test
+    restart: always
+    env_file: ".env"
+    volumes:
+      #- ./templates:/app/templates # unix
+      - "./templates:/app/templates" # windows
+    ports:
+      - 8000:8000
+    depends_on:
+      db:
+        condition: service_started
+    networks:
+      - app
+
+
+  db:
+    image: postgres:12
+    container_name: backend-db
+    restart: always
+    environment:
+      POSTGRES_DB: backend-db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+    volumes:
+      - test_pg_data:/var/lib/postgresql/data
+    networks:
+      - app
+
+
+volumes:
+  test_pg_data:
+    name: test_pg_data
+  templates_data:
+    name: templates_data
+
+networks:
+  app:
