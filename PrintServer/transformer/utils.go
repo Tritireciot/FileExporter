@@ -3,55 +3,14 @@ package transformer
 import (
 	"AutoplayX/paths"
 	"PrintServer/PrintServer/config"
+	logging "PrintServer/agent"
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
-	"regexp"
-	"strings"
 	"time"
 )
-
-type TagAlias struct {
-	Name string `json:"name"`
-	Alias string `json:"alias"`
-}
-
-func getAliases(tag_names []string, subsystem string) ([]TagAlias, error) {
-	client := &http.Client{}
-	jsonData, err := json.Marshal(tag_names)
-	if err != nil {
-		return nil, err
-	}
-	req, err := http.NewRequest(
-		"POST", 
-		fmt.Sprintf(
-			"http://%s/api/%s/config/svc/print/db/tags_aliases", 
-			config.GetSubAccess().GetPath(), 
-			subsystem,
-		), 
-		bytes.NewReader(jsonData),
-	)
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set(paths.SubAccessTokenTag, config.SubAccessCommKey)
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	var aliases []TagAlias
-
-	err = json.Unmarshal(body, &aliases)
-	return aliases, err
-}
 
 func getTemplate(template *Template) error {
 	client := &http.Client{}
@@ -78,9 +37,54 @@ func getTemplate(template *Template) error {
 	if err != nil {
 		return err
 	}
+
+	logging.Agent.AddSimpleInfo("Получение шаблона", "printcontent: " + string(body) + resp.Status + "\n" + req.URL.Path)
+	
 	err = json.Unmarshal(body, template)
 	return err
 	
+}
+
+func getPrintData(context any, template *Template) (map[string]any, error) {
+	client := &http.Client{}
+	data := map[string]any{
+		"context": context,
+		"type": template.Type,
+		"select_opts": template.RenderData,
+	}
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(
+		"POST", 
+		fmt.Sprintf(
+			"http://%s/api/%s/svc/print_data", 
+			config.GetSubAccess().GetPath(), 
+			template.Subsystem,
+		), 
+		bytes.NewReader(jsonData),
+	)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set(paths.SubAccessTokenTag, config.SubAccessCommKey)
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var printData map[string]any
+	logging.Agent.AddSimpleInfo("Получение шаблона", "printcontent: " + string(body) + resp.Status + "\n" + req.URL.Path)
+
+	err = json.Unmarshal(body, &printData)
+	
+	return printData, err
 }
 
 func modifyStructure(entity_stack []string, requiredTags *map[string]any, connections *map[string][]string) {
@@ -98,36 +102,6 @@ func modifyStructure(entity_stack []string, requiredTags *map[string]any, connec
 			sub_map, _ = (*sub_requiredTags)[entity].(map[string]any)
 		}
 		sub_requiredTags = &sub_map
-	}
-}
-
-func IncludeRepeatStructure(template_content string, requiredTags *map[string]any) map[string][]string {
-	connections := map[string][]string{}
-	repeat_pattern := regexp.MustCompile(`</?#Repeat#([A-Za-z]+)#>`)
-	stack := []string{}
-	for _, tag := range repeat_pattern.FindAllStringSubmatch(template_content, -1) {
-		real_tag, entity := tag[0], tag[1]
-		if strings.Contains(real_tag, "/") {
-			modifyStructure(stack, requiredTags, &connections)
-			stack = stack[:len(stack)-1]
-		} else {
-			stack = append(stack, entity)
-		}
-	}
-	return connections
-}
-
-func CompleteConnections(connections map[string][]string, requiredTags *map[string]any, repeatTags *map[string]string) {
-	for source, destinations := range connections {
-		for _, destination := range destinations {
-			destination_map := (*requiredTags)[destination]
-			if source_map, ok := (*requiredTags)[source].(map[string]any); ok {
-				source_map[destination] = destination_map
-				delete(*requiredTags, destination)
-			}
-			delete(*repeatTags, destination)
-		}
-
 	}
 }
 
@@ -158,4 +132,15 @@ func ShortWeekday(dateStr string) string {
 
 	return t.Format("2") + " " + ruShortWeekDays[t.Weekday()]
 
+}
+
+func FramesToTime(frames int) string {
+	fps := 25
+	rest_frames := frames % fps
+	seconds := frames / fps
+	rest_seconds := seconds % 60
+	minutes := seconds / 60
+	rest_minutes := minutes % 60
+	hours := minutes / 60
+	return fmt.Sprintf("%02d:%02d:%02d:%02d", hours, rest_minutes, rest_seconds, rest_frames)
 }

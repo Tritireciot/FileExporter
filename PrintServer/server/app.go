@@ -27,7 +27,7 @@ func (app *App) Init(transformer_ transformer.Transformer) {
 	mainRouter := mux.NewRouter()
 	mainRouter.Use(LoggingMiddleware)
 	app.Router = mainRouter.PathPrefix("/api/core/print").Subrouter()
-	app.Router.Use(handlersMiddlewareJWTRSA)
+	//app.Router.Use(handlersMiddlewareJWTRSA)
 	app.InitializeRouter(transformer_)
 }
 

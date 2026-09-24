@@ -6,4 +6,5 @@ type Template struct {
 	Content string
 	Subsystem string
 	RenderData map[string]bool
+	Type string
 }
