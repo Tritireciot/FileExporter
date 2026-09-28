@@ -94,6 +94,5 @@ func (reshaper *Reshaper) TransformTemplate(template Template) (string, error) {
 	logging.Agent.AddSimpleInfo("Подготовка шаблона печати", "Заменены теги повторов: "+fmt.Sprint(repeats))
 	template_content = reshaper.ChangeBaseTags(template_content, repeats)
 
-
 	return template_content, nil
 }

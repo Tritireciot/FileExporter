@@ -7,7 +7,6 @@ import (
 	"html/template"
 )
 
-
 type Transformer interface {
 	RenderTemplate(template_id int, subsystem string, raw_data any) (string, string, error)
 	PDFFromTemplate(htmlContent string) ([]byte, error)
@@ -52,18 +51,18 @@ func (service *TransformService) RenderTemplate(template_id int, subsystem strin
 		return "", "", err
 	}
 
-	logging.Agent.AddSimpleInfo("Подготовка шаблона печати", "Шаблон: " + formatted_template)
+	logging.Agent.AddSimpleInfo("Подготовка шаблона печати", "Шаблон: "+formatted_template)
 	form_template, err := template.New(template_.Name).Funcs(template.FuncMap{
 		"DashedYMDtoPrintDate": DashedYMDtoPrintDate,
-		"Weekday": ShortWeekday,
-		"FramesToTime": FramesToTime,
+		"Weekday":              ShortWeekday,
+		"FramesToTime":         FramesToTime,
 	}).Parse(formatted_template)
 
 	if err != nil {
 		logging.Agent.AddSimpleError("Подготовка шаблона на печать", "Не удалось сформировать шаблон: "+err.Error())
 		return "", "", err
 	}
-	data, err := getPrintData(raw_data, &template_) 
+	data, err := getPrintData(raw_data, &template_)
 	if err != nil {
 		logging.Agent.AddSimpleError("Подготовка шаблона печати", err.Error())
 		return "", "", err

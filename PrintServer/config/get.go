@@ -18,6 +18,8 @@ var (
 	argServiceId = kingpin.Flag("sid", "Service id.").Short('s').String()
 	argCfgMethod = kingpin.Flag("method", "Configuration get method (ini, psql).").Short('m').String()
 	argCfgPath   = kingpin.Flag("path", "Configuration get path (ini - path to file, psql - CFG_PATH=plan:config:127.0.0.1:5432:postgres:postgres).").Short('p').String()
+	argPrintContentHost = kingpin.Flag("phost", "PrintData host.").Short('h').String()
+	argPrintContentPort = kingpin.Flag("pport", "PrintData port.").Short('P').String()
 )
 
 // --------------------------------------------------------------------------------------
@@ -60,6 +62,25 @@ func getConfigurationMethod() (string, string) {
 	return cfgMethod, cfgPath
 }
 
+func getPrintContentURL() {
+
+
+	phostenv := os.Getenv("Print_Content_Host")
+	if len(phostenv) > 0 {
+		PrintContentHost = phostenv
+	} else if argPrintContentHost != nil {
+		PrintContentHost = *argPrintContentHost
+	}
+
+	pportenv := os.Getenv("Print_Content_Port")
+	if len(pportenv) > 0 {
+		PrintContentPort = pportenv
+	} else if argPrintContentPort != nil {
+		PrintContentPort = *argPrintContentPort
+	}
+
+}
+
 // --------------------------------------------------------------------------------------
 func PrepareConfigIniName(executable string) string {
 	return executable[:len(executable)-len(filepath.Ext(executable))] + ".ini"
@@ -86,6 +107,7 @@ func GetConfig() error {
 	//---------------------
 	// Получим ИД службы
 	getServiceID()
+	getPrintContentURL()
 	cfgMethod, cfgPath := getConfigurationMethod()
 
 	if strings.ToLower(cfgMethod) == deploy.CFG_INI_METHOD {

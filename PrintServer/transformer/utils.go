@@ -15,13 +15,13 @@ import (
 func getTemplate(template *Template) error {
 	client := &http.Client{}
 	req, err := http.NewRequest(
-		"GET", 
+		"GET",
 		fmt.Sprintf(
-			"http://%s/api/%s/config/svc/print/db/get_template?id=%d", 
-			config.GetSubAccess().GetPath(), 
+			"http://%s/api/%s/config/svc/print/db/get_template?id=%d",
+			config.GetSubAccess().GetPath(),
 			template.Subsystem,
 			template.ID,
-		), 
+		),
 		nil,
 	)
 	if err != nil {
@@ -38,31 +38,34 @@ func getTemplate(template *Template) error {
 		return err
 	}
 
-	logging.Agent.AddSimpleInfo("Получение шаблона", "printcontent: " + string(body) + resp.Status + "\n" + req.URL.Path)
-	
+	logging.Agent.AddSimpleInfo("Получение шаблона", "printcontent: "+string(body)+resp.Status+"\n"+req.URL.Path)
+
 	err = json.Unmarshal(body, template)
 	return err
-	
+
 }
 
 func getPrintData(context any, template *Template) (map[string]any, error) {
 	client := &http.Client{}
 	data := map[string]any{
 		"context": context,
-		"type": template.Type,
-		"select_opts": template.RenderData,
+		"type":    template.Type,
 	}
 	jsonData, err := json.Marshal(data)
 	if err != nil {
 		return nil, err
 	}
+	printurl := config.GetSubAccess().GetPath()
+	if config.PrintContentHost != "" && config.PrintContentPort != "" {
+		printurl = config.PrintContentHost + ":" + config.PrintContentPort
+	}
 	req, err := http.NewRequest(
-		"POST", 
+		"POST",
 		fmt.Sprintf(
-			"http://%s/api/%s/svc/print_data", 
-			config.GetSubAccess().GetPath(), 
+			"http://%s/api/%s/svc/printcontent",
+			printurl,
 			template.Subsystem,
-		), 
+		),
 		bytes.NewReader(jsonData),
 	)
 	if err != nil {
@@ -80,10 +83,10 @@ func getPrintData(context any, template *Template) (map[string]any, error) {
 	}
 
 	var printData map[string]any
-	logging.Agent.AddSimpleInfo("Получение шаблона", "printcontent: " + string(body) + resp.Status + "\n" + req.URL.Path)
+	logging.Agent.AddSimpleInfo("Получение данных для печати", "printcontent: "+string(body)+resp.Status+"\n"+req.URL.Path + "\n" + printurl)
 
 	err = json.Unmarshal(body, &printData)
-	
+
 	return printData, err
 }
 

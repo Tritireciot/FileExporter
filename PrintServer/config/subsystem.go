@@ -28,6 +28,8 @@ type serviceConfiguration struct {
 
 var (
 	ServiceID string // ИД службы
+	PrintContentHost string
+	PrintContentPort string
 )
 
 func GetServiceID() int {
