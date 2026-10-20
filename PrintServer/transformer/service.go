@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
+	"PrintServer/PrintServer/compiler"
 )
 
 type Transformer interface {
@@ -14,13 +15,13 @@ type Transformer interface {
 }
 
 type TransformService struct {
-	reshaper Reshaper
+	parser *template_compiler.Parser
 	pdfExec  string
 }
 
 func NewTransformService() *TransformService {
 	return &TransformService{
-		reshaper: *NewReshaper(),
+		parser: template_compiler.NewParser(),
 		pdfExec:  "",
 	}
 }
@@ -45,12 +46,7 @@ func (service *TransformService) RenderTemplate(template_id int, subsystem strin
 		return "", "", &TemplateNotFoundError{id: template_id}
 	}
 
-	formatted_template, err := service.reshaper.TransformTemplate(template_)
-	if err != nil {
-		logging.Agent.AddSimpleError("Подготовка шаблона на печать", "Не удалось сформировать шаблон: "+err.Error())
-		return "", "", err
-	}
-
+	formatted_template := service.parser.Parse(template_.Content)
 	logging.Agent.AddSimpleInfo("Подготовка шаблона печати", "Шаблон: "+formatted_template)
 	form_template, err := template.New(template_.Name).Funcs(template.FuncMap{
 		"DashedYMDtoPrintDate": DashedYMDtoPrintDate,
