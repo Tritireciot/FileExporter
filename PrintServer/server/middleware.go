@@ -2,6 +2,7 @@ package server
 
 import (
 	"AutoplayX/jwtoken"
+	"AutoplayX/paths"
 	"PrintServer/PrintServer/config"
 	logging "PrintServer/agent"
 	"bytes"
@@ -95,5 +96,21 @@ func handlersMiddlewareJWTRSA(next http.Handler) http.Handler {
 		ctx := context.WithValue(r.Context(), "uclaims", uclaims)
 
 		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
+// Промежуточная проверка внутренних запросов
+func handlersInternalMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		auth := r.Header.Get(paths.SubAccessTokenTag)
+		if auth != config.SubAccessCommKey {
+			code := http.StatusUnauthorized
+			http.Error(w, http.StatusText(code), code)
+			return
+		}
+
+		// Проверка на наличие сетевого ключа
+
+		next.ServeHTTP(w, r)
 	})
 }

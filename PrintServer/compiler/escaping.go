@@ -1,35 +1,78 @@
 package template_compiler
 
-import "fmt"
+import (
+	"PrintServer/PrintServer/diagnostic"
+	"strconv"
+)
 
-func checkEscapeCharacters(runes []rune, index int) (bool, string, int) {
-	if len(runes) <= index {
-		return false, "", 0
+func (s *parseSession) parseEscape() *diagnostic.Diagnostic {
+	s.cursor.advance(1)
+
+	if s.cursor.eof() {
+		s.output.WriteRune('\\')
+		return nil
 	}
 
-	switch runes[index] {
+	current, _ := s.cursor.current()
+
+	switch current {
 	case '#':
-		return true, `{{ "#" }}`, 2
+		s.writeTemplateLiteral("#")
+		s.cursor.advance(1)
+		return nil
+
 	case '\\':
-		return true, `\`, 2
+		s.output.WriteRune('\\')
+		s.cursor.advance(1)
+		return nil
+
 	case '<':
-		if index+1 < len(runes) && runes[index+1] == '#' {
-			endIndex := index + 1
-			closed := false
-			for endIndex < len(runes) {
-				if runes[endIndex] == '#' && endIndex+1 < len(runes) && runes[endIndex+1] == '>' {
-					closed = true
-					endIndex++
-					break
-				}
-				endIndex++
-			}
-			if closed {
-				res := string(runes[index : endIndex+1])
-				return true, fmt.Sprintf(`{{ "%s" }}`, res), len(res) + 1
-			}
-			return true, `{{ "<#" }}`, 3
+		if !s.cursor.startsWith("<#") {
+			s.output.WriteRune('\\')
+			return nil
 		}
+
+		return s.parseEscapedSpecialTag()
+
+	default:
+		s.output.WriteRune('\\')
+		return nil
 	}
-	return false, "", 0
+}
+
+func (s *parseSession) writeTemplateLiteral(value string) {
+	s.output.WriteString("{{ ")
+	s.output.WriteString(strconv.Quote(value))
+	s.output.WriteString(" }}")
+}
+
+func (s *parseSession) parseEscapedSpecialTag() *diagnostic.Diagnostic {
+	const suffix = "#>"
+
+	tagStartIndex := s.cursor.runeIndex()
+
+	for !s.cursor.eof() && !s.cursor.startsWith(suffix) {
+		s.cursor.advance(1)
+	}
+
+	if s.cursor.eof() {
+		literal := s.cursor.slice(
+			tagStartIndex,
+			s.cursor.runeIndex(),
+		)
+
+		s.writeTemplateLiteral(literal)
+		return nil
+	}
+
+	s.cursor.advance(len(suffix))
+
+	literal := s.cursor.slice(
+		tagStartIndex,
+		s.cursor.runeIndex(),
+	)
+
+	s.writeTemplateLiteral(literal)
+
+	return nil
 }

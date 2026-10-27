@@ -1,147 +1,167 @@
 package template_compiler
 
 import (
-	"fmt"
+	"PrintServer/PrintServer/diagnostic"
 	"strings"
 )
 
-func (parser *Parser) Parse(templateStr string) string {
-	defer func() {
-		parser.BlockStack = nil 
-		parser.Encounter = 0 
-	}()
+func (p *parser) Parse(source string) ParseResult {
+	session := parseSession{
+		cursor: cursor{
+			source: []rune(source),
+			line:   1,
+			column: 1,
+		},
+	}
 
-	runes := []rune(templateStr)
-	var result strings.Builder
-	i := 0
+	return session.parse()
+}
 
-	for i < len(runes) {
-		if i+1 < len(runes) {
-			if runes[i] == '{' && runes[i+1] == '{' {
-				result.WriteString(`{{ "{{" }}`)
-				i += 2
-				continue
-			}
-			if runes[i] == '}' && runes[i+1] == '}' {
-				result.WriteString(`{{ "}}" }}`)
-				i += 2
-				continue
-			}
+func (s *parseSession) parse() ParseResult {
+	for !s.cursor.eof() {
+		previousIndex := s.cursor.runeIndex()
 
-			if runes[i] == '\\' {
-				if ok, change, add := checkEscapeCharacters(runes, i+1); ok {
-					result.WriteString(change)
-					i += add
-					continue
-				}
-			}
-
-			if runes[i] == '<' && runes[i+1] == '#' {
-				endIndex := i + 2
-				closed := false
-				isValid := true
-
-				for endIndex < len(runes) {
-					if runes[endIndex] == '#' && endIndex+1 < len(runes) && runes[endIndex+1] == '>' {
-						closed = true
-						endIndex++
-						break
-					}
-					if !isValidFieldChar(runes[endIndex]) {
-						isValid = false
-						break
-					}
-					endIndex++
-				}
-
-				if closed && isValid {
-					if ok, parsed := parser.parseSpecialTags(string(runes[i+1 : endIndex])); ok {
-						result.WriteString(parsed)
-						i = endIndex + 1
-						continue
-					}
-				}
-			}
-
-			if runes[i] == '#' {
-				endIndex := i + 1
-				closed := false
-				isValid := true
-
-				for endIndex < len(runes) {
-					if runes[endIndex] == '#' {
-						closed = true
-						break
-					}
-					if !isValidFieldChar(runes[endIndex]) {
-						isValid = false
-						break
-					}
-					endIndex++
-				}
-
-				if closed && isValid && endIndex-i > 2 {
-					rawContent := string(runes[i+1 : endIndex])
-					
-					var tokens []string
-					var current strings.Builder
-					
-					for _, r := range rawContent {
-						if r == ' ' || r == '|' {
-							if current.Len() > 0 {
-								tokens = append(tokens, current.String())
-								current.Reset()
-							}
-							if r == '|' {
-								tokens = append(tokens, "|")
-							}
-						} else {
-							current.WriteRune(r)
-						}
-					}
-					if current.Len() > 0 {
-						tokens = append(tokens, current.String())
-					}
-
-					for idx, token := range tokens {
-						if token == "|" {
-							continue
-						}
-
-						isFunc := idx > 0 && tokens[idx-1] == "|"
-
-						if strings.Contains(token, "[") && strings.Contains(token, "]") {
-							tokens[idx] = parser.convertIndexes(token)
-						} else {
-							replaced := parser.ReplaceVar(token)
-
-							if strings.HasPrefix(replaced, "$") {
-								tokens[idx] = replaced
-							} else if isFunc || strings.HasPrefix(replaced, `"`) || strings.HasPrefix(replaced, `'`) || replaced == "." {
-								tokens[idx] = replaced
-							} else {
-								tokens[idx] = "." + replaced
-							}
-						}
-					}
-
-					var finalContent strings.Builder
-					for idx, token := range tokens {
-						if idx > 0 {
-							finalContent.WriteString(" ")
-						}
-						finalContent.WriteString(token)
-					}
-
-					result.WriteString(fmt.Sprintf("{{ %s }}", finalContent.String()))
-					i = endIndex + 1
-					continue
-				}
+		if err := s.parseNext(); err != nil {
+			return ParseResult{
+				Output:      s.output.String(),
+				Diagnostics: []diagnostic.Diagnostic{*err},
 			}
 		}
 
-		result.WriteRune(runes[i])
-		i++
+		if s.cursor.runeIndex() <= previousIndex {
+			panic("parseNext did not advance cursor")
+		}
 	}
-	return result.String()
+
+	if len(s.blockStack) > 0 {
+		scope := s.blockStack[len(s.blockStack)-1]
+
+		message := "Блочная конструкция не закрыта"
+		hint := "Добавьте <#End#>"
+
+		switch scope.BlockType {
+		case blockTypeRepeat:
+			message = "Конструкция Repeat не закрыта"
+			hint = "Добавьте <#End#> для закрытия Repeat"
+
+		case blockTypeIf:
+			message = "Конструкция If не закрыта"
+			hint = "Добавьте <#End#> для закрытия If"
+
+		case blockTypeWith:
+			message = "Конструкция With не закрыта"
+			hint = "Добавьте <#End#> для закрытия With"
+		}
+
+		return ParseResult{
+			Output: s.output.String(),
+			Diagnostics: []diagnostic.Diagnostic{
+				{
+					Code:    diagnostic.CodeUnclosedBlock,
+					Stage:   diagnostic.StageTranspile,
+					Message: message,
+					Span: &diagnostic.Span{
+						Start: scope.OpenedAt,
+						End:   s.cursor.position(),
+					},
+					Hint: hint,
+				},
+			},
+		}
+	}
+
+	return ParseResult{
+		Output: s.output.String(),
+	}
+}
+
+func (s *parseSession) parseNext() *diagnostic.Diagnostic {
+	current, ok := s.cursor.current()
+	if !ok {
+		return nil
+	}
+
+	switch {
+	case s.cursor.startsWith("{{"):
+
+	case s.cursor.startsWith("}}"):
+
+	case s.cursor.startsWith("\\"):
+		return s.parseEscape()
+
+	case s.cursor.startsWith("<#BreakPage#>"):
+		s.output.WriteString(`<div style="page-break-before: always;"></div>`)
+		s.output.WriteRune('\n')
+		s.cursor.advance(len("<#BreakPage#>"))
+		return nil
+
+	case s.cursor.startsWith("<#Repeat#"):
+		return s.parseRepeat()
+
+	case s.cursor.startsWith("<#With#"):
+		return s.parseWith()
+
+	case s.cursor.startsWith("<#If "):
+		return s.parseIf()
+
+	case s.cursor.startsWith("<#ElseIf "):
+		return s.parseElseIf()
+
+	case s.cursor.startsWith("<#Else#>"):
+		return s.parseElse()
+
+	case s.cursor.startsWith("<#End#>"):
+		return s.parseEnd()
+
+	case s.cursor.startsWith("<#"):
+		return s.parseUnknownSpecialTag()
+
+	case s.cursor.startsWith("#"):
+		matched, err := s.tryParseField()
+		if matched || err != nil {
+			return err
+		}
+	}
+
+	s.output.WriteRune(current)
+	s.cursor.advance(1)
+
+	return nil
+}
+
+func (s *parseSession) resolveScopeReference(
+	value string,
+) string {
+	for i := len(s.blockStack) - 1; i >= 0; i-- {
+		scope := s.blockStack[i]
+
+		if scope.UserIndexName != "" &&
+			value == scope.UserIndexName {
+			return scope.IndexName
+		}
+
+		if internalName, ok := scope.Fields[value]; ok {
+			return internalName
+		}
+
+		bestUserName := ""
+		bestInternalName := ""
+
+		for userName, internalName := range scope.Fields {
+			prefix := userName + "."
+
+			if strings.HasPrefix(value, prefix) &&
+				len(userName) > len(bestUserName) {
+				bestUserName = userName
+				bestInternalName = internalName
+			}
+		}
+
+		if bestUserName != "" {
+			return bestInternalName +
+				value[len(bestUserName):]
+		}
+	}
+
+	return value
 }

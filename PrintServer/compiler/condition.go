@@ -1,60 +1,14 @@
 package template_compiler
 
 import (
+	"PrintServer/PrintServer/diagnostic"
 	"fmt"
 	"strings"
 	"unicode"
+	"unicode/utf8"
 )
 
-type Node interface {
-	String() string
-}
-
-type LiteralNode struct {
-	Value string
-	Parser *Parser
-}
-
-func (n *LiteralNode) String() string {
-
-	if len(n.Value) == 0 {
-		return ""
-	}
-	
-	if strings.HasPrefix(n.Value, `"`) || strings.HasPrefix(n.Value, `'`) {
-		return n.Value
-	}
-	if unicode.IsDigit(rune(n.Value[0])) || n.Value == "true" || n.Value == "false" {
-		return n.Value
-	}
-	
-
-	if strings.Contains(n.Value, "[") && strings.Contains(n.Value, "]") {
-		if n.Parser != nil {
-			return n.Parser.convertIndexes(n.Value)
-		}
-	}
-	
-	if n.Parser != nil {
-		replaced := n.Parser.ReplaceVar(n.Value)
-		if len(replaced) > 0 && replaced[0] == '$' {
-			return replaced
-		}
-		return "." + replaced
-	}
-	
-	return "." + n.Value
-}
-
-// Узел для оператора (например, "==", "&&")
-type BinaryNode struct {
-	Op    string
-	Left  Node
-	Right Node
-}
-
-// Карта соответствия операторов Go-шаблонам
-var templateOps = map[string]string{
+var templateOperators = map[string]string{
 	"||": "or",
 	"&&": "and",
 	"==": "eq",
@@ -67,224 +21,486 @@ var templateOps = map[string]string{
 	"-":  "sub",
 	"*":  "mul",
 	"/":  "div",
+	"!":  "not",
 }
 
-func (n *BinaryNode) String() string {
-	goOp := templateOps[n.Op]
-	if goOp == "" {
-		goOp = n.Op // на случай +, -, *, /
-	}
-	// Синтаксис Go-шаблонов: (оператор левый_аргумент правый_аргумент)
-	return fmt.Sprintf("(%s %s %s)", goOp, n.Left.String(), n.Right.String())
-}
-
-type NotNode struct {
-	Child Node
-}
-
-func (n *NotNode) String() string {
-	// Переводим в префиксный синтаксис Go-шаблонов: (not выражение)
-	return fmt.Sprintf("(not %s)", n.Child.String())
-}
-
-// --- Парсер на основе алгоритма Сортировочной станции ---
-
-func opPrecedence(op string) int {
-	switch op {
+func conditionOperatorPrecedence(operator string) int {
+	switch operator {
 	case "||":
 		return 1
+
 	case "&&":
 		return 2
+
 	case "==", "!=", "<", ">", "<=", ">=":
 		return 3
+
 	case "+", "-":
 		return 4
+
 	case "*", "/":
 		return 5
-	case "!": 
+
+	case "!":
 		return 6
+
+	default:
+		return 0
 	}
-	return 0
 }
 
-func tokenize(expr string) []string {
-	var tokens []string
-	runes := []rune(expr)
-	i := 0
-	for i < len(runes) {
-		if unicode.IsSpace(runes[i]) {
-			i++
-			continue
-		}
-
-		if unicode.IsLetter(runes[i]) || unicode.IsDigit(runes[i]) || runes[i] == '$' || runes[i] == '.' || runes[i] == '_' {
-			start := i
-			for i < len(runes) && (unicode.IsLetter(runes[i]) || unicode.IsDigit(runes[i]) || runes[i] == '$' || runes[i] == '.' || runes[i] == '_' || runes[i] == '[' || runes[i] == ']') {
-				i++
-			}
-			token := string(runes[start:i])
-			tokens = append(tokens, token)
-			continue
-		}
-
-		if runes[i] == '"' || runes[i] == '\'' {
-			quote := runes[i]
-			start := i
-			i++ 
-			for i < len(runes) && runes[i] != quote {
-				if runes[i] == '\\' && i+1 < len(runes) {
-					i += 2
-					continue
-				}
-				i++
-			}
-			if i < len(runes) { i++ } 
-			tokens = append(tokens, string(runes[start:i]))
-			continue
-		}
-
-		if runes[i] == '(' || runes[i] == ')' {
-			tokens = append(tokens, string(runes[i]))
-			i++
-			continue
-		}
-		if i+1 < len(runes) {
-			nextTwo := string(runes[i : i+2])
-			if _, ok := templateOps[nextTwo]; ok {
-				tokens = append(tokens, nextTwo)
-				i += 2
-				continue
-			}
-		}
-		if strings.ContainsRune("+-*/><!", runes[i]) {
-			tokens = append(tokens, string(runes[i]))
-			i++
-			continue
-		}
-		if unicode.IsLetter(runes[i]) || unicode.IsDigit(runes[i]) || runes[i] == '$' ||
-			runes[i] == '.' ||
-			runes[i] == '_' {
-			start := i
-			for i < len(runes) && (unicode.IsLetter(runes[i]) || runes[i] == '$' || runes[i] == '.' || runes[i] == '_' || unicode.IsDigit(runes[i]) || runes[i] == '.') {
-				i++
-			}
-			tokens = append(tokens, string(runes[start:i]))
-			continue
-		}
-		i++
-	}
-	return tokens
+var conditionTemplateOperators = map[string]string{
+	"||": "or",
+	"&&": "and",
+	"==": "eq",
+	"!=": "ne",
+	"<":  "lt",
+	">":  "gt",
+	"<=": "le",
+	">=": "ge",
+	"+":  "add",
+	"-":  "sub",
+	"*":  "mul",
+	"/":  "div",
+	"!":  "not",
 }
 
-func (parser *Parser) ReplaceVar(token string) string {
-	if len(token) == 0 {
-		return token
+func buildConditionPostfix(
+	tokens []conditionToken,
+) ([]conditionToken, *diagnostic.Diagnostic) {
+	if len(tokens) == 0 {
+		return nil, diagnostic.NewTranspile(
+			diagnostic.CodeExpectedOperand,
+			"Условие не содержит операндов",
+		).
+			WithHint("Укажите поле, литерал или логическое выражение")
 	}
 
-	if token[0] == '"' || token[0] == '\'' {
-		return token
-	}
+	output := make([]conditionToken, 0, len(tokens))
+	operators := make([]conditionToken, 0)
 
-	for i := len(parser.BlockStack) - 1; i >= 0; i-- {
-		scope := parser.BlockStack[i]
-
-		if scope.BlockType == "if" {
-			continue
-		}
-		
-		if scope.UserIndexName != "" && token == scope.UserIndexName {
-			return scope.IndexName
-		}
-		
-		for key, varName := range scope.Fields {
-			if token == key {
-				return varName
-			}
-			if strings.HasPrefix(token, key+".") {
-				return varName + token[len(key):]
-			}
-		}
-	}
-	return token
-}
-
-// Строит дерево выражений
-func (parser *Parser) parseToAST(expr string) Node {
-	tokens := tokenize(expr)
-	var nodeStack []Node
-	var opStack []string
-
-	buildNode := func() {
-
-		if len(opStack) == 0 { return }
-		op := opStack[len(opStack)-1]
-		opStack = opStack[:len(opStack)-1]
-
-		if op == "!" {
-			if len(nodeStack) < 1 { return }
-			child := nodeStack[len(nodeStack)-1]
-			nodeStack = nodeStack[:len(nodeStack)-1]
-			
-			nodeStack = append(nodeStack, &NotNode{Child: child})
-			return
-		}
-
-		if len(nodeStack) < 2 { return }
-		right := nodeStack[len(nodeStack)-1]
-		left := nodeStack[len(nodeStack)-2]
-		nodeStack = nodeStack[:len(nodeStack)-2]
-
-		nodeStack = append(nodeStack, &BinaryNode{Op: op, Left: left, Right: right})
-	}
+	expectOperand := true
 
 	for _, token := range tokens {
-		if token == "(" {
-			opStack = append(opStack, token)
-		} else if token == ")" {
-			for len(opStack) > 0 && opStack[len(opStack)-1] != "(" {
-				buildNode()
+		switch token.Kind {
+		case conditionTokenOperand:
+			if !expectOperand {
+				return nil, diagnostic.NewTranspile(
+					diagnostic.CodeExpectedOperand,
+					"Между операндами отсутствует оператор",
+				).
+					WithHint("Добавьте логический, сравнительный или арифметический оператор").
+					WithSpan(
+						token.Span.Start,
+						token.Span.End,
+					)
 			}
-			if len(opStack) > 0 {
-				opStack = opStack[:len(opStack)-1]
-			} 
-		} else if prec := opPrecedence(token); prec > 0 {
-			if token == "!" {
-				for len(opStack) > 0 && opPrecedence(opStack[len(opStack)-1]) > prec {
-					buildNode()
+
+			output = append(output, token)
+			expectOperand = false
+
+		case conditionTokenLeftParenthesis:
+			if !expectOperand {
+				return nil, diagnostic.NewTranspile(
+					diagnostic.CodeExpectedOperand,
+					"Перед открывающей скобкой отсутствует оператор",
+				).
+					WithHint("Добавьте оператор перед открывающей скобкой").
+					WithSpan(
+						token.Span.Start,
+						token.Span.End,
+					)
+			}
+
+			operators = append(operators, token)
+			expectOperand = true
+
+		case conditionTokenRightParenthesis:
+			leftParenthesisIndex := -1
+
+			for i := len(operators) - 1; i >= 0; i-- {
+				if operators[i].Kind == conditionTokenLeftParenthesis {
+					leftParenthesisIndex = i
+					break
+				}
+			}
+
+			if leftParenthesisIndex == -1 {
+				return nil, diagnostic.NewTranspile(
+					diagnostic.CodeUnmatchedParenthesis,
+					"Закрывающая скобка не имеет открывающей",
+				).
+					WithHint("Добавьте открывающую скобку или удалите лишнюю закрывающую").
+					WithSpan(
+						token.Span.Start,
+						token.Span.End,
+					)
+			}
+
+			if expectOperand {
+				return nil, diagnostic.NewTranspile(
+					diagnostic.CodeExpectedOperand,
+					"Перед закрывающей скобкой отсутствует операнд",
+				).
+					WithHint("Добавьте выражение внутри скобок").
+					WithSpan(
+						token.Span.Start,
+						token.Span.End,
+					)
+			}
+
+			for len(operators)-1 > leftParenthesisIndex {
+				lastIndex := len(operators) - 1
+
+				output = append(output, operators[lastIndex])
+				operators = operators[:lastIndex]
+			}
+
+			operators = operators[:leftParenthesisIndex]
+
+			expectOperand = false
+
+		case conditionTokenOperator:
+			precedence := conditionOperatorPrecedence(token.Value)
+
+			if precedence == 0 {
+				return nil, diagnostic.NewTranspile(
+					diagnostic.CodeExpectedOperand,
+					fmt.Sprintf(
+						"Оператор %q не поддерживается",
+						token.Value,
+					),
+				).
+					WithHint("Используйте поддерживаемый оператор").
+					WithSpan(
+						token.Span.Start,
+						token.Span.End,
+					)
+			}
+
+			if token.Value == "!" {
+				if !expectOperand {
+					return nil, diagnostic.NewTranspile(
+						diagnostic.CodeExpectedOperand,
+						"Унарный оператор ! находится после операнда",
+					).
+						WithHint("Поместите ! перед операндом или выражением").
+						WithSpan(
+							token.Span.Start,
+							token.Span.End,
+						)
 				}
 			} else {
-				for len(opStack) > 0 && opPrecedence(opStack[len(opStack)-1]) >= prec {
-					buildNode()
+				if expectOperand {
+					return nil, diagnostic.NewTranspile(
+						diagnostic.CodeExpectedOperand,
+						fmt.Sprintf(
+							"Перед оператором %q отсутствует операнд",
+							token.Value,
+						),
+					).
+						WithHint("Добавьте операнд перед бинарным оператором").
+						WithSpan(
+							token.Span.Start,
+							token.Span.End,
+						)
 				}
 			}
-			opStack = append(opStack, token)
-		} else {
-			nodeStack = append(nodeStack, &LiteralNode{Value: parser.ReplaceVar(token), Parser: parser})
+
+			for len(operators) > 0 {
+				lastIndex := len(operators) - 1
+				top := operators[lastIndex]
+
+				if top.Kind == conditionTokenLeftParenthesis {
+					break
+				}
+
+				topPrecedence := conditionOperatorPrecedence(top.Value)
+
+				shouldPop := false
+
+				if token.Value == "!" {
+					shouldPop = topPrecedence > precedence
+				} else {
+					shouldPop = topPrecedence >= precedence
+				}
+
+				if !shouldPop {
+					break
+				}
+
+				output = append(output, top)
+				operators = operators[:lastIndex]
+			}
+
+			operators = append(operators, token)
+			expectOperand = true
 		}
 	}
 
-	for len(opStack) > 0 {
-		buildNode()
+	if expectOperand {
+		lastToken := tokens[len(tokens)-1]
+
+		return nil, diagnostic.NewTranspile(
+			diagnostic.CodeExpectedOperand,
+			"В конце условия отсутствует операнд",
+		).
+			WithHint("Добавьте операнд после оператора").
+			WithSpan(
+				lastToken.Span.Start,
+				lastToken.Span.End,
+			)
 	}
 
-	if len(nodeStack) == 0 {
-		return nil
+	for len(operators) > 0 {
+		lastIndex := len(operators) - 1
+		operator := operators[lastIndex]
+		operators = operators[:lastIndex]
+
+		if operator.Kind == conditionTokenLeftParenthesis {
+			return nil, diagnostic.NewTranspile(
+				diagnostic.CodeUnmatchedParenthesis,
+				"Открывающая скобка не имеет закрывающей",
+			).
+				WithHint("Добавьте закрывающую скобку").
+				WithSpan(
+					operator.Span.Start,
+					operator.Span.End,
+				)
+		}
+
+		output = append(output, operator)
 	}
-	return nodeStack[0]
+
+	return output, nil
 }
 
-func (parser *Parser) parseCondition(condition string) string {
-	if strings.HasPrefix(condition, "Condition:") {
-		condition = condition[len("Condition:")+1:]
-	}
-	ast := parser.parseToAST(condition)
-	if ast == nil {
-		return ""
+func (s *parseSession) resolveConditionOperand(
+	token conditionToken,
+) (string, *diagnostic.Diagnostic) {
+	value := token.Value
+
+	if value == "" {
+		return "", diagnostic.NewTranspile(
+			diagnostic.CodeExpectedOperand,
+			"Обнаружен пустой операнд",
+		).
+			WithSpan(
+				token.Span.Start,
+				token.Span.End,
+			)
 	}
 
-	res := ast.String()
-	if strings.HasPrefix(res, "(") && strings.HasSuffix(res, ")") {
-		res = res[1 : len(res)-1]
+	if strings.HasPrefix(value, `"`) ||
+		strings.HasPrefix(value, `'`) {
+		return value, nil
 	}
-	return res
+
+	switch value {
+	case "true", "false", "nil":
+		return value, nil
+	}
+
+	firstRune, _ := utf8.DecodeRuneInString(value)
+
+	if unicode.IsDigit(firstRune) {
+		return value, nil
+	}
+
+	return s.compilePath(
+		value,
+		token.Span,
+		s.resolveConditionBase,
+	)
+}
+
+func (s *parseSession) buildConditionExpression(
+	postfix []conditionToken,
+) (string, *diagnostic.Diagnostic) {
+	if len(postfix) == 0 {
+		return "", diagnostic.NewTranspile(
+			diagnostic.CodeExpectedOperand,
+			"Условие не содержит выражения",
+		).
+			WithHint("Укажите поле, литерал или логическое выражение")
+	}
+
+	expressions := make([]string, 0, len(postfix))
+
+	for _, token := range postfix {
+		switch token.Kind {
+		case conditionTokenOperand:
+			operand, err := s.resolveConditionOperand(token)
+			if err != nil {
+				return "", err
+			}
+
+			expressions = append(expressions, operand)
+
+		case conditionTokenOperator:
+			templateOperator, ok :=
+				conditionTemplateOperators[token.Value]
+
+			if !ok {
+				return "", diagnostic.NewTranspile(
+					diagnostic.CodeExpectedOperand,
+					fmt.Sprintf(
+						"Оператор %q не поддерживается",
+						token.Value,
+					),
+				).
+					WithHint("Используйте поддерживаемый оператор").
+					WithSpan(
+						token.Span.Start,
+						token.Span.End,
+					)
+			}
+
+			if token.Value == "!" {
+				if len(expressions) < 1 {
+					return "", diagnostic.NewTranspile(
+						diagnostic.CodeExpectedOperand,
+						"Для оператора ! отсутствует операнд",
+					).
+						WithHint("Укажите выражение после оператора !").
+						WithSpan(
+							token.Span.Start,
+							token.Span.End,
+						)
+				}
+
+				lastIndex := len(expressions) - 1
+				operand := expressions[lastIndex]
+
+				expressions = expressions[:lastIndex]
+
+				expressions = append(
+					expressions,
+					fmt.Sprintf(
+						"(%s %s)",
+						templateOperator,
+						operand,
+					),
+				)
+
+				continue
+			}
+
+			if len(expressions) < 2 {
+				return "", diagnostic.NewTranspile(
+					diagnostic.CodeExpectedOperand,
+					fmt.Sprintf(
+						"Для оператора %q недостаточно операндов",
+						token.Value,
+					),
+				).
+					WithHint("Бинарный оператор должен иметь левый и правый операнд").
+					WithSpan(
+						token.Span.Start,
+						token.Span.End,
+					)
+			}
+
+			// В postfix правый операнд находится на вершине стека.
+			rightIndex := len(expressions) - 1
+			right := expressions[rightIndex]
+
+			leftIndex := rightIndex - 1
+			left := expressions[leftIndex]
+
+			// Убираем оба операнда.
+			expressions = expressions[:leftIndex]
+
+			expressions = append(
+				expressions,
+				fmt.Sprintf(
+					"(%s %s %s)",
+					templateOperator,
+					left,
+					right,
+				),
+			)
+		}
+	}
+
+	if len(expressions) != 1 {
+		lastToken := postfix[len(postfix)-1]
+
+		return "", diagnostic.NewTranspile(
+			diagnostic.CodeExpectedOperand,
+			"Условие содержит несвязанные выражения",
+		).
+			WithHint("Добавьте оператор между выражениями").
+			WithSpan(
+				lastToken.Span.Start,
+				lastToken.Span.End,
+			)
+	}
+
+	return expressions[0], nil
+}
+
+func removeOuterParentheses(expression string) string {
+	if len(expression) >= 2 &&
+		expression[0] == '(' &&
+		expression[len(expression)-1] == ')' {
+		return expression[1 : len(expression)-1]
+	}
+
+	return expression
+}
+
+func (s *parseSession) parseCondition(
+	condition string,
+	startPosition diagnostic.Location,
+) (string, *diagnostic.Diagnostic) {
+	const legacyPrefix = "Condition:"
+
+	// Оставляем поддержку старого синтаксиса.
+	if strings.HasPrefix(condition, legacyPrefix) {
+		condition = strings.TrimSpace(
+			condition[len(legacyPrefix):],
+		)
+	}
+
+	if condition == "" {
+		return "", diagnostic.NewTranspile(
+			diagnostic.CodeExpectedOperand,
+			"Условие не содержит выражения",
+		).
+			WithHint("Укажите поле, литерал или логическое выражение").
+			WithSpan(
+				startPosition,
+				startPosition,
+			)
+	}
+
+	if strings.TrimSpace(condition) == "" {
+		return "", diagnostic.NewTranspile(
+			diagnostic.CodeExpectedOperand,
+			"Условие не содержит выражения",
+		).
+			WithHint("Укажите поле, литерал или логическое выражение").
+			WithSpan(
+				startPosition,
+				startPosition,
+			)
+	}
+
+	tokens, err := tokenizeCondition(condition, startPosition)
+	if err != nil {
+		return "", err
+	}
+
+	postfix, err := buildConditionPostfix(tokens)
+	if err != nil {
+		return "", err
+	}
+
+	result, err := s.buildConditionExpression(postfix)
+	if err != nil {
+		return "", err
+	}
+
+	return removeOuterParentheses(result), nil
 }

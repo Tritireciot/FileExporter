@@ -10,3 +10,17 @@ type ExportModel struct {
 func (model *ExportModel) Validate() bool {
 	return model.TemplateId > 0 && len(model.Subsystem) > 0
 }
+
+type PreviewModel struct {
+	Subsystem       string `json:"subsystem"`
+	TemplateType    string `json:"template_type"`
+	TemplateContent string `json:"template"`
+}
+
+type ValidateTemplateModel struct {
+	Subsystem       string         `json:"subsystem"`
+	TemplateType    string         `json:"template_type"`
+	TemplateContent string         `json:"template"`
+	ContentHash     string         `json:"content_hash"`
+	TemplateData    map[string]any `json:"data"`
+}
