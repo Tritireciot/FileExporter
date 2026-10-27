@@ -1,0 +1,69 @@
+{
+    "date": "2026-08-25",
+    "requests": [
+        {
+            "id_entity_object": 5498,
+            "custom_id": "5-19-08-2026",
+            "start_time": "00:00",
+            "end_time": "00:00",
+            "name": "проверка выдачи 3",
+            "id_status": 12,
+            "infopovods": [
+                {
+                    "id": 2977,
+                    "value": "Новости"
+                }
+            ],
+            "locations": [],
+            "film_crews": [
+                {
+                    "id": 4227,
+                    "value": "Цифров Штрих Георгиевич",
+                    "position": "Инженер"
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 3062,
+                    "value": "RS3 Япония",
+                    "equipment_type": "Камера"
+                },
+                {
+                    "id": 2962,
+                    "value": "ЛАМПА Япония",
+                    "equipment_type": "Свет"
+                }
+            ],
+            "transport": []
+        },
+        {
+            "id_entity_object": 5605,
+            "custom_id": "1-20-08-2026",
+            "start_time": "00:00",
+            "end_time": "00:00",
+            "name": "l1xxRHO0Wb",
+            "id_status": 14,
+            "infopovods": [
+                {
+                    "id": 2977,
+                    "value": "Новости"
+                }
+            ],
+            "locations": [],
+            "film_crews": [
+                {
+                    "id": 5501,
+                    "value": "FvPDUwbhob 8UyVjRYI 8UyVjRYI",
+                    "position": "Инженер"
+                },
+                {
+                    "id": 5502,
+                    "value": "lv0u0ttW90 Myezc6Yg Myezc6Yg",
+                    "position": "Инженер"
+                }
+            ],
+            "equipment": [],
+            "transport": []
+        }
+    ]
+}

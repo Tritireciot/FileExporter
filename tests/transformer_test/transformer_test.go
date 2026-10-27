@@ -1,0 +1,43 @@
+package transformer
+
+import (
+	"PrintServer/PrintServer/db"
+	"PrintServer/PrintServer/transformer"
+	"PrintServer/pgutils"
+	"context"
+	"log"
+	"os"
+	"testing"
+)
+
+var test_db_repo *db.DBRepository
+var test_reshaper *transformer.Reshaper
+var test_context context.Context
+
+func createDBRepository() *db.DBRepository {
+	logger := log.New(os.Stdout, "[TEST] ", log.LstdFlags)
+	db_config := pgutils.DatabaseConfig{
+		Host:     "db",
+		Port:     5432,
+		User:     "user",
+		Password: "pass",
+		DBname:   "backend-db",
+		Schema:   "print",
+	}
+	db_repo, err := db.SetupDB(context.Background(), &db_config)
+	if err != nil {
+		logger.Fatal(err.Error())
+		return nil
+	}
+	return db_repo
+}
+
+func TestMain(m *testing.M) {
+	test_db_repo = createDBRepository()
+	test_context = context.Background()
+	defer test_db_repo.TearDown()
+	test_reshaper = transformer.NewReshaper(test_db_repo)
+	exit_code := m.Run()
+	os.Exit(exit_code)
+
+}

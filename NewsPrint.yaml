@@ -1,0 +1,299 @@
+openapi: 3.0.0
+info:
+  description: This is Print Bram Space Client API
+  version: 0.0.0
+  title: Print Bram Space
+  license:
+    name: Bramtech company
+servers:
+  - url: http://example.domain/api
+    description: Текущая без версии
+tags:
+  - name: templates
+    description: Работа с шаблонами для печати
+  - name: tags
+    description: Работа с тэгами для печати
+  - name: export
+    description: Вывод на печать
+paths:
+  /api/core/print/db/get_all_templates:
+    get:
+      tags: 
+        - templates
+      summary: Получение получение всех шаблонов подсистемы
+      description: Получение получение всех шаблонов по подсистеме(параметр subsystem). Параметр active, если true, то показывает только активные шаблоны(используемые), иначе показывает все по подсистеме.
+      parameters:
+        - name: active
+          in: query
+          example: true
+          schema: 
+            type: boolean
+        - name: subsystem
+          in: query
+          example: news
+          schema: 
+            type: string
+      responses:
+        '200':
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  allOf:
+                    - $ref: '#/components/schemas/ShortTemplate'
+        
+  /api/core/print/db/get_template:
+    get:
+      tags: 
+        - templates
+      summary: Получение получение шаблона по его id
+      description: Получение получение шаблона по его id
+      parameters:
+        - name: id
+          in: query
+          schema: 
+            type: integer
+      responses:
+        '200':
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Template'
+        '404':
+          description: Шаблон не найден
+        '422':
+          description: Необходим  id шаблона
+  /api/core/print/db/add_template:
+    post:
+      tags:
+        - templates
+      summary: Добавление шаблона
+      description: Добавление/изменение шаблона. name, content и subsystem обязательны. Для изменения шаблона наужно указать его ID.
+      requestBody: 
+        content: 
+          application/json:
+            "schema":
+              $ref: '#/components/schemas/AddTemplate'
+      responses:
+        '200':
+          description: Шаблон добавлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Template'
+  /api/core/print/db/delete_template:
+    delete:
+      tags:
+        - templates
+      summary: Удаление шаблона
+      description: Удаление шаблона
+      parameters:
+        - name: id
+          in: query
+          schema: 
+            type: integer
+      responses: 
+        '200':
+          description: Шаблон удален
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModelID'
+        '404':
+          description: Шаблон не найден
+  /api/core/print/db/get_all_tags:
+    get:
+      tags:
+        - tags
+      summary: Получение всех тегов
+      description: Получение всех тегов
+      responses:
+        '200':
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  allOf:
+                    - $ref: '#/components/schemas/ShortTag'
+  /api/core/print/db/add_tag:
+    post:
+      tags:
+        - tags
+      summary: Добавление тэга
+      description: Добавление/изменение тэга.
+      requestBody: 
+        content: 
+          application/json:
+            "schema":
+              $ref: '#/components/schemas/AddTag'
+      responses:
+        '200':
+          description: Тэг добавлен
+          content: 
+            application/json:
+              "schema":
+                $ref: '#/components/schemas/Tag'
+  /api/core/print/db/delete_tag:
+    delete:
+      tags:
+        - tags
+      summary: Удаление тэга
+      description: Удаление тэга
+      parameters:
+        - name: id
+          in: query
+          schema: 
+            type: integer
+      responses:
+        '200':
+          description: c Тэг удален
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModelID'
+        '404':
+          description: Тэг не найден
+  /api/core/print/export:
+    post:
+      tags:
+        - export
+      summary: Вывод на печать шаблона
+      description: Вывод на печать шаблона. Поддерживаемые форматы PDF, HTML. По умолчанию в виде HTML.
+      requestBody: 
+        content: 
+          application/json:
+            "schema":
+              $ref: '#/components/schemas/ExportTemplate'
+      responses:
+        '200':
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Template'
+        '404':
+          description: Шаблон не найден
+components:
+  schemas:
+    Template:
+      type: object
+      properties:
+          ID:
+            type: integer
+          name:
+            type: string
+          content:
+            type: string
+          subsystem:
+            type: string
+          is_active:
+            type: boolean
+          render_data:
+            type: object
+          is_single:
+            type: boolean
+    ShortTemplate:
+      type: object
+      properties:
+          element_id:
+            type: integer
+          element_name:
+            type: string
+          is_single:
+            type: boolean
+    AddTemplate:
+      type: object
+      required:
+        - name
+        - content
+        - subsystem
+      properties:
+          ID:
+            type: integer
+            description: "Опционально"
+          name:
+            type: string
+          content:
+            type: string
+          subsystem:
+            type: string
+          is_active:
+            type: boolean
+            description: "Опционально"
+          render_data:
+            type: object
+            description: "Опционально"
+          is_single:
+            type: boolean
+            description: "Опционально"
+    ModelID:
+      type: object
+      properties:
+        ID:
+          type: integer
+    ShortTag:
+      type: object
+      properties:
+          element_id:
+            type: integer
+          element_name:
+            type: string
+          is_single:
+            type: boolean
+    AddTag:
+      type: object
+      required:
+        - name
+        - description
+        - subsystem
+        - alias
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        subsystem:
+          type: string
+        alias:
+          type: string
+        is_active:
+          type: boolean
+          description: "Опционально"
+    Tag:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        subsystem:
+          type: string
+        alias:
+          type: string
+        is_active:
+          type: boolean
+    ExportTemplate:
+      type: object
+      required:
+        - name
+        - data
+        - susbsystem
+      properties: 
+        template_id:
+          type: integer
+        data:
+          type: object
+        susbsystem:
+          type: string
+        format:
+          type: string
+          description: "Опционально"
+          
+      
+
+    

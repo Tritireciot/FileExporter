@@ -1,0 +1,30 @@
+## Требования
+
+Перед запуском убедитесь, что установлены:
+
+- Docker
+- Docker Compose
+
+---
+
+## Подготовка к запуску
+
+1. Создайте файл `.env`, скопировав содержимое из `example.env`: 
+```bash
+cp example.env .env
+```
+2. Соберите Docker-образы:
+```
+docker-compose build
+```
+3. Запуск приложения:
+```
+docker-compose up
+```
+
+После успешного запуска приложение будет доступно по адресу: ```http://localhost:8000```
+
+##  тесты
+```
+docker compose -f docker-compose.test.yml up --build --abort-on-container-exit
+```

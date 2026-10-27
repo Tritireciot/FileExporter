@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Отчет по сотрудникам</title>
+    <style>
+        @page {
+            size: A4 landscape;
+            margin: 10mm 10mm 10mm 10mm;
+        }
+
+        body {
+            font-family: Arial;
+            font-size: 10px;
+            color: #333333;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+        }
+
+        table {
+            width: 100%;
+            max-width: 277mm;
+            table-layout: fixed;
+            border-collapse: collapse;
+            page-break-inside: auto; 
+        }
+
+        tr {
+            page-break-inside: avoid; 
+            page-break-after: auto;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            color: #000000;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 9px;
+            border: 1px solid #cccccc;
+            padding: 5px 3px;
+            text-align: center;
+            word-wrap: break-word;
+        }
+
+        td {
+            border: 1px solid #cccccc;
+            padding: 4px 3px;
+            text-align: center;
+            font-size: 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .text-left {
+            text-align: left;
+            padding-left: 5px;
+            white-space: normal; 
+        }
+
+        tfoot tr {
+            background-color: #f9f9f9;
+            font-weight: bold;
+        }
+
+        tfoot td {
+            border: 1px solid #bbbbbb;
+            padding: 6px 3px;
+        }
+
+        .text-right {
+            text-align: right;
+            padding-right: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <table>
+        <thead>
+            <tr>
+                <th>СПИСОК СОТРУДНИКОВ</th>
+                <th>График</th>
+                <th>Количество съёмочных часов</th>
+                <th>Количество дежурных часов</th>
+                <th>Всего отработанных часов</th>
+                <th>Всего отработанных дней</th>
+                <th>Выходных дней</th>
+                <th>Командировочных дней</th>
+                <th>Больничных дней</th>
+                <th>Отпуск</th>
+                <th>Съемок за месяц</th>
+            </tr>
+        </thead>
+        <tbody>
+            <#Repeat#Employees#>
+            <tr>
+                <td class="text-left">
+                    <strong>#Employees.Employee#</strong><br>
+                    <small style="color: #666666;">#Employees.Position#</small>
+                </td>
+                <td>#Employees.Schedule#</td>
+                <td>#Employees.ShootingHours#</td>
+                <td>#Employees.DutyHours#</td>
+                <td>#Employees.TotalHours#</td>
+                <td>#Employees.WorkDays#</td>
+                <td>#Employees.DaysOff#</td>
+                <td>#Employees.BusinessTripDays#</td>
+                <td>#Employees.SickDays#</td>
+                <td>#Employees.VacationDays#</td>
+                <td>#Employees.ShootingsCount#</td>
+            </tr>
+            </#Repeat#Employees#>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="2" class="text-right">Среднее значение отработанного времени</td>
+                <td>#Reports.AverageShootingHours#</td>
+                <td>#Reports.AverageDutyHours#</td>
+                <td>#Reports.AverageTotalHours#</td>
+                <td colspan="6"></td>
+            </tr>
+            <tr>
+                <td colspan="2" class="text-right">Итого отработано за месяц</td>
+                <td>#Reports.SummaryShootingHours#</td>
+                <td>#Reports.SummaryDutyHours#</td>
+                <td>#Reports.SummaryTotalHours#</td>
+                <td colspan="6"></td>
+            </tr>
+        </tfoot>
+    </table>
+
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+		<html>
+		 <head>
+		  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+		  <title>#Story.Name#</title>
+		</head>
+		<body style = "font-family:Arial;font-size:12pt;color:black;">
+		<p style="text-align: right;">СОБЫТИЕ #Story.Name#</p>
+		<hr />
+		<p style="text-align: left;">#Story.Name#</p>
+		<table style="width: 100%; margin-left: auto; margin-right: auto;">
+		<tbody>
+		<tr>
+		<td colspan="5" nowrap>#Story.Type#</td>
+		</tr>
+		<tr>
+		<td>Автор:</td>
+		<td nowrap>#Story.Author#</td>
+		<td></td>
+		<td>Готовность:</td>
+		<td nowrap>#Story.State#</td>
+		</tr>
+		<tr>
+		<td>Начитка:</td>
+		<td nowrap>#Story.Presenter#</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		</tr>
+		<tr>
+		<td colspan="2" nowrap>Дата планируемого эфира:</td>
+		<td>&nbsp;</td>
+		<td nowrap>Длительность планируемая:</td>
+		<td nowrap>#Story.DurationPlan#</td>
+		</tr>
+		<tr>
+		<td colspan="2" nowrap>#Story.StartPlan#</td>
+		<td>&nbsp;</td>
+		<td nowrap>Длительность фактическая:</td>
+		<td nowrap>#Story.DurationFact#</td>
+		</tr>
+		</tbody>
+		</table>
+		<p style="word-wrap:break-word;">#Story.Text#</p>
+		<table width="100%">
+		<tbody>
+		<#Repeat#Media#>
+		<tr>
+		<td nowrap>#Media.Pos#</td>
+		<td nowrap>#Media.Type# #Media.Name#</td>
+		<td align="right" nowrap>#Media.Duration#</td>
+		</tr>
+		<tr>
+		<td/>
+		<td colspan="2">#Media.Params#</td>
+		</tr>
+		</#Repeat#Media#>
+		</tbody>
+		</table>
+		 </body>
+		</html>

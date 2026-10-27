@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+			<html>
+			 <head>
+				<meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+			  <title>#RunDown.Name#</title>
+			</head>
+			<style type="text/css">
+			@media print
+			{
+				div { 
+				  page-break-inside:avoid; 
+				  margin: 5px 0 5px 0;
+				 }
+           
+	 		  thead { display:table-header-group }
+			}
+			</style>
+			<body style = "font-family:Arial;font-size:12pt;color:black;">			
+			<p style="font-weight:bold;text-align: right;">Выпуск: #RunDown.Name#</p>	
+			<table width="100%" border="1" cellpadding="1" cellspacing="0">
+				<thead width="100%">
+				<tr>
+					<th>№</th>
+					<th>Длит.Факт.</th>
+					<th>Тип</th>
+					<th>Название</th>
+					<th>К</th>
+				</tr>
+			   </thead>
+			<#Repeat#Story#>
+			<tr width="100%">
+			  <td width="7%"><div>#Story.Pos#</div></td>
+			  <td width="10%"><div>#Story.DurationFact#</div></td>
+			  <td><div>#Story.Type#</div></td>
+			  <td><div>#Story.Name#</div></td>
+			  <td width="5%">&nbsp;</td>
+			</tr>
+			</#Repeat#Story#>
+			</table>
+			</body>
+			</html>

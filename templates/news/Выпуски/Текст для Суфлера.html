@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+		<html>
+		 <head>
+		  <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+		  <title>#RunDown.Name#</title>
+		</head>
+		 <body style = "font-family:Arial;font-size:12pt;color:black;">
+		 <p style="text-align: right;">Выпуск #RunDown.Name#</p>
+		<hr />
+		<table style="width: 100%; margin-left: auto; margin-right: auto;">
+		<tbody>
+		<tr>
+		<td>Автор:</td>
+		<td nowrap>#RunDown.Author#</td>
+		<td></td>
+		<td nowrap>Готовность:</td>
+		<td nowrap>#RunDown.State#</td>
+		</tr>
+		<tr>
+		<td colspan="2" nowrap>Дата планируемого эфира:</td>
+		<td>&nbsp;</td>
+		<td nowrap>Длительность планируемая:</td>
+		<td nowrap>#RunDown.DurationPlan#</td>
+		</tr>
+		<tr>
+		<td colspan="2" nowrap>#RunDown.AirDate# #RunDown.AirTime#</td>
+		<td>&nbsp;</td>
+		<td nowrap>Длительность фактическая:</td>
+		<td nowrap>#RunDown.DurationFact#</td>
+		</tr>
+		</tbody>
+		</table>
+		<#Repeat#Story#>
+		<hr />
+		<p style="text-align: left;">№#Story.Pos#. #Story.Name#</p>
+		<table style="width: 100%; margin-left: auto; margin-right: auto;">
+		<tbody>
+		<tr>
+		<td colspan="5" nowrap>#Story.Type#</td>
+		</tr>
+		<tr>
+		<td>Автор:</td>
+		<td nowrap>#Story.Author#</td>
+		<td></td>
+		<td>Готовность:</td>
+		<td nowrap>#Story.State#</td>
+		</tr>
+		<tr>
+		<td>Начитка:</td>
+		<td nowrap>#Story.Presenter#</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		</tr>
+		<tr>
+		<td colspan="2" nowrap>Время старта от начала выпуска:</td>
+		<td>&nbsp;</td>
+		<td nowrap>Длительность планируемая:</td>
+		<td nowrap>#Story.DurationPlan#</td>
+		</tr>
+		<tr>
+		<td colspan="2" nowrap>#Story.StartPlan#</td>
+		<td>&nbsp;</td>
+		<td nowrap>Длительность фактическая:</td>
+		<td nowrap>#Story.DurationFact#</td>
+		</tr>
+		</tbody>
+		</table>
+		<p style="word-wrap:break-word;">#Story.Text#</p>
+		</tbody>
+		</table>
+		</#Repeat#Story#>
+		<p>&nbsp;</p>
+		 </body>
+		</html>
