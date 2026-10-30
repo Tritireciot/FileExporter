@@ -19,7 +19,17 @@ func NewExportHandler(transformer_ transformer.Transformer) *ExportHandler {
 
 func (handler *ExportHandler) TransformTemplate(writer http.ResponseWriter, request *http.Request) {
 	var export_form ExportModel
-	if err := json.NewDecoder(request.Body).Decode(&export_form); err != nil || !export_form.Validate() {
+	if err := json.NewDecoder(request.Body).Decode(&export_form); err != nil {
+		WriteError(
+			writer, 
+			diagnostic.NewRequestError(
+				http.StatusUnprocessableEntity,
+				diagnostic.CodeInvalidJSONError,
+				err.Error(),
+			),
+		)
+		return
+	} else if isValid,  err := export_form.Validate(); !isValid {
 		WriteError(
 			writer, 
 			diagnostic.NewRequestError(

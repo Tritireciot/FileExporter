@@ -1,5 +1,7 @@
 package handlers
 
+import "errors"
+
 type ExportModel struct {
 	TemplateId int    `json:"template_id"`
 	Data       any    `json:"data"`
@@ -7,8 +9,21 @@ type ExportModel struct {
 	Format     string `json:"format"`
 }
 
-func (model *ExportModel) Validate() bool {
-	return model.TemplateId > 0 && len(model.Subsystem) > 0
+func (model *ExportModel) Validate() (bool, error) {
+	is_valid :=  model.TemplateId > 0 && len(model.Subsystem) > 0
+	if is_valid {
+		return true, nil
+	}
+
+	err_message := ""
+	if model.TemplateId < 0 {
+		err_message += "Reqired Template ID\n"
+	}
+
+	if len(model.Subsystem) < 0 {
+		err_message += "Reqired Subsystem\n"
+	}
+	return false, errors.New(err_message)
 }
 
 type PreviewModel struct {

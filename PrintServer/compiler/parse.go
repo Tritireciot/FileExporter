@@ -83,8 +83,14 @@ func (s *parseSession) parseNext() *diagnostic.Diagnostic {
 
 	switch {
 	case s.cursor.startsWith("{{"):
+		s.writeTemplateLiteral("{{ \"{{\" }}")
+		s.cursor.advance(2)
+		return nil
 
 	case s.cursor.startsWith("}}"):
+		s.writeTemplateLiteral("{{ \"}}\" }}")
+		s.cursor.advance(2)
+		return nil
 
 	case s.cursor.startsWith("\\"):
 		return s.parseEscape()

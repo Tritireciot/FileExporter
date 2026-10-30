@@ -54,6 +54,16 @@ func (service *TransformService) prepareTemplate(formattedTemplate string, templ
 		"DashedYMDtoPrintDate": DashedYMDtoPrintDate,
 		"Weekday":              ShortWeekday,
 		"FramesToTime":         FramesToTime,
+		"add": add,
+		"sub": sub,
+		"mul": mul,
+		"div": div,
+		"templateLe": templateLe,
+		"templateEq": templateEq,
+		"templateNe": templateNe,
+		"templateGt": templateGt,
+		"templateLt": templateLt,
+		"templateGe": templateGe,
 	}).Option("missingkey=error").
 		Parse(formattedTemplate)
 

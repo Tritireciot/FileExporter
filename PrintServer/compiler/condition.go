@@ -4,25 +4,7 @@ import (
 	"PrintServer/PrintServer/diagnostic"
 	"fmt"
 	"strings"
-	"unicode"
-	"unicode/utf8"
 )
-
-var templateOperators = map[string]string{
-	"||": "or",
-	"&&": "and",
-	"==": "eq",
-	"!=": "ne",
-	"<":  "lt",
-	">":  "gt",
-	"<=": "le",
-	">=": "ge",
-	"+":  "add",
-	"-":  "sub",
-	"*":  "mul",
-	"/":  "div",
-	"!":  "not",
-}
 
 func conditionOperatorPrecedence(operator string) int {
 	switch operator {
@@ -52,12 +34,12 @@ func conditionOperatorPrecedence(operator string) int {
 var conditionTemplateOperators = map[string]string{
 	"||": "or",
 	"&&": "and",
-	"==": "eq",
-	"!=": "ne",
-	"<":  "lt",
-	">":  "gt",
-	"<=": "le",
-	">=": "ge",
+	"==": "templateEq",
+	"!=": "templateNe",
+	"<":  "templateLt",
+	">":  "templateGt",
+	"<=": "templateLe",
+	">=": "templateGe",
 	"+":  "add",
 	"-":  "sub",
 	"*":  "mul",
@@ -291,9 +273,12 @@ func (s *parseSession) resolveConditionOperand(
 			)
 	}
 
-	if strings.HasPrefix(value, `"`) ||
-		strings.HasPrefix(value, `'`) {
+	if strings.HasPrefix(value, `"`) {
 		return value, nil
+	}
+
+	if strings.HasPrefix(value, `'`) {
+		return strings.ReplaceAll(value, "'", "\""), nil
 	}
 
 	switch value {
@@ -301,9 +286,8 @@ func (s *parseSession) resolveConditionOperand(
 		return value, nil
 	}
 
-	firstRune, _ := utf8.DecodeRuneInString(value)
 
-	if unicode.IsDigit(firstRune) {
+	if isIntegerLiteral(value) || isFloatLiteral(value) {
 		return value, nil
 	}
 
@@ -454,15 +438,6 @@ func (s *parseSession) parseCondition(
 	condition string,
 	startPosition diagnostic.Location,
 ) (string, *diagnostic.Diagnostic) {
-	const legacyPrefix = "Condition:"
-
-	// Оставляем поддержку старого синтаксиса.
-	if strings.HasPrefix(condition, legacyPrefix) {
-		condition = strings.TrimSpace(
-			condition[len(legacyPrefix):],
-		)
-	}
-
 	if condition == "" {
 		return "", diagnostic.NewTranspile(
 			diagnostic.CodeExpectedOperand,
