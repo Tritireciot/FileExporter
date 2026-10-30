@@ -17,18 +17,24 @@ type App struct {
 	Server *http.Server
 }
 
-func (app *App) InitializeRouter(transformer_ transformer.Transformer) {
+func (app *App) InitializeRouter(transformer_ transformer.Transformer, publicRouter *mux.Router, internalRouter *mux.Router) {
 	export_handler := handlers.NewExportHandler(transformer_)
 
-	app.Router.HandleFunc("/export", export_handler.TransformTemplate).Methods("POST")
+	publicRouter.HandleFunc("/export", export_handler.TransformTemplate).Methods("POST")
+	publicRouter.HandleFunc("/preview", export_handler.PreviewTemplate).Methods("POST")
+
+	internalRouter.HandleFunc("/validate-template", export_handler.ValidateTemplate).Methods("POST")
 }
 
 func (app *App) Init(transformer_ transformer.Transformer) {
-	mainRouter := mux.NewRouter()
-	mainRouter.Use(LoggingMiddleware)
-	app.Router = mainRouter.PathPrefix("/api/core/print").Subrouter()
+	app.Router = mux.NewRouter()
+	app.Router.Use(LoggingMiddleware)
+	publicRouter := app.Router.PathPrefix("/api/core/print").Subrouter()
 	//app.Router.Use(handlersMiddlewareJWTRSA)
-	app.InitializeRouter(transformer_)
+
+	internalRouter := app.Router.PathPrefix("/api/core/print/svc").Subrouter()
+	internalRouter.Use(handlersInternalMiddleware)
+	app.InitializeRouter(transformer_, publicRouter, internalRouter)
 }
 
 func (app *App) Run(address string) error {

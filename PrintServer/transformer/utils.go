@@ -83,11 +83,57 @@ func getPrintData(context any, template *Template) (map[string]any, error) {
 	}
 
 	var printData map[string]any
-	logging.Agent.AddSimpleInfo("Получение данных для печати", "printcontent: "+string(body)+resp.Status+"\n"+req.URL.Path + "\n" + printurl)
+	logging.Agent.AddSimpleInfo("Получение данных для печати", "printcontent: "+string(body)+resp.Status+"\n"+req.URL.Path+"\n"+printurl)
 
 	err = json.Unmarshal(body, &printData)
 
 	return printData, err
+}
+
+func getPreviewData(subsystem string, templateType string) (map[string]any, error) {
+	client := &http.Client{}
+	printurl := config.GetSubAccess().GetPath()
+	if config.PrintContentHost != "" && config.PrintContentPort != "" {
+		printurl = config.PrintContentHost + ":" + config.PrintContentPort
+	}
+	req, err := http.NewRequest(
+		"GET",
+		fmt.Sprintf(
+			"http://%s/api/%s/config/svc/print/template-types/%s/preview-data",
+			printurl,
+			subsystem,
+			templateType,
+		),
+		nil,
+	)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set(paths.SubAccessTokenTag, config.SubAccessCommKey)
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("Ошибка при запросе данных предпросмотра: status: %d; Url: %v", resp.StatusCode, resp.Request.URL)
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	defer resp.Body.Close()
+	if err != nil {
+		logging.Agent.AddSimpleInfo("Получение данных предпросмотра", "printcontent: "+string(body)+resp.Status)
+		return nil, err
+	}
+
+	var printData map[string]any
+	err = json.Unmarshal(body, &printData)
+	if err != nil {
+		logging.Agent.AddSimpleInfo("Получение данных предпросмотра", fmt.Sprintf("Body: %s", string(body)))
+		return nil, fmt.Errorf("Получение данных предпросмотра невозможно прочитать")
+	}
+
+	return printData, nil
 }
 
 func modifyStructure(entity_stack []string, requiredTags *map[string]any, connections *map[string][]string) {

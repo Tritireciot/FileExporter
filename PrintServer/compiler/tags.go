@@ -1,8 +1,10 @@
 package template_compiler
 
 import (
+	"PrintServer/PrintServer/diagnostic"
 	"fmt"
 	"strings"
+	"unicode"
 )
 
 func cleanVarName(path string) string {
@@ -15,98 +17,367 @@ func cleanVarName(path string) string {
 	return path
 }
 
-func (parser *Parser) buildContextPath(newFieldName string) string {
-	if strings.Contains(newFieldName, "[") && strings.Contains(newFieldName, "]") {
-		return parser.convertIndexes(newFieldName)
-	}
-	if len(parser.BlockStack) == 0 {
-		return "." + newFieldName
-	}
+func (s *parseSession) tryParseField() (bool, *diagnostic.Diagnostic) {
+	start := s.cursor.position()
 
-	var parentVar string
-	for i := len(parser.BlockStack) - 1; i >= 0; i-- {
-		if parser.BlockStack[i].BlockType != "if" {
-			parentVar = parser.BlockStack[i].VarName
-			break
+	probe := s.cursor
+	probe.advance(1) // открывающий #
+
+	contentStart := probe.runeIndex()
+
+	var quote rune
+	escaped := false
+
+	for !probe.eof() {
+		current, _ := probe.current()
+
+		if quote != 0 {
+			if escaped {
+				escaped = false
+				probe.advance(1)
+				continue
+			}
+
+			if current == '\\' {
+				escaped = true
+				probe.advance(1)
+				continue
+			}
+
+			if current == quote {
+				quote = 0
+			}
+
+			probe.advance(1)
+			continue
+		}
+
+		switch current {
+		case '"', '\'', '`':
+			quote = current
+			probe.advance(1)
+
+		case '#':
+			rawField := probe.slice(contentStart, probe.runeIndex())
+
+			s.cursor = probe
+			s.cursor.advance(1)
+
+			span := diagnostic.Span{
+				Start: start,
+				End:   s.cursor.position(),
+			}
+
+			expression, err := s.compileFieldExpression(rawField, span)
+			if err != nil {
+				return true, err
+			}
+
+			s.output.WriteString("{{ ")
+			s.output.WriteString(expression)
+			s.output.WriteString(" }}")
+
+			return true, nil
+
+		case '\n', '\r', '<', '>', '{', '}', ';':
+			return false, nil
+
+		default:
+			probe.advance(1)
 		}
 	}
-	return parentVar + "." + newFieldName
+
+	return false, nil
 }
 
-func (parser *Parser) parseSpecialTags(candidateSyntax string) (bool, string) {
-	if candidateSyntax == "#End#" {
-		if len(parser.BlockStack) == 0 {
-			return true, "{{ end }}"
+func (s *parseSession) compileFieldExpression(
+	raw string,
+	span diagnostic.Span,
+) (string, *diagnostic.Diagnostic) {
+	parts, err := splitFieldPipeline(raw, span)
+	if err != nil {
+		return "", err
+	}
+
+	if len(parts) == 0 || strings.TrimSpace(parts[0]) == "" {
+		return "", diagnostic.NewTranspile(
+			diagnostic.CodeEmptyField,
+			"Поле между символами # не указано",
+		).WithSpan(
+			span.Start,
+			span.End,
+		)
+	}
+
+	baseTokens, err := tokenizeFieldCommand(parts[0], span)
+	if err != nil {
+		return "", err
+	}
+
+	baseExpression, compileErr := s.compileInitialFieldCommand(
+		baseTokens,
+		span,
+	)
+	if compileErr != nil {
+		return "", compileErr
+	}
+
+	var result strings.Builder
+	result.WriteString(baseExpression)
+
+	for _, rawCommand := range parts[1:] {
+		commandTokens, commandErr := tokenizeFieldCommand(rawCommand, span)
+		if commandErr != nil {
+			return "", commandErr
 		}
-		parser.BlockStack[len(parser.BlockStack)-1] = Scope{}
-		parser.BlockStack = parser.BlockStack[:len(parser.BlockStack)-1]
-		return true, "{{ end }}"
+
+		if len(commandTokens) == 0 {
+			return "", diagnostic.NewTranspile(
+				diagnostic.CodeInvalidFieldPipeline,
+				"После символа | должен быть указан форматтер",
+			).WithSpan(
+				span.Start,
+				span.End,
+			)
+		}
+
+		formatter := commandTokens[0]
+		if !isValidFormatterName(formatter) {
+			return "", diagnostic.NewTranspile(
+				diagnostic.CodeInvalidFormatter,
+				fmt.Sprintf("Некорректное имя форматтера %q", formatter),
+			).WithSpan(
+				span.Start,
+				span.End,
+			)
+		}
+
+		result.WriteString(" | ")
+		result.WriteString(formatter)
+
+		for _, rawArgument := range commandTokens[1:] {
+			argument, argumentErr := s.compileFieldArgument(
+				rawArgument,
+				span,
+			)
+			if argumentErr != nil {
+				return "", argumentErr
+			}
+
+			result.WriteByte(' ')
+			result.WriteString(argument)
+		}
 	}
 
-	if candidateSyntax == "#BreakPage#" {
-		return true, "<div style=\"page-break-before: always;\"></div>\n"
-	}
-
-	if strings.HasPrefix(candidateSyntax, "#Repeat#") {
-		rawFieldName := candidateSyntax[len("#Repeat#") : len(candidateSyntax)-1]
-		cleanName := cleanVarName(rawFieldName)
-
-		parser.Encounter++
-		contextVar := fmt.Sprintf("$%s%d", cleanName, parser.Encounter)		
-
-		parser.Encounter++
-		contextIndex := fmt.Sprintf("$%sIndex%d", cleanName, parser.Encounter) 
-
-		userIndexName := cleanName + "Index"
-		
-		rangePath := parser.buildContextPath(rawFieldName)
-
-		parser.BlockStack = append(parser.BlockStack, Scope{
-			BlockType: "range",
-			VarName:   contextVar,
-			IndexName: contextIndex, 
-			UserIndexName: userIndexName,
-			Fields:    map[string]string{cleanName: contextVar},
-		})
-
-		return true, fmt.Sprintf("{{ range %s, %s := %s }}", contextIndex, contextVar, rangePath)
-	}
-
-
-	if strings.HasPrefix(candidateSyntax, "#If ") {
-		condition := candidateSyntax[len("#If ") : len(candidateSyntax)-1]
-		parser.BlockStack = append(parser.BlockStack, Scope{
-			BlockType: "if",
-		})
-		return true, fmt.Sprintf("{{ if %s }}", parser.parseCondition(condition))
-	}
-
-	if strings.HasPrefix(candidateSyntax, "#ElseIf ") {
-		condition := candidateSyntax[len("#ElseIf ") : len(candidateSyntax)-1]
-		return true, fmt.Sprintf("{{ else if %s }}", parser.parseCondition(condition))
-	}
-
-	if candidateSyntax == "#Else#" {
-		return true, "{{ else }}"
-	}
-
-	if strings.HasPrefix(candidateSyntax, "#With#") {
-		parts := strings.Split(candidateSyntax[len("#With#"):len(candidateSyntax)-1], "#")
-		if len(parts) != 2 { return false, "" }
-		
-		varName, fieldName := parts[0], parts[1]
-		withPath := parser.buildContextPath(fieldName)
-		contextVar := "$" + varName
-
-		// Создаем изолированный Scope
-		parser.BlockStack = append(parser.BlockStack, Scope{
-			BlockType: "with",
-			VarName:   contextVar,
-			Fields:    map[string]string{varName: contextVar},
-		})
-
-		return true, fmt.Sprintf("{{ with %s := %s }}", contextVar, withPath)
+	return result.String(), nil
 }
 
-	return false, ""
+func splitFieldPipeline(
+	raw string,
+	span diagnostic.Span,
+) ([]string, *diagnostic.Diagnostic) {
+	var result []string
+	var current strings.Builder
+
+	var quote rune
+	escaped := false
+
+	for _, char := range raw {
+		if quote != 0 {
+			current.WriteRune(char)
+
+			if escaped {
+				escaped = false
+				continue
+			}
+
+			if char == '\\' && quote != '`' {
+				escaped = true
+				continue
+			}
+
+			if char == quote {
+				quote = 0
+			}
+
+			continue
+		}
+
+		switch char {
+		case '"', '\'', '`':
+			quote = char
+			current.WriteRune(char)
+
+		case '|':
+			result = append(result, strings.TrimSpace(current.String()))
+			current.Reset()
+
+		default:
+			current.WriteRune(char)
+		}
+	}
+
+	if quote != 0 {
+		return nil, diagnostic.NewTranspile(
+			diagnostic.CodeInvalidFieldPipeline,
+			"В выражении поля не закрыт строковый литерал",
+		).WithSpan(
+			span.Start,
+			span.End,
+		)
+	}
+
+	result = append(result, strings.TrimSpace(current.String()))
+	return result, nil
+}
+
+func tokenizeFieldCommand(
+	raw string,
+	span diagnostic.Span,
+) ([]string, *diagnostic.Diagnostic) {
+	var tokens []string
+	var current strings.Builder
+
+	var quote rune
+	escaped := false
+
+	flush := func() {
+		if current.Len() == 0 {
+			return
+		}
+
+		tokens = append(tokens, current.String())
+		current.Reset()
+	}
+
+	for _, char := range raw {
+		if quote != 0 {
+			current.WriteRune(char)
+
+			if escaped {
+				escaped = false
+				continue
+			}
+
+			if char == '\\' && quote != '`' {
+				escaped = true
+				continue
+			}
+
+			if char == quote {
+				quote = 0
+			}
+
+			continue
+		}
+
+		switch {
+		case char == '"' || char == '\'' || char == '`':
+			quote = char
+			current.WriteRune(char)
+
+		case unicode.IsSpace(char):
+			flush()
+
+		default:
+			current.WriteRune(char)
+		}
+	}
+
+	if quote != 0 {
+		return nil, diagnostic.NewTranspile(
+			diagnostic.CodeInvalidFieldPipeline,
+			"В аргументах форматтера не закрыт строковый литерал",
+		).WithSpan(
+			span.Start,
+			span.End,
+		)
+	}
+
+	flush()
+	return tokens, nil
+}
+
+func (s *parseSession) compileFieldArgument(
+	rawArgument string,
+	span diagnostic.Span,
+) (string, *diagnostic.Diagnostic) {
+	argument := strings.TrimSpace(rawArgument)
+
+	if argument == "" {
+		return "", diagnostic.NewTranspile(
+			diagnostic.CodeInvalidFieldPipeline,
+			"Аргумент форматтера не может быть пустым",
+		).WithSpan(
+			span.Start,
+			span.End,
+		)
+	}
+
+	if isFieldLiteral(argument) {
+		return argument, nil
+	}
+
+	if argument == "." {
+		return argument, nil
+	}
+
+	return s.compilePath(
+		argument,
+		span,
+		s.buildContextPath,
+	)
+}
+
+func (s *parseSession) compileInitialFieldCommand(
+	tokens []string,
+	span diagnostic.Span,
+) (string, *diagnostic.Diagnostic) {
+	if len(tokens) == 0 {
+		return "", diagnostic.NewTranspile(
+			diagnostic.CodeEmptyField,
+			"Выражение поля не может быть пустым",
+		).WithSpan(
+			span.Start,
+			span.End,
+		)
+	}
+
+	if len(tokens) == 1 {
+		return s.compilePath(
+			tokens[0],
+			span,
+			s.buildContextPath,
+		)
+	}
+
+	functionName := tokens[0]
+
+	if !isValidFormatterName(functionName) {
+		return "", diagnostic.NewTranspile(
+			diagnostic.CodeInvalidFormatter,
+			fmt.Sprintf(
+				"Некорректное имя функции %q",
+				functionName,
+			),
+		).WithSpan(
+			span.Start,
+			span.End,
+		)
+	}
+
+	var result strings.Builder
+	result.WriteString(functionName)
+
+	for _, rawArgument := range tokens[1:] {
+		argument, err := s.compileFieldArgument(rawArgument, span)
+		if err != nil {
+			return "", err
+		}
+
+		result.WriteByte(' ')
+		result.WriteString(argument)
+	}
+
+	return result.String(), nil
 }
