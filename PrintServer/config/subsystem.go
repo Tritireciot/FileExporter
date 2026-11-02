@@ -27,7 +27,7 @@ type serviceConfiguration struct {
 }
 
 var (
-	ServiceID string // ИД службы
+	ServiceID        string // ИД службы
 	PrintContentHost string
 	PrintContentPort string
 )

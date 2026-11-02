@@ -15,9 +15,9 @@ import (
 )
 
 var (
-	argServiceId = kingpin.Flag("sid", "Service id.").Short('s').String()
-	argCfgMethod = kingpin.Flag("method", "Configuration get method (ini, psql).").Short('m').String()
-	argCfgPath   = kingpin.Flag("path", "Configuration get path (ini - path to file, psql - CFG_PATH=plan:config:127.0.0.1:5432:postgres:postgres).").Short('p').String()
+	argServiceId        = kingpin.Flag("sid", "Service id.").Short('s').String()
+	argCfgMethod        = kingpin.Flag("method", "Configuration get method (ini, psql).").Short('m').String()
+	argCfgPath          = kingpin.Flag("path", "Configuration get path (ini - path to file, psql - CFG_PATH=plan:config:127.0.0.1:5432:postgres:postgres).").Short('p').String()
 	argPrintContentHost = kingpin.Flag("phost", "PrintData host.").Short('h').String()
 	argPrintContentPort = kingpin.Flag("pport", "PrintData port.").Short('P').String()
 )
@@ -63,7 +63,6 @@ func getConfigurationMethod() (string, string) {
 }
 
 func getPrintContentURL() {
-
 
 	phostenv := os.Getenv("Print_Content_Host")
 	if len(phostenv) > 0 {

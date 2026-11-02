@@ -8,3 +8,9 @@ type Template struct {
 	RenderData map[string]bool
 	Type       string
 }
+
+type ValidateResult struct {
+	Message string
+	Payload any
+}
+
