@@ -2,16 +2,18 @@ package transformer
 
 import (
 	"PrintServer/PrintServer/compiler"
+	"PrintServer/PrintServer/config"
 	"PrintServer/PrintServer/diagnostic"
 	logging "PrintServer/agent"
 	"bytes"
+	"context"
 	"fmt"
 	"html/template"
 )
 
 type Transformer interface {
-	RenderTemplate(templateID int, subsystem string, rawData any) (string, string, error)
-	PreviewTemplate(templateContent string, subsystem string, templateType string) (string, string, error)
+	RenderTemplate(ctx context.Context, templateID int, subsystem string, rawData any) (string, string, error)
+	PreviewTemplate(ctx context.Context, templateContent string, subsystem string, templateType string) (string, string, error)
 	ValidateTemplate(templateContent string, subsystem string, templateType string, contentHash string, templateData map[string]any) error
 	PDFFromTemplate(htmlContent string) ([]byte, error)
 	DOCXFromTemplate(htmlContent string) ([]byte, error)
@@ -20,12 +22,19 @@ type Transformer interface {
 type TransformService struct {
 	parser  template_compiler.Parser
 	pdfExec string
+	client *configClient
 }
 
 func NewTransformService() *TransformService {
+	adress := config.GetSubAccess().GetPath()
+	if config.PrintContentHost != "" && config.PrintContentPort != "" { // Временно
+		adress = config.PrintContentHost + ":" + config.PrintContentPort
+	}
+
 	return &TransformService{
 		parser:  template_compiler.NewParser(),
 		pdfExec: "",
+		client: newConfigClient(adress),
 	}
 }
 
@@ -92,10 +101,10 @@ func (service *TransformService) parseTemplate(templateContent string) (string, 
 	return parseResult.Output, nil
 }
 
-func (service *TransformService) RenderTemplate(template_id int, subsystem string, raw_data any) (string, string, error) {
+func (service *TransformService) RenderTemplate(ctx context.Context, template_id int, subsystem string, raw_data any) (string, string, error) {
 
 	template_ := Template{ID: template_id, Subsystem: subsystem}
-	err := getTemplate(&template_)
+	err := service.client.getTemplate(ctx, &template_)
 
 	if err != nil {
 		logging.Agent.AddSimpleError("Подготовка шаблона на печать", "Не удалось получить шаблон: "+err.Error())
@@ -112,7 +121,8 @@ func (service *TransformService) RenderTemplate(template_id int, subsystem strin
 		logging.Agent.AddSimpleError("Подготовка шаблона на печать", "Не удалось сформировать шаблон: "+err.Error())
 		return "", "", err
 	}
-	data, err := getPrintData(raw_data, &template_)
+	var data map[string]any
+	err = service.client.getPrintData(ctx, raw_data, &template_, data)
 	if err != nil {
 		logging.Agent.AddSimpleError("Подготовка шаблона печати", err.Error())
 		return "", "", err
@@ -122,7 +132,7 @@ func (service *TransformService) RenderTemplate(template_id int, subsystem strin
 	return template_.Name, result_template, err
 }
 
-func (service *TransformService) PreviewTemplate(templateContent string, subsystem string, templateType string) (string, string, error) {
+func (service *TransformService) PreviewTemplate(ctx context.Context, templateContent string, subsystem string, templateType string) (string, string, error) {
 	generatedTemplate, err := service.parseTemplate(templateContent)
 	if err != nil {
 		return "", "", err
@@ -132,7 +142,8 @@ func (service *TransformService) PreviewTemplate(templateContent string, subsyst
 		logging.Agent.AddSimpleError("Предпросмотр шаблона", "Не удалось сформировать шаблон: "+err.Error())
 		return "", "", err
 	}
-	data, err := getPreviewData(subsystem, templateType)
+	var data map[string]any
+	err = service.client.getPreviewData(ctx, subsystem, templateType, data)
 	if err != nil {
 		logging.Agent.AddSimpleError("Предпросмотр шаблон", err.Error())
 		return "", "", err

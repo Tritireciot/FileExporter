@@ -17,7 +17,20 @@ func (s *parseSession) readCondition(
 	conditionPosition := s.cursor.position()
 	conditionStart := s.cursor.runeIndex()
 
-	for !s.cursor.eof() && !s.cursor.startsWith(suffix) {
+
+	for !s.cursor.eof() {
+		current, _ := s.cursor.current()
+
+		if current == '"' || current == '\'' {
+			if _, err := scanConditionString(&s.cursor); err != nil {
+				return "", conditionPosition, err
+			}
+			continue
+		}
+
+		if s.cursor.startsWith(suffix) {
+			break
+		}
 		s.cursor.advance(1)
 	}
 

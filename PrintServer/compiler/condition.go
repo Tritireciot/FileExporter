@@ -278,7 +278,12 @@ func (s *parseSession) resolveConditionOperand(
 	}
 
 	if strings.HasPrefix(value, `'`) {
-		return strings.ReplaceAll(value, "'", "\""), nil
+		quotedString, err := scanConditionString(&s.cursor)
+		if err != nil {
+			return "", err
+		}
+		quotedString = strings.Trim(quotedString, "'")
+		return fmt.Sprintf(`"%s"`, quotedString), nil
 	}
 
 	switch value {

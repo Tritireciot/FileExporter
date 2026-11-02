@@ -1,6 +1,9 @@
 package handlers
 
-import "errors"
+import (
+	"errors"
+	"strings"
+)
 
 type ExportModel struct {
 	TemplateId int    `json:"template_id"`
@@ -16,11 +19,11 @@ func (model *ExportModel) Validate() (bool, error) {
 	}
 
 	err_message := ""
-	if model.TemplateId < 0 {
+	if model.TemplateId <= 0 {
 		err_message += "Reqired Template ID\n"
 	}
 
-	if len(model.Subsystem) < 0 {
+	if len(strings.TrimSpace(model.Subsystem)) == 0 {
 		err_message += "Reqired Subsystem\n"
 	}
 	return false, errors.New(err_message)

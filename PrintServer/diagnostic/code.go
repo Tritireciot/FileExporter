@@ -6,6 +6,7 @@ const (
 	CodeUnclosedSpecialTag   Code = "UNCLOSED_SPECIAL_TAG"
 	CodeUnexpectedEnd        Code = "UNEXPECTED_END"
 	CodeUnclosedBlock        Code = "UNCLOSED_BLOCK"
+	CodeUnclosedString        Code = "UNCLOSED_STRING"
 	CodeElseWithoutIf        Code = "ELSE_WITHOUT_IF"
 	CodeElseIfWithoutIf      Code = "ELSE_IF_WITHOUT_IF"
 	CodeDuplicateElse        Code = "DUPLICATE_ELSE"

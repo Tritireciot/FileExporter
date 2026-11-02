@@ -46,7 +46,7 @@ func (handler *ExportHandler) TransformTemplate(writer http.ResponseWriter, requ
 	var fileBytes []byte
 	var err error
 
-	fileName, export_doc, err := handler.transformer.RenderTemplate(export_form.TemplateId, export_form.Subsystem, export_form.Data)
+	fileName, export_doc, err := handler.transformer.RenderTemplate(request.Context(), export_form.TemplateId, export_form.Subsystem, export_form.Data)
 	if err != nil {
 		WriteError(writer, err)
 		return
@@ -96,7 +96,7 @@ func (handler *ExportHandler) PreviewTemplate(writer http.ResponseWriter, reques
 	}
 	defer request.Body.Close()
 
-	content, name, err := handler.transformer.PreviewTemplate(preview_form.TemplateContent, preview_form.Subsystem, preview_form.TemplateType)
+	content, name, err := handler.transformer.PreviewTemplate(request.Context(), preview_form.TemplateContent, preview_form.Subsystem, preview_form.TemplateType)
 
 	if err != nil {
 		WriteError(writer, err)

@@ -83,12 +83,12 @@ func (s *parseSession) parseNext() *diagnostic.Diagnostic {
 
 	switch {
 	case s.cursor.startsWith("{{"):
-		s.writeTemplateLiteral("{{ \"{{\" }}")
+		s.writeTemplateLiteral("{{")
 		s.cursor.advance(2)
 		return nil
 
 	case s.cursor.startsWith("}}"):
-		s.writeTemplateLiteral("{{ \"}}\" }}")
+		s.writeTemplateLiteral("}}")
 		s.cursor.advance(2)
 		return nil
 

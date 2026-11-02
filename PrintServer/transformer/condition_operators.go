@@ -64,8 +64,8 @@ func templateGt(a, b any) (bool, error) {
 }
 
 func templateLt(a, b any) (bool, error) {
-	res, err := templateGt(a, b)
-	return !res, err
+	result, err := compareValues(a, b, false)
+	return result < 0, err
 }
 
 func templateGe(a, b any) (bool, error) {
