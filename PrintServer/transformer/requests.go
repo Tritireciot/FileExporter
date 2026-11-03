@@ -63,6 +63,9 @@ func (c *configClient) getJSONOnce(
 		return err
 	}
 	req.Header.Set(paths.SubAccessTokenTag, config.SubAccessCommKey)
+	if method == http.MethodPost {
+		req.Header.Set("Content-Type", "application/json")
+	}
 
 	resp, err := c.http.Do(req)
 	if err != nil {
@@ -88,16 +91,15 @@ func (c *configClient) getJSON(
 	ctx context.Context,
 	method string,
 	endpoint string,
-	requestBody io.Reader,
+	bodyBytes []byte,
 	result any,
 ) error {
 	delays := [...]time.Duration{100 * time.Millisecond, 300 * time.Millisecond}
-
 	for attempt := 0; attempt <= len(delays); attempt++ {
 		if err := ctx.Err(); err != nil {
 			return err
 		}
-
+		requestBody := bytes.NewReader(bodyBytes)
 		err := c.getJSONOnce(ctx, method, endpoint, requestBody, result)
 		if err == nil {
 			return nil
@@ -132,44 +134,44 @@ func (c *configClient) getTemplate(
 		var statusErr *UpstreamStatusError
 		if errors.As(err, &statusErr) &&
 			statusErr.StatusCode == http.StatusNotFound {
-			return &TemplateNotFoundError{id: tmpl.ID}
+			return err
 		}
 		return fmt.Errorf("получение опубликованного шаблона %d: %w", tmpl.ID, err)
 	}
 	return nil
 }
 
-func (c *configClient) getPrintData(ctx context.Context, context any, tmpl *Template, printData map[string]any) error {
+func (c *configClient) getPrintData(ctx context.Context, context any, tmpl *Template) (map[string]any, error) {
 	data := map[string]any{
 		"context": context,
 		"type":    tmpl.Type,
 	}
 	jsonData, err := json.Marshal(data)
 	if err != nil {
-		return fmt.Errorf("Получение данных шаблона %s: Не удалось сформировать тело запроса", tmpl.Type)
+		return nil, fmt.Errorf("Получение данных шаблона %s: Не удалось сформировать тело запроса", tmpl.Type)
 	}
 	endpoint := fmt.Sprintf(
 		"http://%s/api/%s/svc/printcontent",
 		"mock_backend:8150", //c.address,
 		url.PathEscape(tmpl.Subsystem),
 	)
-	if err := c.getJSON(ctx, http.MethodPost, endpoint, bytes.NewReader(jsonData), &printData); err != nil {
+	var printData map[string]any
+	if err := c.getJSON(ctx, http.MethodPost, endpoint, jsonData, &printData); err != nil {
 		var statusErr *UpstreamStatusError
 		if errors.As(err, &statusErr) &&
 			statusErr.StatusCode == http.StatusNotFound {
-			return &TemplateNotFoundError{id: tmpl.ID}
+			return nil, fmt.Errorf("Сервис %s недоступен или  шаблон типа %s не существует", tmpl.Subsystem, tmpl.Type)
 		}
-		return fmt.Errorf("Получение данных шаблона %s: %w", tmpl.Type, err)
+		return nil, fmt.Errorf("Получение данных шаблона %s: %w", tmpl.Type, err)
 	}
-	return nil
+	return printData, nil
 }
 
 func (c *configClient) getPreviewData(
 	ctx context.Context,
 	subsystem string,
 	templateType string,
-	printData map[string]any,
-) error {
+) (map[string]any, error) {
 	endpoint := fmt.Sprintf(
 		"http://%s/api/%s/config/svc/print/template-types/%s/preview-data",
 		c.address,
@@ -177,13 +179,15 @@ func (c *configClient) getPreviewData(
 		url.PathEscape(templateType),
 	)
 
+	var printData map[string]any
+
 	if err := c.getJSON(ctx, http.MethodGet, endpoint, nil, &printData); err != nil {
 		var statusErr *UpstreamStatusError
 		if errors.As(err, &statusErr) &&
 			statusErr.StatusCode == http.StatusNotFound {
-			return &TemplateTypeNotFoundError{templateType: templateType}
+			return nil, &TemplateTypeNotFoundError{templateType: templateType}
 		}
-		return fmt.Errorf("получение данных предпросмотра шаблона %s: %w", templateType, err)
+		return nil, fmt.Errorf("получение данных предпросмотра шаблона %s: %w", templateType, err)
 	}
-	return nil
+	return printData, nil
 }

@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	logging "AutoplayX/agent"
+	logging "PrintServer/agent"
 	"PrintServer/PrintServer/diagnostic"
 	"encoding/json"
 	"errors"
@@ -179,10 +179,15 @@ func WriteError(
 ) {
 	status, response := MapError(err)
 
+	errMessage := response.Message
+	if err != nil {
+		errMessage = err.Error()
+	}
+
 	if status >= http.StatusInternalServerError {
 		logging.Agent.AddSimpleError(
 			"Обработка HTTP-запроса",
-			err.Error(),
+			errMessage,
 		)
 	}
 

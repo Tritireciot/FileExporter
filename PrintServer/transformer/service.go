@@ -108,7 +108,7 @@ func (service *TransformService) RenderTemplate(ctx context.Context, template_id
 
 	if err != nil {
 		logging.Agent.AddSimpleError("Подготовка шаблона на печать", "Не удалось получить шаблон: "+err.Error())
-		return "", "", &TemplateNotFoundError{id: template_id}
+		return "", "", err
 	}
 
 	generatedTemplate, err := service.parseTemplate(template_.Content)
@@ -118,13 +118,12 @@ func (service *TransformService) RenderTemplate(ctx context.Context, template_id
 	form_template, err := service.prepareTemplate(generatedTemplate, template_.Name)
 
 	if err != nil {
-		logging.Agent.AddSimpleError("Подготовка шаблона на печать", "Не удалось сформировать шаблон: "+err.Error())
+		logging.Agent.AddSimpleInfo("Подготовка шаблона на печать", "Не удалось сформировать шаблон: "+err.Error())
 		return "", "", err
 	}
-	var data map[string]any
-	err = service.client.getPrintData(ctx, raw_data, &template_, data)
+	data, err := service.client.getPrintData(ctx, raw_data, &template_)
 	if err != nil {
-		logging.Agent.AddSimpleError("Подготовка шаблона печати", err.Error())
+		logging.Agent.AddSimpleInfo("Подготовка шаблона печати", err.Error())
 		return "", "", err
 	}
 	logging.Agent.AddSimpleInfo("Подготовка шаблона печати", "Сформированны данные: "+fmt.Sprint(data))
@@ -139,13 +138,12 @@ func (service *TransformService) PreviewTemplate(ctx context.Context, templateCo
 	}
 	form_template, err := service.prepareTemplate(generatedTemplate, templateType)
 	if err != nil {
-		logging.Agent.AddSimpleError("Предпросмотр шаблона", "Не удалось сформировать шаблон: "+err.Error())
+		logging.Agent.AddSimpleInfo("Предпросмотр шаблона", "Не удалось сформировать шаблон: "+err.Error())
 		return "", "", err
 	}
-	var data map[string]any
-	err = service.client.getPreviewData(ctx, subsystem, templateType, data)
+	data, err := service.client.getPreviewData(ctx, subsystem, templateType)
 	if err != nil {
-		logging.Agent.AddSimpleError("Предпросмотр шаблон", err.Error())
+		logging.Agent.AddSimpleInfo("Предпросмотр шаблон", err.Error())
 		return "", "", err
 	}
 	result_template, err := execute(form_template, data)

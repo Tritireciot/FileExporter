@@ -137,7 +137,6 @@ func validateIntegerLiteral(value string) (string, error) {
 		}
 	}
 
-	strconv.ParseInt(value, 10, 64)
 	n, err := strconv.ParseInt(value, 10, 64)
 	if err != nil {
 		return "", fmt.Errorf("целое число вне диапазона int64 или записано неверно: %w", err)
