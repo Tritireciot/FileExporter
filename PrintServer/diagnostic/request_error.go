@@ -24,8 +24,8 @@ func NewRequestError(
 	message string,
 ) *RequestError {
 	return &RequestError{
-		Status: status,
-		Code: code,
+		Status:  status,
+		Code:    code,
 		Message: message,
 	}
 }

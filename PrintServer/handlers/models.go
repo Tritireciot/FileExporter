@@ -13,7 +13,7 @@ type ExportModel struct {
 }
 
 func (model *ExportModel) Validate() (bool, error) {
-	is_valid :=  model.TemplateId > 0 && len(model.Subsystem) > 0
+	is_valid := model.TemplateId > 0 && len(model.Subsystem) > 0
 	if is_valid {
 		return true, nil
 	}

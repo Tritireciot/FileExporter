@@ -37,10 +37,10 @@ func MapError(err error) (int, ErrorResponse) {
 
 	if errors.As(err, &reqErr) {
 		return reqErr.Status, ErrorResponse{
-			Code: reqErr.Code,
+			Code:    reqErr.Code,
 			Message: reqErr.Message,
 			Details: ErrorDetails{
-				Stage: diagnostic.StageRequest,
+				Stage:     diagnostic.StageRequest,
 				Retryable: true,
 			},
 		}
@@ -164,6 +164,12 @@ var errorPolicies = map[diagnostic.Code]errorPolicy{
 	},
 	diagnostic.CodeInternalError: {
 		Status: http.StatusInternalServerError, Message: "Внутренняя ошибка сервера",
+	},
+	diagnostic.CodeInvalidNumber: {
+		Status: http.StatusUnprocessableEntity, Message: "Некорректное число", Field: string(ErrorFieldTemplate),
+	},
+	diagnostic.CodeUnclosedString: {
+		Status: http.StatusUnprocessableEntity, Message: "Строковый литерал некорректно записан", Field: string(ErrorFieldTemplate),
 	},
 }
 

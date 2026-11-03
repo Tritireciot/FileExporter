@@ -7,5 +7,5 @@ const (
 	StageGoTemplateParse Stage = "parsing"
 	StageExecute         Stage = "execution"
 	StageInternal        Stage = "internal"
-	StageRequest        Stage = "request"
+	StageRequest         Stage = "request"
 )

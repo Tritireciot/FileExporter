@@ -1,6 +1,8 @@
 package template_compiler
 
 import (
+	"fmt"
+	"strconv"
 	"strings"
 	"unicode"
 )
@@ -116,37 +118,45 @@ func isQuotedLiteral(value string) bool {
 	}
 }
 
-func isIntegerLiteral(value string) bool {
+func validateIntegerLiteral(value string) (string, error) {
 	if value == "" {
-		return false
+		return "", fmt.Errorf("пустая строка не целое число")
 	}
 
 	start := 0
 	if value[0] == '-' || value[0] == '+' {
 		if len(value) == 1 {
-			return false
+			return "", fmt.Errorf("целое число не может состоять только из знака")
 		}
 		start = 1
 	}
 
 	for index := start; index < len(value); index++ {
 		if value[index] < '0' || value[index] > '9' {
-			return false
+			return "", fmt.Errorf("целое число состоит только из символов от 0 до 9")
 		}
 	}
 
-	return true
+	strconv.ParseInt(value, 10, 64)
+	n, err := strconv.ParseInt(value, 10, 64)
+	if err != nil {
+		return "", fmt.Errorf("целое число вне диапазона int64 или записано неверно: %w", err)
+	}
+	if n < -(1<<53) || n > 1<<53 {
+		return "", fmt.Errorf("целое число вне допустимого диапазона")
+	}
+	return strconv.FormatInt(n, 10), nil
 }
 
-func isFloatLiteral(value string) bool {
+func validateFloatLiteral(value string) (string, error) {
 	if value == "" {
-		return false
+		return "", fmt.Errorf("пустая строка не число c плавающей точкой")
 	}
 
 	start := 0
 	if value[0] == '-' || value[0] == '+' {
 		if len(value) == 1 {
-			return false
+			return "", fmt.Errorf("число c плавающей точкой не может состоять только из знака")
 		}
 		start = 1
 	}
@@ -163,11 +173,23 @@ func isFloatLiteral(value string) bool {
 			dotSeen = true
 
 		default:
-			return false
+			return "", fmt.Errorf("число c плавающей точкой состоит только из символов от 0 до 9 и '.'")
 		}
 	}
 
-	return digitSeen && dotSeen
+	if !(digitSeen && dotSeen) {
+		return "", fmt.Errorf("число c плавающей точкой не может быть без точки или без цифр")
+	}
+	f, err := strconv.ParseFloat(value, 64)
+	if err != nil {
+		return "", fmt.Errorf("число c плавающей точкой вне диапазона float64 или записано неверно: %w", err)
+	}
+
+	normalized := strconv.FormatFloat(f, 'g', -1, 64)
+	if !strings.ContainsAny(normalized, ".eE") {
+		normalized += ".0"
+	}
+	return normalized, nil
 }
 
 func isFieldLiteral(value string) bool {
@@ -180,11 +202,11 @@ func isFieldLiteral(value string) bool {
 		return true
 	}
 
-	if isIntegerLiteral(value) {
+	if _, err := validateIntegerLiteral(value); err == nil {
 		return true
 	}
 
-	if isFloatLiteral(value) {
+	if _, err := validateFloatLiteral(value); err == nil {
 		return true
 	}
 

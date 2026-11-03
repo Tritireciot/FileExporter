@@ -22,7 +22,7 @@ type Transformer interface {
 type TransformService struct {
 	parser  template_compiler.Parser
 	pdfExec string
-	client *configClient
+	client  *configClient
 }
 
 func NewTransformService() *TransformService {
@@ -34,7 +34,7 @@ func NewTransformService() *TransformService {
 	return &TransformService{
 		parser:  template_compiler.NewParser(),
 		pdfExec: "",
-		client: newConfigClient(adress),
+		client:  newConfigClient(adress),
 	}
 }
 
@@ -63,16 +63,16 @@ func (service *TransformService) prepareTemplate(formattedTemplate string, templ
 		"DashedYMDtoPrintDate": DashedYMDtoPrintDate,
 		"Weekday":              ShortWeekday,
 		"FramesToTime":         FramesToTime,
-		"add": add,
-		"sub": sub,
-		"mul": mul,
-		"div": div,
-		"templateLe": templateLe,
-		"templateEq": templateEq,
-		"templateNe": templateNe,
-		"templateGt": templateGt,
-		"templateLt": templateLt,
-		"templateGe": templateGe,
+		"add":                  add,
+		"sub":                  sub,
+		"mul":                  mul,
+		"div":                  div,
+		"templateLe":           templateLe,
+		"templateEq":           templateEq,
+		"templateNe":           templateNe,
+		"templateGt":           templateGt,
+		"templateLt":           templateLt,
+		"templateGe":           templateGe,
 	}).Option("missingkey=error").
 		Parse(formattedTemplate)
 

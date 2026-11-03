@@ -21,7 +21,7 @@ func (handler *ExportHandler) TransformTemplate(writer http.ResponseWriter, requ
 	var export_form ExportModel
 	if err := json.NewDecoder(request.Body).Decode(&export_form); err != nil {
 		WriteError(
-			writer, 
+			writer,
 			diagnostic.NewRequestError(
 				http.StatusUnprocessableEntity,
 				diagnostic.CodeInvalidJSONError,
@@ -29,9 +29,9 @@ func (handler *ExportHandler) TransformTemplate(writer http.ResponseWriter, requ
 			),
 		)
 		return
-	} else if isValid,  err := export_form.Validate(); !isValid {
+	} else if isValid, err := export_form.Validate(); !isValid {
 		WriteError(
-			writer, 
+			writer,
 			diagnostic.NewRequestError(
 				http.StatusUnprocessableEntity,
 				diagnostic.CodeInvalidJSONError,
@@ -85,7 +85,7 @@ func (handler *ExportHandler) PreviewTemplate(writer http.ResponseWriter, reques
 	var preview_form PreviewModel
 	if err := json.NewDecoder(request.Body).Decode(&preview_form); err != nil {
 		WriteError(
-			writer, 
+			writer,
 			diagnostic.NewRequestError(
 				http.StatusUnprocessableEntity,
 				diagnostic.CodeInvalidJSONError,
@@ -121,7 +121,7 @@ func (handler *ExportHandler) ValidateTemplate(writer http.ResponseWriter, reque
 	var validation_form ValidateTemplateModel
 	if err := json.NewDecoder(request.Body).Decode(&validation_form); err != nil {
 		WriteError(
-			writer, 
+			writer,
 			diagnostic.NewRequestError(
 				http.StatusUnprocessableEntity,
 				diagnostic.CodeInvalidJSONError,

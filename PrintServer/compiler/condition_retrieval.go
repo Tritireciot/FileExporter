@@ -17,7 +17,6 @@ func (s *parseSession) readCondition(
 	conditionPosition := s.cursor.position()
 	conditionStart := s.cursor.runeIndex()
 
-
 	for !s.cursor.eof() {
 		current, _ := s.cursor.current()
 

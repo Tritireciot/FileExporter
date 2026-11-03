@@ -4,6 +4,7 @@ import (
 	"PrintServer/PrintServer/diagnostic"
 	"fmt"
 	"strings"
+	"unicode"
 )
 
 func conditionOperatorPrecedence(operator string) int {
@@ -278,22 +279,38 @@ func (s *parseSession) resolveConditionOperand(
 	}
 
 	if strings.HasPrefix(value, `'`) {
-		quotedString, err := scanConditionString(&s.cursor)
+		normalized, err := normalizeStringLiteral(value)
 		if err != nil {
-			return "", err
+			return "", diagnostic.NewTranspile(
+				diagnostic.CodeInvalidCondition,
+				err.Error(),
+			).WithSpan(token.Span.Start, token.Span.End)
 		}
-		quotedString = strings.Trim(quotedString, "'")
-		return fmt.Sprintf(`"%s"`, quotedString), nil
+		return normalized, nil
 	}
 
 	switch value {
 	case "true", "false", "nil":
 		return value, nil
 	}
-
-
-	if isIntegerLiteral(value) || isFloatLiteral(value) {
-		return value, nil
+	runes := []rune(value)
+	startsLikeNumber := unicode.IsDigit(runes[0]) ||
+		(runes[0] == '.' && len(runes) > 1 && unicode.IsDigit(runes[1]))
+	if startsLikeNumber {
+		var normalized string
+		var err error
+		if strings.ContainsRune(value, '.') {
+			normalized, err = validateFloatLiteral(value)
+		} else {
+			normalized, err = validateIntegerLiteral(value)
+		}
+		if err != nil {
+			return "", diagnostic.NewTranspile(
+				diagnostic.CodeInvalidNumber,
+				err.Error(),
+			).WithSpan(token.Span.Start, token.Span.End)
+		}
+		return normalized, nil
 	}
 
 	return s.compilePath(

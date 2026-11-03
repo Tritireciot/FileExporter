@@ -31,7 +31,6 @@ func exactSigned(value int64) (float64, error) {
 	return float64(value), nil
 }
 
-
 func exactUnsigned(value uint64) (float64, error) {
 	if value > maxExactFloatInteger {
 		return 0, fmt.Errorf("целое число %d нельзя точно представить как float64", value)
@@ -40,8 +39,8 @@ func exactUnsigned(value uint64) (float64, error) {
 }
 
 func toNumber(value any) (float64, error) {
-	if number, ok := value.(json.Number); ok  {
-				text := string(number)
+	if number, ok := value.(json.Number); ok {
+		text := string(number)
 		if !strings.ContainsAny(text, ".eE") {
 			if signed, err := strconv.ParseInt(text, 10, 64); err == nil {
 				return exactSigned(signed)
@@ -65,9 +64,9 @@ func toNumber(value any) (float64, error) {
 
 	v := reflect.ValueOf(value)
 	switch v.Kind() {
-		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-			return exactSigned(v.Int())
-			case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		return exactSigned(v.Int())
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
 		return exactUnsigned(v.Uint())
 	case reflect.Float32, reflect.Float64:
 		return finiteNumber(v.Float())
