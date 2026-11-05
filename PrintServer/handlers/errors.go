@@ -1,10 +1,12 @@
 package handlers
 
 import (
-	logging "PrintServer/agent"
 	"PrintServer/PrintServer/diagnostic"
+	"PrintServer/PrintServer/transformer"
+	logging "PrintServer/agent"
 	"encoding/json"
 	"errors"
+	"net"
 	"net/http"
 )
 
@@ -41,12 +43,53 @@ func MapError(err error) (int, ErrorResponse) {
 			Message: reqErr.Message,
 			Details: ErrorDetails{
 				Stage:     diagnostic.StageRequest,
-				Retryable: true,
+				Retryable: reqErr.Status >= http.StatusInternalServerError,
 			},
 		}
 	}
 
+	var templateTypeNotFound *transformer.TemplateTypeNotFoundError
+	if errors.As(err, &templateTypeNotFound) {
+		return lookupError(http.StatusNotFound, diagnostic.CodeTemplateTypeNotFound, "Тип шаблона не найден", false)
+	}
+	var templateNotFound *transformer.TemplateNotFoundError
+	if errors.As(err, &templateNotFound) {
+		return lookupError(http.StatusNotFound, diagnostic.CodeTemplateNotFound, "Шаблон не найден", false)
+	}
+	var previewFetch *transformer.PreviewDataFetchError
+	if errors.As(err, &previewFetch) {
+		var netErr net.Error
+		if errors.As(previewFetch.Cause, &netErr) {
+			return lookupError(http.StatusBadGateway, diagnostic.CodeConfigServerUnavailable, "ConfigAppServer недоступен", true)
+		}
+		return lookupError(http.StatusBadGateway, diagnostic.CodePreviewDataFetchFailed, "Не удалось получить данные предпросмотра", true)
+	}
+	var templateFetch *transformer.TemplateFetchError
+	if errors.As(err, &templateFetch) {
+		var statusErr *transformer.UpstreamStatusError
+		if errors.As(templateFetch.Cause, &statusErr) {
+			switch statusErr.StatusCode {
+			case http.StatusNotFound:
+				return lookupError(http.StatusNotFound, diagnostic.CodeTemplateNotFound, "Шаблон не найден", false)
+			case http.StatusConflict:
+				return lookupError(http.StatusConflict, diagnostic.CodeTemplateNotActive, "Шаблон не опубликован", false)
+			}
+		}
+		var netErr net.Error
+		if errors.As(templateFetch.Cause, &netErr) {
+			return lookupError(http.StatusBadGateway, diagnostic.CodeConfigServerUnavailable, "ConfigAppServer недоступен", true)
+		}
+		return lookupError(http.StatusBadGateway, diagnostic.CodeTemplateFetchFailed, "Не удалось получить шаблон", true)
+	}
+
 	return mapInternalError()
+}
+
+func lookupError(status int, code diagnostic.Code, message string, retryable bool) (int, ErrorResponse) {
+	return status, ErrorResponse{
+		Code: code, Message: message,
+		Details: ErrorDetails{Stage: diagnostic.StageTemplateLookup, Retryable: retryable},
+	}
 }
 
 type ErrorField string

@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"PrintServer/PrintServer/diagnostic"
 	"PrintServer/PrintServer/transformer"
 	"encoding/json"
 	"fmt"
@@ -19,28 +18,14 @@ func NewExportHandler(transformer_ transformer.Transformer) *ExportHandler {
 
 func (handler *ExportHandler) TransformTemplate(writer http.ResponseWriter, request *http.Request) {
 	var export_form ExportModel
-	if err := json.NewDecoder(request.Body).Decode(&export_form); err != nil {
-		WriteError(
-			writer,
-			diagnostic.NewRequestError(
-				http.StatusUnprocessableEntity,
-				diagnostic.CodeInvalidJSONError,
-				err.Error(),
-			),
-		)
+	defer request.Body.Close()
+	if err := decodeRequest(request, &export_form, []string{"template_id", "subsystem", "data"}, []string{"format"}); err != nil {
+		WriteError(writer, err)
 		return
 	} else if isValid, err := export_form.Validate(); !isValid {
-		WriteError(
-			writer,
-			diagnostic.NewRequestError(
-				http.StatusUnprocessableEntity,
-				diagnostic.CodeInvalidJSONError,
-				err.Error(),
-			),
-		)
+		WriteError(writer, err)
 		return
 	}
-	defer request.Body.Close()
 
 	var contentType string
 	var fileBytes []byte
@@ -83,18 +68,15 @@ func (handler *ExportHandler) TransformTemplate(writer http.ResponseWriter, requ
 
 func (handler *ExportHandler) PreviewTemplate(writer http.ResponseWriter, request *http.Request) {
 	var preview_form PreviewModel
-	if err := json.NewDecoder(request.Body).Decode(&preview_form); err != nil {
-		WriteError(
-			writer,
-			diagnostic.NewRequestError(
-				http.StatusUnprocessableEntity,
-				diagnostic.CodeInvalidJSONError,
-				err.Error(),
-			),
-		)
+	defer request.Body.Close()
+	if err := decodeRequest(request, &preview_form, []string{"subsystem", "template_type", "template"}, nil); err != nil {
+		WriteError(writer, err)
 		return
 	}
-	defer request.Body.Close()
+	if err := preview_form.Validate(); err != nil {
+		WriteError(writer, err)
+		return
+	}
 
 	content, name, err := handler.transformer.PreviewTemplate(request.Context(), preview_form.TemplateContent, preview_form.Subsystem, preview_form.TemplateType)
 
@@ -119,18 +101,15 @@ func (handler *ExportHandler) PreviewTemplate(writer http.ResponseWriter, reques
 
 func (handler *ExportHandler) ValidateTemplate(writer http.ResponseWriter, request *http.Request) {
 	var validation_form ValidateTemplateModel
-	if err := json.NewDecoder(request.Body).Decode(&validation_form); err != nil {
-		WriteError(
-			writer,
-			diagnostic.NewRequestError(
-				http.StatusUnprocessableEntity,
-				diagnostic.CodeInvalidJSONError,
-				err.Error(),
-			),
-		)
+	defer request.Body.Close()
+	if err := decodeRequest(request, &validation_form, []string{"template_id", "subsystem", "template_type", "template", "content_hash", "data"}, nil); err != nil {
+		WriteError(writer, err)
 		return
 	}
-	defer request.Body.Close()
+	if err := validation_form.Validate(); err != nil {
+		WriteError(writer, err)
+		return
+	}
 
 	err := handler.transformer.ValidateTemplate(
 		validation_form.TemplateContent,
@@ -144,5 +123,9 @@ func (handler *ExportHandler) ValidateTemplate(writer http.ResponseWriter, reque
 		WriteError(writer, err)
 		return
 	}
-
+	writer.Header().Set("Content-Type", "application/json; charset=utf-8")
+	_ = json.NewEncoder(writer).Encode(struct {
+		Valid       bool   `json:"valid"`
+		ContentHash string `json:"content_hash"`
+	}{Valid: true, ContentHash: validation_form.ContentHash})
 }

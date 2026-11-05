@@ -19,6 +19,20 @@ type UpstreamStatusError struct {
 	StatusCode int
 }
 
+type TemplateFetchError struct{ Cause error }
+
+func (e *TemplateFetchError) Error() string {
+	return fmt.Sprintf("получение опубликованного шаблона: %v", e.Cause)
+}
+func (e *TemplateFetchError) Unwrap() error { return e.Cause }
+
+type PreviewDataFetchError struct{ Cause error }
+
+func (e *PreviewDataFetchError) Error() string {
+	return fmt.Sprintf("получение данных предпросмотра: %v", e.Cause)
+}
+func (e *PreviewDataFetchError) Unwrap() error { return e.Cause }
+
 func (e *UpstreamStatusError) Error() string {
 	return fmt.Sprintf("ConfigAppServer вернул HTTP %d", e.StatusCode)
 }
@@ -131,12 +145,7 @@ func (c *configClient) getTemplate(
 	)
 
 	if err := c.getJSON(ctx, http.MethodGet, endpoint, nil, tmpl); err != nil {
-		var statusErr *UpstreamStatusError
-		if errors.As(err, &statusErr) &&
-			statusErr.StatusCode == http.StatusNotFound {
-			return err
-		}
-		return fmt.Errorf("получение опубликованного шаблона %d: %w", tmpl.ID, err)
+		return &TemplateFetchError{Cause: err}
 	}
 	return nil
 }
@@ -187,7 +196,7 @@ func (c *configClient) getPreviewData(
 			statusErr.StatusCode == http.StatusNotFound {
 			return nil, &TemplateTypeNotFoundError{templateType: templateType}
 		}
-		return nil, fmt.Errorf("получение данных предпросмотра шаблона %s: %w", templateType, err)
+		return nil, &PreviewDataFetchError{Cause: err}
 	}
 	return printData, nil
 }

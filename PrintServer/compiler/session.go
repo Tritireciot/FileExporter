@@ -23,6 +23,9 @@ func (s *parseSession) buildContextPath(fieldName string) string {
 		if !isDataScope(scope) {
 			continue
 		}
+		if scope.UserIndexName != "" && fieldName == scope.UserIndexName {
+			return scope.IndexName
+		}
 
 		if internalName, ok := scope.Fields[fieldName]; ok {
 			return internalName

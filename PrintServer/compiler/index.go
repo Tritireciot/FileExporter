@@ -113,6 +113,10 @@ func (s *parseSession) compilePath(
 		baseStartIndex,
 		baseEndIndex,
 	)
+	isGlobal := strings.HasPrefix(basePath, "$.")
+	if isGlobal {
+		basePath = strings.TrimPrefix(basePath, "$.")
+	}
 
 	if !isValidFieldPath(basePath) {
 		return "", diagnostic.NewTranspile(
@@ -127,6 +131,9 @@ func (s *parseSession) compilePath(
 	}
 
 	result := resolveBase(basePath)
+	if isGlobal {
+		result = "$." + basePath
+	}
 
 	for !pathCursor.eof() {
 		current, _ := pathCursor.current()

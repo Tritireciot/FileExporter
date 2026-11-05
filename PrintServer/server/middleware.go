@@ -4,6 +4,8 @@ import (
 	"AutoplayX/jwtoken"
 	"AutoplayX/paths"
 	"PrintServer/PrintServer/config"
+	"PrintServer/PrintServer/diagnostic"
+	"PrintServer/PrintServer/handlers"
 	logging "PrintServer/agent"
 	"bytes"
 	"context"
@@ -104,8 +106,7 @@ func handlersInternalMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		auth := r.Header.Get(paths.SubAccessTokenTag)
 		if auth != config.SubAccessCommKey {
-			code := http.StatusUnauthorized
-			http.Error(w, http.StatusText(code), code)
+			handlers.WriteError(w, diagnostic.NewRequestError(http.StatusUnauthorized, "UNAUTHORIZED", "Необходим ключ подсистемы"))
 			return
 		}
 

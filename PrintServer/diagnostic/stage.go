@@ -8,4 +8,5 @@ const (
 	StageExecute         Stage = "execution"
 	StageInternal        Stage = "internal"
 	StageRequest         Stage = "request"
+	StageTemplateLookup  Stage = "template_lookup"
 )

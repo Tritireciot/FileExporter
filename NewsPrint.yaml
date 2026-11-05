@@ -1,299 +1,810 @@
-openapi: 3.0.0
+openapi: 3.0.3
 info:
-  description: This is Print Bram Space Client API
-  version: 0.0.0
-  title: Print Bram Space
-  license:
-    name: Bramtech company
+  title: API сервера печати PrintServer
+  version: 2.1.0
+  description: |
+    Сервис без собственной БД и авторитетного состояния, который подставляет
+    данные в шаблоны печати и преобразует результат в выходной формат.
+    Скомпилированные шаблоны могут храниться только в восстанавливаемом кэше.
+
+    У PrintServer нет базы данных. Он не владеет шаблонами, типами шаблонов,
+    полями или данными предпросмотра. Шаблоны хранятся в ConfigAppServer.
+
+    Сейчас поддерживаются выходные форматы HTML и DOCX. PDF намеренно не
+    опубликован в API до разрешения конфликта его реализации.
+
+    Содержимое шаблона записывается на публичном DSL печати (`#Field.Name#`,
+    `Repeat`, `If`, форматтеры и другие описанные конструкции). PrintServer
+    преобразует DSL в Go `html/template`, разбирает его и выполняет с
+    переданными данными. Координаты в ошибках API всегда относятся к исходному
+    пользовательскому шаблону, а не к сгенерированному Go-шаблону.
+
+    Значения `code` являются стабильными идентификаторами ошибок API. Клиент
+    может локализовать ошибки по `code` и использовать `details`, но не должен
+    разбирать предназначенное для человека поле `message`.
 servers:
-  - url: http://example.domain/api
-    description: Текущая без версии
+  - url: http://print-server
+    description: Внутренняя сеть приложения
+
 tags:
-  - name: templates
-    description: Работа с шаблонами для печати
-  - name: tags
-    description: Работа с тэгами для печати
-  - name: export
-    description: Вывод на печать
+  - name: Печать
+  - name: Внутреннее API
+
+security:
+  - bearerAuth: []
+  - subsystemKey: []
+
 paths:
-  /api/core/print/db/get_all_templates:
-    get:
-      tags: 
-        - templates
-      summary: Получение получение всех шаблонов подсистемы
-      description: Получение получение всех шаблонов по подсистеме(параметр subsystem). Параметр active, если true, то показывает только активные шаблоны(используемые), иначе показывает все по подсистеме.
-      parameters:
-        - name: active
-          in: query
-          example: true
-          schema: 
-            type: boolean
-        - name: subsystem
-          in: query
-          example: news
-          schema: 
-            type: string
-      responses:
-        '200':
-          description: Успешно
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  allOf:
-                    - $ref: '#/components/schemas/ShortTemplate'
-        
-  /api/core/print/db/get_template:
-    get:
-      tags: 
-        - templates
-      summary: Получение получение шаблона по его id
-      description: Получение получение шаблона по его id
-      parameters:
-        - name: id
-          in: query
-          schema: 
-            type: integer
-      responses:
-        '200':
-          description: Успешно
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Template'
-        '404':
-          description: Шаблон не найден
-        '422':
-          description: Необходим  id шаблона
-  /api/core/print/db/add_template:
-    post:
-      tags:
-        - templates
-      summary: Добавление шаблона
-      description: Добавление/изменение шаблона. name, content и subsystem обязательны. Для изменения шаблона наужно указать его ID.
-      requestBody: 
-        content: 
-          application/json:
-            "schema":
-              $ref: '#/components/schemas/AddTemplate'
-      responses:
-        '200':
-          description: Шаблон добавлен
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Template'
-  /api/core/print/db/delete_template:
-    delete:
-      tags:
-        - templates
-      summary: Удаление шаблона
-      description: Удаление шаблона
-      parameters:
-        - name: id
-          in: query
-          schema: 
-            type: integer
-      responses: 
-        '200':
-          description: Шаблон удален
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ModelID'
-        '404':
-          description: Шаблон не найден
-  /api/core/print/db/get_all_tags:
-    get:
-      tags:
-        - tags
-      summary: Получение всех тегов
-      description: Получение всех тегов
-      responses:
-        '200':
-          description: Успешно
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  allOf:
-                    - $ref: '#/components/schemas/ShortTag'
-  /api/core/print/db/add_tag:
-    post:
-      tags:
-        - tags
-      summary: Добавление тэга
-      description: Добавление/изменение тэга.
-      requestBody: 
-        content: 
-          application/json:
-            "schema":
-              $ref: '#/components/schemas/AddTag'
-      responses:
-        '200':
-          description: Тэг добавлен
-          content: 
-            application/json:
-              "schema":
-                $ref: '#/components/schemas/Tag'
-  /api/core/print/db/delete_tag:
-    delete:
-      tags:
-        - tags
-      summary: Удаление тэга
-      description: Удаление тэга
-      parameters:
-        - name: id
-          in: query
-          schema: 
-            type: integer
-      responses:
-        '200':
-          description: c Тэг удален
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ModelID'
-        '404':
-          description: Тэг не найден
   /api/core/print/export:
     post:
-      tags:
-        - export
-      summary: Вывод на печать шаблона
-      description: Вывод на печать шаблона. Поддерживаемые форматы PDF, HTML. По умолчанию в виде HTML.
-      requestBody: 
-        content: 
+      tags: [Печать]
+      operationId: exportDocument
+      summary: Сформировать документ из сохранённого шаблона и рабочих данных
+      description: |
+        Сохраняет существующую модель запроса: вызывающая сторона передаёт
+        идентификатор шаблона, маршрутное имя подсистемы, входные данные и
+        необязательный формат результата.
+
+        PrintServer получает опубликованный шаблон через внутренний `/published`
+        соответствующего ConfigAppServer. Механизм кэширования и проверки ETag
+        пока не является частью действующего контракта.
+      requestBody:
+        required: true
+        content:
           application/json:
-            "schema":
-              $ref: '#/components/schemas/ExportTemplate'
+            schema:
+              $ref: '#/components/schemas/ExportRequest'
+            examples:
+              html:
+                value:
+                  template_id: 42
+                  subsystem: news
+                  data:
+                    rundown:
+                      title: Вечерние новости
+                    items:
+                      - title: Первый сюжет
+                        duration: 90
+                  format: html
+              docx:
+                value:
+                  template_id: 42
+                  subsystem: news
+                  data:
+                    rundown:
+                      title: Вечерние новости
+                  format: docx
       responses:
         '200':
-          description: Успешно
+          description: Сформированный документ
+          content:
+            text/html:
+              schema:
+                type: string
+                example: '<!doctype html><html><body>Сформированный документ</body></html>'
+            application/vnd.openxmlformats-officedocument.wordprocessingml.document:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/TemplateNotActive'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '422':
+          $ref: '#/components/responses/ProcessingFailed'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '502':
+          $ref: '#/components/responses/DependencyUnavailable'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/core/print/preview:
+    post:
+      tags: [Печать]
+      operationId: previewTemplate
+      summary: Сформировать предпросмотр несохранённого шаблона
+      description: |
+        Вызывающая сторона передаёт подсистему, тип и содержимое шаблона, но не
+        передаёт данные-заглушки. PrintServer получает их из внутреннего
+        read-only endpoint соответствующего ConfigAppServer и возвращает HTML.
+
+        Операция не читает и не изменяет сохранённые шаблоны. Для проверки перед
+        публикацией ConfigAppServer использует отдельный внутренний endpoint и
+        передаёт данные-заглушки прямо в теле запроса.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PreviewRequest'
+            examples:
+              defaultData:
+                value:
+                  subsystem: news
+                  template_type: monitoring
+                  template: '<h1>#Monitoring.Date#</h1>'
+      responses:
+        '200':
+          description: Сформированный HTML предпросмотра
+          content:
+            text/html:
+              schema:
+                type: string
+                example: '<!doctype html><html><body><h1>Предпросмотр</h1></body></html>'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/PreviewDataNotFound'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '422':
+          $ref: '#/components/responses/ProcessingFailed'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '502':
+          $ref: '#/components/responses/DependencyUnavailable'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/core/print/svc/validate-template:
+    post:
+      tags: [Внутреннее API]
+      operationId: validateTemplate
+      summary: Проверить шаблон перед публикацией
+      description: |
+        Внутренняя операция для ConfigAppServer. Вызывающая сторона сама
+        передаёт собранные данные-заглушки, поэтому PrintServer не выполняет
+        обратный запрос в ConfigAppServer и между сервисами не возникает
+        циклической цепочки вызовов.
+
+        PrintServer преобразует DSL в Go `html/template`, компилирует и
+        выполняет шаблон на переданных данных. Проверка не зависит от кэша.
+      security:
+        - subsystemKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InternalValidationRequest'
+      responses:
+        '200':
+          description: Шаблон корректен для переданных данных-заглушек
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Template'
-        '404':
-          description: Шаблон не найден
+                $ref: '#/components/schemas/ValidationResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '422':
+          $ref: '#/components/responses/ProcessingFailed'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    subsystemKey:
+      type: apiKey
+      in: header
+      name: SubToken
+
   schemas:
-    Template:
+    ExportRequest:
       type: object
+      additionalProperties: false
+      required: [template_id, subsystem, data]
       properties:
-          ID:
-            type: integer
-          name:
-            type: string
-          content:
-            type: string
-          subsystem:
-            type: string
-          is_active:
-            type: boolean
-          render_data:
-            type: object
-          is_single:
-            type: boolean
-    ShortTemplate:
-      type: object
-      properties:
-          element_id:
-            type: integer
-          element_name:
-            type: string
-          is_single:
-            type: boolean
-    AddTemplate:
-      type: object
-      required:
-        - name
-        - content
-        - subsystem
-      properties:
-          ID:
-            type: integer
-            description: "Опционально"
-          name:
-            type: string
-          content:
-            type: string
-          subsystem:
-            type: string
-          is_active:
-            type: boolean
-            description: "Опционально"
-          render_data:
-            type: object
-            description: "Опционально"
-          is_single:
-            type: boolean
-            description: "Опционально"
-    ModelID:
-      type: object
-      properties:
-        ID:
-          type: integer
-    ShortTag:
-      type: object
-      properties:
-          element_id:
-            type: integer
-          element_name:
-            type: string
-          is_single:
-            type: boolean
-    AddTag:
-      type: object
-      required:
-        - name
-        - description
-        - subsystem
-        - alias
-      properties:
-        name:
-          type: string
-        description:
-          type: string
-        subsystem:
-          type: string
-        alias:
-          type: string
-        is_active:
-          type: boolean
-          description: "Опционально"
-    Tag:
-      type: object
-      properties:
-        name:
-          type: string
-        description:
-          type: string
-        subsystem:
-          type: string
-        alias:
-          type: string
-        is_active:
-          type: boolean
-    ExportTemplate:
-      type: object
-      required:
-        - name
-        - data
-        - susbsystem
-      properties: 
         template_id:
           type: integer
+          format: int64
+          minimum: 1
+        subsystem:
+          type: string
+          minLength: 1
+          maxLength: 64
+          pattern: '^[a-z][a-z0-9_-]*$'
+          description: Маршрутное имя для поиска ConfigAppServer подсистемы
+          example: news
         data:
           type: object
-        susbsystem:
-          type: string
+          additionalProperties: true
+          description: Рабочие данные предметной области для подстановки в шаблон
         format:
           type: string
-          description: "Опционально"
-          
-      
+          enum: [html, docx]
+          default: html
 
-    
+    PreviewRequest:
+      type: object
+      additionalProperties: false
+      required: [subsystem, template_type, template]
+      properties:
+        subsystem:
+          type: string
+          minLength: 1
+          maxLength: 64
+          pattern: '^[a-z][a-z0-9_-]*$'
+          description: Маршрутное имя для поиска ConfigAppServer подсистемы
+          example: news
+        template_type:
+          type: string
+          minLength: 1
+          maxLength: 64
+          pattern: '^[a-z][a-z0-9_-]*$'
+          description: Тип шаблона, для которого нужны данные-заглушки
+          example: monitoring
+        template:
+          type: string
+          description: Текущее несохранённое содержимое на публичном DSL печати
+
+    InternalValidationRequest:
+      type: object
+      additionalProperties: false
+      required: [template_id, subsystem, template_type, template, content_hash, data]
+      properties:
+        template_id:
+          type: integer
+          format: int64
+          minimum: 1
+        subsystem:
+          type: string
+          minLength: 1
+          maxLength: 64
+          pattern: '^[a-z][a-z0-9_-]*$'
+        template_type:
+          type: string
+          minLength: 1
+          maxLength: 64
+          pattern: '^[a-z][a-z0-9_-]*$'
+        template:
+          type: string
+        content_hash:
+          type: string
+          pattern: '^[a-f0-9]{64}$'
+          description: SHA-256 точных UTF-8 байтов `template`, вычисленный ConfigAppServer
+        data:
+          type: object
+          additionalProperties: true
+          description: Данные-заглушки, собранные ConfigAppServer
+
+    ValidationResult:
+      type: object
+      additionalProperties: false
+      required: [valid, content_hash]
+      properties:
+        valid:
+          type: boolean
+          enum: [true]
+        content_hash:
+          type: string
+          pattern: '^[a-f0-9]{64}$'
+          description: SHA-256 исходного содержимого шаблона
+
+    ErrorCode:
+      type: string
+      description: |
+        Стабильный машиночитаемый код ошибки. Полный публичный каталог:
+
+        * `INVALID_JSON` (400) — тело запроса не является корректным JSON.
+        * `INVALID_REQUEST` (422) — JSON корректен, но поля, значения или их
+          структура недопустимы.
+        * `CONTENT_HASH_MISMATCH` (422, internal) — переданный hash не
+          соответствует точным байтам шаблона.
+        * `UNSUPPORTED_FORMAT` (422) — запрошенный формат не поддерживается.
+        * `UNAUTHORIZED` (401) — данные аутентификации отсутствуют или неверны.
+        * `SUBSYSTEM_NOT_FOUND` (404) — маршрут подсистемы неизвестен.
+        * `TEMPLATE_NOT_FOUND` (404, export) — сохранённый шаблон не найден.
+        * `TEMPLATE_TYPE_NOT_FOUND` (404, preview) — тип шаблона не найден.
+        * `PREVIEW_DATA_NOT_CONFIGURED` (404, preview) — для типа шаблона не
+          настроены данные-заглушки.
+        * `TEMPLATE_NOT_ACTIVE` (409, export) — шаблон существует, но сейчас не
+          опубликован для печати.
+        * `UNSUPPORTED_MEDIA_TYPE` (415) — запрос передан не как `application/json`.
+        * `TEMPLATE_SYNTAX_ERROR` (422) — неверный токен, выражение или escape DSL,
+          несогласованный блок либо отсутствующий закрывающий разделитель.
+        * `TEMPLATE_CONTEXT_ERROR` (422) — Go `html/template` не может определить
+          безопасный однозначный контекст HTML, CSS, URL или JavaScript.
+        * `TEMPLATE_SCOPE_ERROR` (422) — переменная используется вне области
+          видимости или указана неизвестная контекстная переменная.
+        * `TEMPLATE_FIELD_NOT_FOUND` (422) — в данных отсутствует указанное поле.
+        * `TEMPLATE_TYPE_MISMATCH` (422) — операция получила значение неверного
+          типа, например `Repeat` получил объект вместо массива.
+        * `TEMPLATE_INDEX_OUT_OF_RANGE` (422) — индекс массива отрицательный или
+          выходит за границы переданного массива.
+        * `FORMATTER_NOT_FOUND` (422) — указанный форматтер не зарегистрирован.
+        * `FORMATTER_ARGUMENT_ERROR` (422) — неверны количество или типы аргументов форматтера.
+        * `FORMATTER_FAILED` (422) — форматтер принял аргументы, но не смог
+          обработать их значения.
+        * `DOCUMENT_CONVERSION_ERROR` (422, export) — результат нельзя представить
+          в запрошенном формате документа.
+        * `CONFIG_SERVER_UNAVAILABLE` (502) — ConfigAppServer подсистемы
+          недоступен.
+        * `TEMPLATE_FETCH_FAILED` (502, export) — ConfigAppServer вернул ошибочный
+          или некорректный ответ.
+        * `TEMPLATE_INTEGRITY_ERROR` (502, export) — содержимое опубликованной
+          ревизии не соответствует сохранённому content_hash.
+        * `PREVIEW_DATA_FETCH_FAILED` (502, preview) — ConfigAppServer вернул
+          ошибочный или некорректный ответ с данными-заглушками.
+        * `SERVICE_UNAVAILABLE` (503) — PrintServer временно не принимает работу.
+        * `INTERNAL_ERROR` (500) — непредвиденная ошибка сервера, включая неверный
+          Go-шаблон, созданный из корректного DSL.
+      enum:
+        - INVALID_JSON
+        - INVALID_REQUEST
+        - CONTENT_HASH_MISMATCH
+        - UNSUPPORTED_FORMAT
+        - UNAUTHORIZED
+        - SUBSYSTEM_NOT_FOUND
+        - TEMPLATE_NOT_FOUND
+        - TEMPLATE_TYPE_NOT_FOUND
+        - PREVIEW_DATA_NOT_CONFIGURED
+        - TEMPLATE_NOT_ACTIVE
+        - UNSUPPORTED_MEDIA_TYPE
+        - TEMPLATE_SYNTAX_ERROR
+        - TEMPLATE_CONTEXT_ERROR
+        - TEMPLATE_SCOPE_ERROR
+        - TEMPLATE_FIELD_NOT_FOUND
+        - TEMPLATE_TYPE_MISMATCH
+        - TEMPLATE_INDEX_OUT_OF_RANGE
+        - FORMATTER_NOT_FOUND
+        - FORMATTER_ARGUMENT_ERROR
+        - FORMATTER_FAILED
+        - DOCUMENT_CONVERSION_ERROR
+        - CONFIG_SERVER_UNAVAILABLE
+        - TEMPLATE_FETCH_FAILED
+        - TEMPLATE_INTEGRITY_ERROR
+        - PREVIEW_DATA_FETCH_FAILED
+        - SERVICE_UNAVAILABLE
+        - INTERNAL_ERROR
+
+    ErrorStage:
+      type: string
+      enum:
+        - request
+        - template_lookup
+        - source_parse
+        - source_translate
+        - go_template_parse
+        - go_template_execute
+        - formatter
+        - conversion
+      description: Этап обработки, на котором возникла ошибка
+
+    ErrorLocation:
+      type: object
+      additionalProperties: false
+      description: Позиция в исходном пользовательском шаблоне печати
+      required: [line, column]
+      properties:
+        line:
+          type: integer
+          minimum: 1
+        column:
+          type: integer
+          minimum: 1
+        end_line:
+          type: integer
+          minimum: 1
+        end_column:
+          type: integer
+          minimum: 1
+
+    ErrorDetails:
+      type: object
+      additionalProperties: false
+      properties:
+        stage:
+          $ref: '#/components/schemas/ErrorStage'
+        location:
+          $ref: '#/components/schemas/ErrorLocation'
+        reason:
+          type: string
+          description: Необязательный стабильный подтип основного кода ошибки
+          example: UNCLOSED_IF
+        field_path:
+          type: string
+          description: Путь к полю данных без окружающих символов `#`
+          example: Monitoring.Date
+        variable:
+          type: string
+          description: Контекстная переменная, связанная с ошибкой области видимости
+        formatter:
+          type: string
+          description: Форматтер, при обработке которого возникла ошибка
+          example: FrameTimeStamp
+        expected_type:
+          type: string
+          example: array
+        actual_type:
+          type: string
+          example: object
+        index:
+          type: integer
+          format: int64
+        array_length:
+          type: integer
+          format: int64
+          minimum: 0
+        format:
+          type: string
+          enum: [html, docx]
+        retryable:
+          type: boolean
+          description: Может ли повторение того же запроса позднее завершиться успешно
+
+    ApiError:
+      type: object
+      additionalProperties: false
+      required: [code, message]
+      properties:
+        code:
+          $ref: '#/components/schemas/ErrorCode'
+        message:
+          type: string
+          description: Сообщение для человека; клиент не должен разбирать или локализовать ошибки по нему
+          example: В переданных данных не найдено указанное поле
+        request_id:
+          type: string
+          description: Необязательный идентификатор для поиска ошибки в журналах сервера
+        fields:
+          type: object
+          description: Необязательные ошибки валидации, сгруппированные по полям запроса
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        details:
+          $ref: '#/components/schemas/ErrorDetails'
+
+  responses:
+    BadRequest:
+      description: Тело запроса не является синтаксически корректным JSON
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          examples:
+            invalidJson:
+              summary: Синтаксически некорректное тело JSON
+              value:
+                code: INVALID_JSON
+                message: Тело запроса не является корректным JSON
+                details:
+                  stage: request
+                  location:
+                    line: 4
+                    column: 19
+    Unauthorized:
+      description: Данные аутентификации отсутствуют или неверны
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          example:
+            code: UNAUTHORIZED
+            message: Требуется аутентификация
+    NotFound:
+      description: Подсистема или шаблон не найдены
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          examples:
+            subsystemNotFound:
+              value:
+                code: SUBSYSTEM_NOT_FOUND
+                message: Маршрут подсистемы не найден
+                fields:
+                  subsystem:
+                    - Неизвестная подсистема
+                details:
+                  stage: template_lookup
+            templateNotFound:
+              value:
+                code: TEMPLATE_NOT_FOUND
+                message: Шаблон 42 не найден
+                details:
+                  stage: template_lookup
+
+    TemplateNotActive:
+      description: Шаблон существует, но не опубликован для печати
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          example:
+            code: TEMPLATE_NOT_ACTIVE
+            message: Шаблон недоступен для печати
+            details:
+              stage: template_lookup
+
+    PreviewDataNotFound:
+      description: Подсистема, тип шаблона или данные-заглушки не найдены
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          examples:
+            subsystemNotFound:
+              value:
+                code: SUBSYSTEM_NOT_FOUND
+                message: Маршрут подсистемы не найден
+                fields:
+                  subsystem:
+                    - Неизвестная подсистема
+                details:
+                  stage: template_lookup
+            templateTypeNotFound:
+              value:
+                code: TEMPLATE_TYPE_NOT_FOUND
+                message: Тип шаблона monitoring не найден
+                fields:
+                  template_type:
+                    - Неизвестный тип шаблона
+                details:
+                  stage: template_lookup
+            previewDataNotConfigured:
+              value:
+                code: PREVIEW_DATA_NOT_CONFIGURED
+                message: Для типа шаблона monitoring не настроены данные-заглушки
+                details:
+                  stage: template_lookup
+            templateNotFound:
+              value:
+                code: TEMPLATE_NOT_FOUND
+                message: Шаблон 42 не найден
+                details:
+                  stage: template_lookup
+    UnsupportedMediaType:
+      description: Тип содержимого тела запроса отличается от application/json
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          example:
+            code: UNSUPPORTED_MEDIA_TYPE
+            message: Content-Type должен быть application/json
+            details:
+              stage: request
+
+    ProcessingFailed:
+      description: |
+        Тело запроса является корректным JSON, но его поля либо содержимое
+        шаблона не могут быть обработаны. `DOCUMENT_CONVERSION_ERROR`
+        применяется только к экспорту.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          examples:
+            invalidRequest:
+              summary: Отсутствующие или структурно некорректные поля
+              value:
+                code: INVALID_REQUEST
+                message: Запрос содержит некорректные поля
+                fields:
+                  template_id:
+                    - Обязательное поле отсутствует
+            contentHashMismatch:
+              summary: Hash внутреннего запроса не соответствует шаблону
+              value:
+                code: CONTENT_HASH_MISMATCH
+                message: Content hash не соответствует переданному шаблону
+                fields:
+                  content_hash:
+                    - SHA-256 не совпадает с точными UTF-8 байтами template
+                details:
+                  stage: request
+            unsupportedFormat:
+              summary: Неизвестный выходной формат
+              value:
+                code: UNSUPPORTED_FORMAT
+                message: Выходной формат не поддерживается
+                fields:
+                  format:
+                    - Допустимы только html и docx
+                details:
+                  stage: request
+            syntaxError:
+              summary: Ошибка пользовательского синтаксиса печати
+              value:
+                code: TEMPLATE_SYNTAX_ERROR
+                message: Блок If не закрыт
+                details:
+                  stage: source_parse
+                  reason: UNCLOSED_IF
+                  location:
+                    line: 12
+                    column: 5
+            contextError:
+              summary: Неоднозначный или небезопасный контекст html/template
+              value:
+                code: TEMPLATE_CONTEXT_ERROR
+                message: Ветви шаблона завершаются в разных HTML-контекстах
+                details:
+                  stage: go_template_parse
+                  reason: BRANCH_END_CONTEXT_MISMATCH
+                  location:
+                    line: 18
+                    column: 9
+            scopeError:
+              summary: Контекстная переменная находится вне области видимости
+              value:
+                code: TEMPLATE_SCOPE_ERROR
+                message: Переменная Var недоступна в этой области видимости
+                details:
+                  stage: source_parse
+                  variable: Var
+                  location:
+                    line: 21
+                    column: 3
+            fieldNotFound:
+              summary: В данных отсутствует указанное поле
+              value:
+                code: TEMPLATE_FIELD_NOT_FOUND
+                message: В переданных данных не найдено указанное поле
+                fields:
+                  data:
+                    - Отсутствует поле Monitoring.Date
+                details:
+                  stage: go_template_execute
+                  field_path: Monitoring.Date
+                  location:
+                    line: 4
+                    column: 9
+            typeMismatch:
+              summary: Операция получила значение неверного типа
+              value:
+                code: TEMPLATE_TYPE_MISMATCH
+                message: Для Repeat требуется массив
+                details:
+                  stage: go_template_execute
+                  field_path: Monitor
+                  expected_type: array
+                  actual_type: object
+                  location:
+                    line: 7
+                    column: 1
+            indexOutOfRange:
+              summary: Недопустимый индекс массива
+              value:
+                code: TEMPLATE_INDEX_OUT_OF_RANGE
+                message: Индекс выходит за границы переданного массива
+                details:
+                  stage: go_template_execute
+                  field_path: Monitor
+                  index: 3
+                  array_length: 1
+                  location:
+                    line: 9
+                    column: 6
+            formatterNotFound:
+              summary: Неизвестное имя форматтера
+              value:
+                code: FORMATTER_NOT_FOUND
+                message: Форматтер WeekDay не зарегистрирован
+                details:
+                  stage: source_parse
+                  formatter: WeekDay
+                  location:
+                    line: 14
+                    column: 25
+            formatterArguments:
+              summary: Некорректные аргументы форматтера
+              value:
+                code: FORMATTER_ARGUMENT_ERROR
+                message: FrameTimeStamp требует числовую частоту кадров
+                details:
+                  stage: formatter
+                  formatter: FrameTimeStamp
+                  expected_type: number
+                  actual_type: string
+                  location:
+                    line: 15
+                    column: 20
+            formatterFailed:
+              summary: Форматтер не смог обработать значение допустимого типа
+              value:
+                code: FORMATTER_FAILED
+                message: Значение даты не соответствует формату YYYY-MM-DD
+                details:
+                  stage: formatter
+                  formatter: Weekday
+                  field_path: Monitoring.Date
+                  location:
+                    line: 16
+                    column: 7
+            conversionError:
+              summary: Результат нельзя преобразовать в DOCX; только для экспорта
+              value:
+                code: DOCUMENT_CONVERSION_ERROR
+                message: Сформированный документ содержит неподдерживаемые элементы
+                details:
+                  stage: conversion
+                  format: docx
+    DependencyUnavailable:
+      description: Не удалось получить шаблон или данные-заглушки из ConfigAppServer
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          examples:
+            configUnavailable:
+              value:
+                code: CONFIG_SERVER_UNAVAILABLE
+                message: ConfigAppServer подсистемы недоступен
+                details:
+                  stage: template_lookup
+                  retryable: true
+            invalidUpstreamResponse:
+              value:
+                code: TEMPLATE_FETCH_FAILED
+                message: Сервис шаблонов вернул некорректный ответ
+                details:
+                  stage: template_lookup
+                  retryable: true
+            integrityError:
+              value:
+                code: TEMPLATE_INTEGRITY_ERROR
+                message: Содержимое опубликованной ревизии не прошло проверку целостности
+                details:
+                  stage: template_lookup
+                  retryable: false
+            invalidPreviewDataResponse:
+              value:
+                code: PREVIEW_DATA_FETCH_FAILED
+                message: ConfigAppServer вернул некорректные данные-заглушки
+                details:
+                  stage: template_lookup
+                  retryable: true
+
+    ServiceUnavailable:
+      description: PrintServer временно не может принять или выполнить запрос
+      headers:
+        Retry-After:
+          description: Необязательное число секунд до повторной попытки
+          schema:
+            type: integer
+            minimum: 1
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          example:
+            code: SERVICE_UNAVAILABLE
+            message: PrintServer временно недоступен
+            details:
+              retryable: true
+
+    InternalError:
+      description: Непредвиденная ошибка сервера; подробности доступны только в журналах
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          example:
+            code: INTERNAL_ERROR
+            message: Произошла непредвиденная внутренняя ошибка
+            request_id: 2a90f26d-4d2b-43e8-89fc-960c7f61b021
+            details:
+              stage: source_translate
+              retryable: false

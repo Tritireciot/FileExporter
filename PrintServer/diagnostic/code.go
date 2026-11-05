@@ -36,5 +36,14 @@ const (
 
 	CodeInternalError Code = "INTERNAL_ERROR"
 
-	CodeInvalidJSONError Code = "INVALID_JSON"
+	CodeInvalidJSONError        Code = "INVALID_JSON"
+	CodeInvalidRequest          Code = "INVALID_REQUEST"
+	CodeUnsupportedFormat       Code = "UNSUPPORTED_FORMAT"
+	CodeUnsupportedMediaType    Code = "UNSUPPORTED_MEDIA_TYPE"
+	CodeTemplateNotFound        Code = "TEMPLATE_NOT_FOUND"
+	CodeTemplateTypeNotFound    Code = "TEMPLATE_TYPE_NOT_FOUND"
+	CodeTemplateNotActive       Code = "TEMPLATE_NOT_ACTIVE"
+	CodeConfigServerUnavailable Code = "CONFIG_SERVER_UNAVAILABLE"
+	CodeTemplateFetchFailed     Code = "TEMPLATE_FETCH_FAILED"
+	CodePreviewDataFetchFailed  Code = "PREVIEW_DATA_FETCH_FAILED"
 )
