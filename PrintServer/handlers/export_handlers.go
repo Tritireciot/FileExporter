@@ -112,6 +112,7 @@ func (handler *ExportHandler) ValidateTemplate(writer http.ResponseWriter, reque
 	}
 
 	err := handler.transformer.ValidateTemplate(
+		validation_form.TemplateID,
 		validation_form.TemplateContent,
 		validation_form.Subsystem,
 		validation_form.TemplateType,

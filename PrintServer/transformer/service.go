@@ -1,20 +1,20 @@
 package transformer
 
 import (
-	"PrintServer/PrintServer/compiler"
+	"PrintServer/PrintServer/cache"
+	template_compiler "PrintServer/PrintServer/compiler"
 	"PrintServer/PrintServer/config"
 	"PrintServer/PrintServer/diagnostic"
 	logging "PrintServer/agent"
-	"bytes"
 	"context"
-	"fmt"
 	"html/template"
+	"net/http"
 )
 
 type Transformer interface {
-	RenderTemplate(ctx context.Context, templateID int, subsystem string, rawData any) (string, string, error)
+	RenderTemplate(ctx context.Context, templateID int64, subsystem string, rawData any) (string, string, error)
 	PreviewTemplate(ctx context.Context, templateContent string, subsystem string, templateType string) (string, string, error)
-	ValidateTemplate(templateContent string, subsystem string, templateType string, contentHash string, templateData map[string]any) error
+	ValidateTemplate(templateID int64, templateContent string, subsystem string, templateType string, contentHash string, templateData map[string]any) error
 	PDFFromTemplate(htmlContent string) ([]byte, error)
 	DOCXFromTemplate(htmlContent string) ([]byte, error)
 }
@@ -23,153 +23,166 @@ type TransformService struct {
 	parser  template_compiler.Parser
 	pdfExec string
 	client  *configClient
+
+	mainCache    *cache.LRUCache
+	previewCache *cache.LRUCache
 }
 
 func NewTransformService() *TransformService {
-	adress := config.GetSubAccess().GetPath()
-	if config.PrintContentHost != "" && config.PrintContentPort != "" { // Временно
-		adress = config.PrintContentHost + ":" + config.PrintContentPort
+	configAddress := config.GetSubAccess().GetPath()
+	printContentAddress := configAddress
+	if config.PrintContentHost != "" && config.PrintContentPort != "" {
+		printContentAddress = config.PrintContentHost + ":" + config.PrintContentPort
 	}
+
+	cacheConfig := cache.DefaultCacheConfig()
+
+	if config.PrintCacheMainMaxEntries > 0 {
+		cacheConfig.Main.MaxEntries = config.PrintCacheMainMaxEntries
+	}
+
+	if config.PrintCacheMainMaxBytes > 0 {
+		cacheConfig.Main.MaxBytes = config.PrintCacheMainMaxBytes
+	}
+
+	mainCache, _ := cache.NewLRUCache(cacheConfig.Main)
+	previewCache, _ := cache.NewLRUCache(cacheConfig.Preview)
 
 	return &TransformService{
-		parser:  template_compiler.NewParser(),
-		pdfExec: "",
-		client:  newConfigClient(adress),
+		parser:       template_compiler.NewParser(),
+		pdfExec:      "",
+		client:       newConfigClient(configAddress, printContentAddress),
+		mainCache:    mainCache,
+		previewCache: previewCache,
 	}
 }
 
-func execute(template_ *template.Template, data map[string]any) (string, error) {
-	var buffer bytes.Buffer
-	err := template_.Execute(&buffer, data)
-	if err != nil {
-		logging.Agent.AddSimpleError("Формирование итогового шаблона для печати", "Не удалось вставить данные: "+err.Error())
-		return "", &diagnostic.TemplateError{
-			Diagnostics: []diagnostic.Diagnostic{
-				{
-					Code:    diagnostic.CodeTemplateExecutionFailed,
-					Stage:   diagnostic.StageExecute,
-					Message: "Не удалось выполнить шаблон",
-				},
-			},
-			Cause: err,
-		}
-	}
-	return buffer.String(), nil
-
-}
-
-func (service *TransformService) prepareTemplate(formattedTemplate string, templateName string) (*template.Template, error) {
-	form_template, err := template.New(templateName).Funcs(template.FuncMap{
-		"DashedYMDtoPrintDate": DashedYMDtoPrintDate,
-		"Weekday":              ShortWeekday,
-		"FramesToTime":         FramesToTime,
-		"add":                  add,
-		"sub":                  sub,
-		"mul":                  mul,
-		"div":                  div,
-		"templateLe":           templateLe,
-		"templateEq":           templateEq,
-		"templateNe":           templateNe,
-		"templateGt":           templateGt,
-		"templateLt":           templateLt,
-		"templateGe":           templateGe,
-	}).Option("missingkey=error").
-		Parse(formattedTemplate)
-
-	if err != nil {
-		return nil, &diagnostic.TemplateError{
-			Diagnostics: []diagnostic.Diagnostic{
-				{
-					Code:    diagnostic.CodeGoTemplateParse,
-					Stage:   diagnostic.StageGoTemplateParse,
-					Message: "Не удалось скомпилировать шаблон",
-				},
-			},
-			Cause: err,
-		}
-	}
-	return form_template, nil
-}
-
-func (service *TransformService) parseTemplate(templateContent string) (string, error) {
-	parseResult := service.parser.Parse(templateContent)
-	if parseResult.HasErrors() {
-		return "", &diagnostic.TemplateError{
-			Diagnostics: parseResult.Diagnostics,
-		}
-	}
-	return parseResult.Output, nil
-}
-
-func (service *TransformService) RenderTemplate(ctx context.Context, template_id int, subsystem string, raw_data any) (string, string, error) {
-
-	template_ := Template{ID: template_id, Subsystem: subsystem}
-	err := service.client.getTemplate(ctx, &template_)
+func (service *TransformService) RenderTemplate(ctx context.Context, templateID int64, subsystem string, rawData any) (string, string, error) {
+	tmpl := Template{ID: templateID, Subsystem: subsystem}
+	err := service.client.getTemplate(ctx, &tmpl)
 
 	if err != nil {
 		logging.Agent.AddSimpleError("Подготовка шаблона на печать", "Не удалось получить шаблон: "+err.Error())
 		return "", "", err
 	}
-
-	generatedTemplate, err := service.parseTemplate(template_.Content)
-	if err != nil {
+	contentKey := cache.ContentKey{Subsystem: subsystem, TemplateType: tmpl.Type, Hash: tmpl.ContentHash}
+	// Check the upstream response before a cache hit can hide a mismatched revision.
+	if err := verifyContentHash(tmpl.Content, tmpl.ContentHash); err != nil {
 		return "", "", err
 	}
-	form_template, err := service.prepareTemplate(generatedTemplate, template_.Name)
-
-	if err != nil {
-		logging.Agent.AddSimpleInfo("Подготовка шаблона на печать", "Не удалось сформировать шаблон: "+err.Error())
-		return "", "", err
+	cached := service.cachedMainTemplate(cache.TemplateKey{Subsystem: subsystem, ID: templateID}, contentKey)
+	var compiled *template.Template
+	if cached != nil {
+		compiled = cached.Template
+	} else {
+		compiled, err = service.compileTemplate(tmpl.Content, tmpl.Name)
+		if err != nil {
+			return "", "", err
+		}
 	}
-	data, err := service.client.getPrintData(ctx, raw_data, &template_)
+
+	data, err := service.client.getPrintData(ctx, rawData, &tmpl)
 	if err != nil {
 		logging.Agent.AddSimpleInfo("Подготовка шаблона печати", err.Error())
 		return "", "", err
 	}
-	logging.Agent.AddSimpleInfo("Подготовка шаблона печати", "Сформированны данные: "+fmt.Sprint(data))
-	result_template, err := execute(form_template, data)
-	return template_.Name, result_template, err
+	result, err := execute(compiled, data)
+	if err != nil {
+		return tmpl.Name, result, err
+	}
+	if cached == nil {
+		if err := service.saveInCache(tmpl, compiled); err != nil {
+			logging.Agent.AddSimpleError("Подготовка шаблона на печать", "Не удалось сохранить шаблон в кэше: "+err.Error())
+			return "", "", err
+		}
+	}
+	return tmpl.Name, result, nil
 }
 
 func (service *TransformService) PreviewTemplate(ctx context.Context, templateContent string, subsystem string, templateType string) (string, string, error) {
-	generatedTemplate, err := service.parseTemplate(templateContent)
-	if err != nil {
-		return "", "", err
+	var compiled *template.Template
+	cached := true
+	contentKey := cache.ContentKey{
+		Subsystem:    subsystem,
+		TemplateType: templateType,
+		Hash:         hashTemplateContent(templateContent),
 	}
-	form_template, err := service.prepareTemplate(generatedTemplate, templateType)
-	if err != nil {
-		logging.Agent.AddSimpleInfo("Предпросмотр шаблона", "Не удалось сформировать шаблон: "+err.Error())
-		return "", "", err
+	if val, ok := service.previewCache.Get(contentKey); ok {
+		compiled = val.Template
+	} else {
+		var err error
+		compiled, err = service.compileTemplate(templateContent, templateType)
+		if err != nil {
+			return "", "", err
+		}
+		cached = false
 	}
 	data, err := service.client.getPreviewData(ctx, subsystem, templateType)
 	if err != nil {
 		logging.Agent.AddSimpleInfo("Предпросмотр шаблон", err.Error())
 		return "", "", err
 	}
-	result_template, err := execute(form_template, data)
-	return result_template, templateType, err
+	result, err := execute(compiled, data)
+	if err != nil {
+		return "", "", err
+	}
+
+	if !cached {
+		err = service.savePreviewInCache(contentKey, compiled, templateContent)
+		if err != nil {
+			logging.Agent.AddSimpleError("Предпросмотр шаблона", "Не удалось сохранить шаблон в кэше: "+err.Error())
+			return "", "", err
+		}
+	}
+	return result, templateType, nil
 }
 
 func (service *TransformService) ValidateTemplate(
+	templateID int64,
 	templateContent string,
 	subsystem string,
 	templateType string,
 	contentHash string,
 	templateData map[string]any,
 ) error {
-	generatedTemplate, err := service.parseTemplate(templateContent)
-	if err != nil {
-		return err
+	var compiled *template.Template
+	templateKey := cache.TemplateKey{Subsystem: subsystem, ID: templateID}
+	contentKey := cache.ContentKey{Subsystem: subsystem, TemplateType: templateType, Hash: contentHash}
+	if err := verifyContentHash(templateContent, contentHash); err != nil {
+		return diagnostic.NewRequestError(http.StatusUnprocessableEntity, diagnostic.CodeContentHashMismatch, "Хеш не соответствует содержимому шаблона")
 	}
-	form_template, err := service.prepareTemplate(generatedTemplate, templateType)
+
+	cached := service.cachedMainTemplate(templateKey, contentKey)
+	if cached != nil {
+		compiled = cached.Template
+	} else {
+		var err error
+		compiled, err = service.compileTemplate(templateContent, templateType)
+		if err != nil {
+			return err
+		}
+	}
+
+	_, err := execute(compiled, templateData)
+
 	if err != nil {
 		return err
 	}
 
-	_, err = execute(form_template, templateData)
-
-	if err != nil {
-		return err
+	if cached == nil {
+		if err := service.saveInCache(
+			Template{
+				ID:          templateID,
+				Subsystem:   subsystem,
+				Type:        templateType,
+				ContentHash: contentHash,
+				Content:     templateContent,
+			},
+			compiled,
+		); err != nil {
+			logging.Agent.AddSimpleError("Валидация шаблона", "Не удалось сохранить шаблон в кэше: "+err.Error())
+			return err
+		}
 	}
 
 	return nil

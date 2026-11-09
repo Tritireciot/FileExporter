@@ -26,7 +26,7 @@ var internalHeader = map[string]string{"SubToken": "handlers-test-key"}
 
 func TestExportHTML(t *testing.T) {
 	called := false
-	fake := &fakeTransformer{render: func(_ context.Context, id int, subsystem string, data any) (string, string, error) {
+	fake := &fakeTransformer{render: func(_ context.Context, id int64, subsystem string, data any) (string, string, error) {
 		called = true
 		if id != 42 || subsystem != "news" || !reflect.DeepEqual(data, map[string]any{"rundown": map[string]any{"title": "Вечерние новости"}}) {
 			t.Errorf("unexpected RenderTemplate arguments: id=%d subsystem=%q data=%#v", id, subsystem, data)
@@ -57,7 +57,7 @@ func TestExportHTML(t *testing.T) {
 func TestExportDOCX(t *testing.T) {
 	converted := false
 	fake := &fakeTransformer{
-		render: func(_ context.Context, id int, subsystem string, data any) (string, string, error) {
+		render: func(_ context.Context, id int64, subsystem string, data any) (string, string, error) {
 			if id != 42 || subsystem != "news" {
 				t.Errorf("unexpected RenderTemplate arguments: %d %q", id, subsystem)
 			}
@@ -112,10 +112,10 @@ func TestPreviewHTML(t *testing.T) {
 
 func TestValidateTemplateSuccess(t *testing.T) {
 	called := false
-	fake := &fakeTransformer{validate: func(content, subsystem, templateType, hash string, data map[string]any) error {
+	fake := &fakeTransformer{validate: func(id int64, content, subsystem, templateType, hash string, data map[string]any) error {
 		called = true
-		if content != "<h1>#Monitoring.Date#</h1>" || subsystem != "news" || templateType != "monitoring" || hash != validHash || !reflect.DeepEqual(data, map[string]any{"Monitoring": map[string]any{"Date": "2026-09-08"}}) {
-			t.Errorf("unexpected ValidateTemplate arguments: %q %q %q %q %#v", content, subsystem, templateType, hash, data)
+		if id != 42 || content != "<h1>#Monitoring.Date#</h1>" || subsystem != "news" || templateType != "monitoring" || hash != validHash || !reflect.DeepEqual(data, map[string]any{"Monitoring": map[string]any{"Date": "2026-09-08"}}) {
+			t.Errorf("unexpected ValidateTemplate arguments: %d %q %q %q %q %#v", id, content, subsystem, templateType, hash, data)
 		}
 		return nil
 	}}
@@ -152,9 +152,9 @@ func TestEndpointTemplateErrors(t *testing.T) {
 		fake             *fakeTransformer
 		headers          map[string]string
 	}{
-		{"export", exportPath, `{"template_id":42,"subsystem":"news","data":{}}`, &fakeTransformer{render: func(context.Context, int, string, any) (string, string, error) { return "", "", templateErr }}, nil},
+		{"export", exportPath, `{"template_id":42,"subsystem":"news","data":{}}`, &fakeTransformer{render: func(context.Context, int64, string, any) (string, string, error) { return "", "", templateErr }}, nil},
 		{"preview", previewPath, `{"subsystem":"news","template_type":"monitoring","template":"#Bad..Path#"}`, &fakeTransformer{preview: func(context.Context, string, string, string) (string, string, error) { return "", "", templateErr }}, nil},
-		{"validate", validatePath, `{"template_id":42,"subsystem":"news","template_type":"monitoring","template":"#Bad..Path#","content_hash":"` + validHash + `","data":{}}`, &fakeTransformer{validate: func(string, string, string, string, map[string]any) error { return templateErr }}, internalHeader},
+		{"validate", validatePath, `{"template_id":42,"subsystem":"news","template_type":"monitoring","template":"#Bad..Path#","content_hash":"` + validHash + `","data":{}}`, &fakeTransformer{validate: func(int64, string, string, string, string, map[string]any) error { return templateErr }}, internalHeader},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -179,7 +179,7 @@ func TestEndpointTemplateErrors(t *testing.T) {
 
 func TestExportConversionError(t *testing.T) {
 	fake := &fakeTransformer{
-		render: func(context.Context, int, string, any) (string, string, error) { return "report", "<p>x</p>", nil },
+		render: func(context.Context, int64, string, any) (string, string, error) { return "report", "<p>x</p>", nil },
 		docx: func(string) ([]byte, error) {
 			return nil, diagnostic.NewTemplateError([]diagnostic.Diagnostic{{Code: diagnostic.CodeTemplateExecutionFailed, Stage: diagnostic.StageExecute, Message: "conversion failed"}}, errors.New("conversion failed"))
 		},

@@ -54,14 +54,18 @@ func retryable(err error) bool {
 }
 
 type configClient struct {
-	address string
-	http    *http.Client
+	address             string
+	printContentAddress string
+	http                *http.Client
 }
 
-func newConfigClient(address string) *configClient {
+const maxUpstreamResponseBytes int64 = 32 << 20
+
+func newConfigClient(address, printContentAddress string) *configClient {
 	return &configClient{
-		address: address,
-		http:    &http.Client{Timeout: 10 * time.Second},
+		address:             address,
+		printContentAddress: printContentAddress,
+		http:                &http.Client{Timeout: 10 * time.Second},
 	}
 }
 
@@ -90,10 +94,20 @@ func (c *configClient) getJSONOnce(
 	if resp.StatusCode != http.StatusOK {
 		return &UpstreamStatusError{StatusCode: resp.StatusCode}
 	}
+	if resp.ContentLength > maxUpstreamResponseBytes {
+		return fmt.Errorf("ответ внешнего сервиса превышает лимит %d байт", maxUpstreamResponseBytes)
+	}
 
-	body, err := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(io.LimitReader(resp.Body, maxUpstreamResponseBytes+1))
 	if err != nil {
 		return fmt.Errorf("чтение ответа ConfigAppServer: %w", err)
+	}
+	if int64(len(body)) > maxUpstreamResponseBytes {
+		return fmt.Errorf("ответ внешнего сервиса превышает лимит %d байт", maxUpstreamResponseBytes)
+	}
+	trimmed := bytes.TrimSpace(body)
+	if len(trimmed) == 0 || bytes.Equal(trimmed, []byte("null")) {
+		return errors.New("внешний сервис вернул пустой JSON-ответ")
 	}
 	if err := json.Unmarshal(body, result); err != nil {
 		return fmt.Errorf("некорректный JSON от ConfigAppServer: %w", err)
@@ -161,7 +175,7 @@ func (c *configClient) getPrintData(ctx context.Context, context any, tmpl *Temp
 	}
 	endpoint := fmt.Sprintf(
 		"http://%s/api/%s/svc/printcontent",
-		"mock_backend:8150", //c.address,
+		c.printContentAddress,
 		url.PathEscape(tmpl.Subsystem),
 	)
 	var printData map[string]any

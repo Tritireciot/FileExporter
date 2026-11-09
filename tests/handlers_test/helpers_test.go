@@ -14,16 +14,16 @@ import (
 )
 
 type fakeTransformer struct {
-	render     func(context.Context, int, string, any) (string, string, error)
+	render     func(context.Context, int64, string, any) (string, string, error)
 	preview    func(context.Context, string, string, string) (string, string, error)
-	validate   func(string, string, string, string, map[string]any) error
+	validate   func(int64, string, string, string, string, map[string]any) error
 	docx       func(string) ([]byte, error)
 	unexpected []string
 }
 
 var _ transformer.Transformer = (*fakeTransformer)(nil)
 
-func (f *fakeTransformer) RenderTemplate(ctx context.Context, id int, subsystem string, data any) (string, string, error) {
+func (f *fakeTransformer) RenderTemplate(ctx context.Context, id int64, subsystem string, data any) (string, string, error) {
 	if f.render == nil {
 		f.unexpected = append(f.unexpected, "RenderTemplate")
 		return "", "", nil
@@ -39,12 +39,12 @@ func (f *fakeTransformer) PreviewTemplate(ctx context.Context, content, subsyste
 	return f.preview(ctx, content, subsystem, templateType)
 }
 
-func (f *fakeTransformer) ValidateTemplate(content, subsystem, templateType, hash string, data map[string]any) error {
+func (f *fakeTransformer) ValidateTemplate(id int64, content, subsystem, templateType, hash string, data map[string]any) error {
 	if f.validate == nil {
 		f.unexpected = append(f.unexpected, "ValidateTemplate")
 		return nil
 	}
-	return f.validate(content, subsystem, templateType, hash, data)
+	return f.validate(id, content, subsystem, templateType, hash, data)
 }
 
 func (f *fakeTransformer) DOCXFromTemplate(content string) ([]byte, error) {

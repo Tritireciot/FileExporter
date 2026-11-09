@@ -71,7 +71,7 @@ func TestEndpointLookupAndUpstreamStatuses(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			fake := &fakeTransformer{}
 			if tt.path == exportPath {
-				fake.render = func(context.Context, int, string, any) (string, string, error) {
+				fake.render = func(context.Context, int64, string, any) (string, string, error) {
 					return "", "", tt.upstreamError
 				}
 			} else {
@@ -110,9 +110,9 @@ func TestEndpointUnexpectedError(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			internal := errors.New("private internal failure")
 			fake := &fakeTransformer{
-				render:   func(context.Context, int, string, any) (string, string, error) { return "", "", internal },
+				render:   func(context.Context, int64, string, any) (string, string, error) { return "", "", internal },
 				preview:  func(context.Context, string, string, string) (string, string, error) { return "", "", internal },
-				validate: func(string, string, string, string, map[string]any) error { return internal },
+				validate: func(int64, string, string, string, string, map[string]any) error { return internal },
 			}
 			response := request(t, newRouter(fake), tt.path, tt.body, tt.headers)
 			requireError(t, response, http.StatusInternalServerError, "INTERNAL_ERROR")
@@ -136,9 +136,9 @@ func TestEndpointTemporarilyUnavailable(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			unavailable := diagnostic.NewRequestError(http.StatusServiceUnavailable, "SERVICE_UNAVAILABLE", "временно недоступен")
 			fake := &fakeTransformer{
-				render:   func(context.Context, int, string, any) (string, string, error) { return "", "", unavailable },
+				render:   func(context.Context, int64, string, any) (string, string, error) { return "", "", unavailable },
 				preview:  func(context.Context, string, string, string) (string, string, error) { return "", "", unavailable },
-				validate: func(string, string, string, string, map[string]any) error { return unavailable },
+				validate: func(int64, string, string, string, string, map[string]any) error { return unavailable },
 			}
 			response := request(t, newRouter(fake), tt.path, tt.body, tt.headers)
 			requireError(t, response, http.StatusServiceUnavailable, "SERVICE_UNAVAILABLE")
@@ -158,7 +158,7 @@ func TestEndpointTemporarilyUnavailable(t *testing.T) {
 }
 
 func TestPrintContentFailureIsNotConfigAppServerFailure(t *testing.T) {
-	fake := &fakeTransformer{render: func(context.Context, int, string, any) (string, string, error) {
+	fake := &fakeTransformer{render: func(context.Context, int64, string, any) (string, string, error) {
 		return "", "", fmt.Errorf("Получение данных шаблона: %w", &net.OpError{Op: "dial", Net: "tcp", Err: errors.New("connection refused")})
 	}}
 	response := request(t, newRouter(fake), exportPath, `{"template_id":42,"subsystem":"news","data":{}}`, nil)

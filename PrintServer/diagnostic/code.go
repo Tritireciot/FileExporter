@@ -38,6 +38,7 @@ const (
 
 	CodeInvalidJSONError        Code = "INVALID_JSON"
 	CodeInvalidRequest          Code = "INVALID_REQUEST"
+	CodeContentHashMismatch     Code = "CONTENT_HASH_MISMATCH"
 	CodeUnsupportedFormat       Code = "UNSUPPORTED_FORMAT"
 	CodeUnsupportedMediaType    Code = "UNSUPPORTED_MEDIA_TYPE"
 	CodeTemplateNotFound        Code = "TEMPLATE_NOT_FOUND"
@@ -45,5 +46,6 @@ const (
 	CodeTemplateNotActive       Code = "TEMPLATE_NOT_ACTIVE"
 	CodeConfigServerUnavailable Code = "CONFIG_SERVER_UNAVAILABLE"
 	CodeTemplateFetchFailed     Code = "TEMPLATE_FETCH_FAILED"
+	CodeTemplateIntegrityError  Code = "TEMPLATE_INTEGRITY_ERROR"
 	CodePreviewDataFetchFailed  Code = "PREVIEW_DATA_FETCH_FAILED"
 )

@@ -1,14 +1,14 @@
-FROM cr.yandex/mirror/library/golang:1.19-alpine
+FROM golang:1.19-alpine AS builder
 
-# Устанавливаем gcc и инструменты сборки
 RUN apk add --no-cache build-base
 
 WORKDIR /app
 
+COPY . .
+
 COPY go.mod go.sum ./
 RUN go mod download
 
-COPY . .
 
 
-CMD ["go", "test", "-v", "./..."]
+CMD ["go", "test", "-v", "./tests/...", "-race"]

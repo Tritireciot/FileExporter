@@ -27,9 +27,11 @@ type serviceConfiguration struct {
 }
 
 var (
-	ServiceID        string // ИД службы
-	PrintContentHost string
-	PrintContentPort string
+	ServiceID                string // ИД службы
+	PrintContentHost         string
+	PrintContentPort         string
+	PrintCacheMainMaxEntries int
+	PrintCacheMainMaxBytes   int64
 )
 
 func GetServiceID() int {

@@ -81,6 +81,10 @@ func MapError(err error) (int, ErrorResponse) {
 		}
 		return lookupError(http.StatusBadGateway, diagnostic.CodeTemplateFetchFailed, "Не удалось получить шаблон", true)
 	}
+	var integrityErr *transformer.TemplateIntegrityError
+	if errors.As(err, &integrityErr) {
+		return lookupError(http.StatusBadGateway, diagnostic.CodeTemplateIntegrityError, "Содержимое шаблона не соответствует хешу", false)
+	}
 
 	return mapInternalError()
 }

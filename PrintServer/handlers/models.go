@@ -14,7 +14,7 @@ func validRouteName(value string) bool {
 }
 
 type ExportModel struct {
-	TemplateId int    `json:"template_id"`
+	TemplateId int64  `json:"template_id"`
 	Data       any    `json:"data"`
 	Subsystem  string `json:"subsystem"`
 	Format     string `json:"format"`

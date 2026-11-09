@@ -1,7 +1,7 @@
 package transformer
 
 type Template struct {
-	ID          int
+	ID          int64
 	Name        string
 	Content     string `json:"content"`
 	Subsystem   string
