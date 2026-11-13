@@ -11,4 +11,4 @@ RUN go mod download
 
 
 
-CMD ["go", "test", "-v", "./tests/...", "-race"]
+CMD ["go", "test", "-v", "./tests/...", "-count=1", "-race", "-timeout=120s"]

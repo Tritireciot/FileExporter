@@ -30,7 +30,7 @@ func (app *App) Init(transformer_ transformer.Transformer) {
 	app.Router = mux.NewRouter()
 	app.Router.Use(LoggingMiddleware)
 	publicRouter := app.Router.PathPrefix("/api/core/print").Subrouter()
-	//app.Router.Use(handlersMiddlewareJWTRSA)
+	app.Router.Use(handlersMiddlewareJWTRSA)
 
 	internalRouter := app.Router.PathPrefix("/api/core/print/svc").Subrouter()
 	internalRouter.Use(handlersInternalMiddleware)

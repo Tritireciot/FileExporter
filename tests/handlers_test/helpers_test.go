@@ -1,6 +1,7 @@
 package handlers_test
 
 import (
+	"AutoplayX/jwtoken"
 	"PrintServer/PrintServer/config"
 	"PrintServer/PrintServer/server"
 	"PrintServer/PrintServer/transformer"
@@ -11,7 +12,10 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 )
+
+var testAuthToken string
 
 type fakeTransformer struct {
 	render     func(context.Context, int64, string, any) (string, string, error)
@@ -61,6 +65,15 @@ func (f *fakeTransformer) PDFFromTemplate(string) ([]byte, error) {
 
 func TestMain(m *testing.M) {
 	logging.InitAXAgent(logging.Config{}, logging.AXLocation{})
+	key, err := jwtoken.GenerateKey()
+	if err != nil {
+		panic(err)
+	}
+	config.PublicKey = key.PublicKey
+	testAuthToken, err = jwtoken.Create(key, 1, "handlers-test", 1, "news", time.Now().Add(time.Hour))
+	if err != nil {
+		panic(err)
+	}
 	m.Run()
 }
 
@@ -75,6 +88,7 @@ func request(t *testing.T, router http.Handler, path, body string, headers map[s
 	t.Helper()
 	req := httptest.NewRequest(http.MethodPost, path, strings.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+testAuthToken)
 	for name, value := range headers {
 		req.Header.Set(name, value)
 	}

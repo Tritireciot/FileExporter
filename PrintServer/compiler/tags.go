@@ -22,6 +22,12 @@ func (s *parseSession) tryParseField() (bool, *diagnostic.Diagnostic) {
 
 	probe := s.cursor
 	probe.advance(1) // открывающий #
+	unclosedField := func() (bool, *diagnostic.Diagnostic) {
+		return true, diagnostic.NewTranspile(
+			diagnostic.CodeUnclosedField,
+			"Поле шаблона не закрыто символом #",
+		).WithHint("Добавьте закрывающий символ #").WithSpan(start, probe.position())
+	}
 
 	contentStart := probe.runeIndex()
 
@@ -80,14 +86,14 @@ func (s *parseSession) tryParseField() (bool, *diagnostic.Diagnostic) {
 			return true, nil
 
 		case '\n', '\r', '<', '>', '{', '}', ';':
-			return false, nil
+			return unclosedField()
 
 		default:
 			probe.advance(1)
 		}
 	}
 
-	return false, nil
+	return unclosedField()
 }
 
 func (s *parseSession) compileFieldExpression(

@@ -41,7 +41,11 @@ func TestCompilerTranspilation(t *testing.T) {
 		{"fractional literal", "<#If Value > .5#>да<#End#>", "{{ if templateGt .Value 0.5 }}да{{ end }}"},
 		{"condition scope index", "<#Repeat#Items#><#If ItemsIndex == 0#>первый<#End#><#End#>", "{{ range $ItemsIndex1, $Items1 := .Items }}{{ if templateEq $ItemsIndex1 0 }}первый{{ end }}{{ end }}"},
 		{"page break", "A<#BreakPage#>B", "A<div style=\"page-break-before: always;\"></div>\nB"},
-		{"escaped field", `\#Field.Name#`, `{{ "#" }}Field.Name#`},
+		{"escaped field text", `\#Field.Name\#`, `{{ "#" }}Field.Name{{ "#" }}`},
+		{"escaped unclosed field text", `\#Monitoring.MonitoringDate`, `{{ "#" }}Monitoring.MonitoringDate`},
+		{"field then escaped hash", `#Monitoring.MonitoringDate#\#`, `{{ .Monitoring.MonitoringDate }}{{ "#" }}`},
+		{"escaped hash then field", `\##Monitoring.MonitoringDate#`, `{{ "#" }}{{ .Monitoring.MonitoringDate }}`},
+		{"escaped hash", `\#`, `{{ "#" }}`},
 		{"escaped special tag", `\<#End#>`, `{{ "<#End#>" }}`},
 		{"escaped backslash", `\\`, `\`},
 		{"ordinary backslash", `\x`, `\x`},
@@ -80,6 +84,12 @@ func TestCompilerDiagnostics(t *testing.T) {
 		{"index with spaces", "<#Repeat#Field[ 0]#>", diagnostic.CodeInvalidIndex},
 		{"nested index", "#Field[Other[0]]#", diagnostic.CodeInvalidIndex},
 		{"unclosed index", "#Field[0#", diagnostic.CodeUnclosedIndex},
+		{"unclosed field at end", "#Monitoring.MonitoringDate", diagnostic.CodeUnclosedField},
+		{"field then unescaped hash", "#Monitoring.MonitoringDate##", diagnostic.CodeUnclosedField},
+		{"empty field before valid field", "##Monitoring.MonitoringDate#", diagnostic.CodeEmptyField},
+		{"unescaped hash", "#", diagnostic.CodeUnclosedField},
+		{"escaped opening but unescaped closing hash", `\#Field.Name#`, diagnostic.CodeUnclosedField},
+		{"unclosed field before newline", "#Monitoring.MonitoringDate\nnext", diagnostic.CodeUnclosedField},
 		{"missing formatter", "#Field | #", diagnostic.CodeInvalidFieldPipeline},
 		{"invalid formatter", "#Field | 1Wrong#", diagnostic.CodeInvalidFormatter},
 		{"empty repeat", "<#Repeat##>", diagnostic.CodeInvalidRepeat},
@@ -151,5 +161,20 @@ func TestCompilerPositionAndSessionIsolation(t *testing.T) {
 	second := parser.Parse("<#Repeat#Items#>#Items#<#End#>")
 	if second.HasErrors() || second.Output != "{{ range $ItemsIndex1, $Items1 := .Items }}{{ $Items1 }}{{ end }}" {
 		t.Errorf("parser did not reset between calls: %+v", second)
+	}
+}
+
+func TestUnclosedFieldDiagnosticSpan(t *testing.T) {
+	const source = "#Monitoring.MonitoringDate"
+	result := compiler.NewParser().Parse(source)
+	if len(result.Diagnostics) != 1 {
+		t.Fatalf("expected one diagnostic, got %+v", result.Diagnostics)
+	}
+	item := result.Diagnostics[0]
+	if item.Code != diagnostic.CodeUnclosedField || item.Span == nil {
+		t.Fatalf("unexpected diagnostic: %+v", item)
+	}
+	if item.Span.Start.Line != 1 || item.Span.Start.Column != 1 || item.Span.End.Line != 1 || item.Span.End.Column != len([]rune(source))+1 {
+		t.Errorf("incorrect unclosed field span: %+v", item.Span)
 	}
 }

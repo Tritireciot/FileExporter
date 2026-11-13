@@ -249,11 +249,35 @@ func TestInternalEndpointRequiresSubToken(t *testing.T) {
 	requireError(t, response, http.StatusUnauthorized, "UNAUTHORIZED")
 }
 
+func TestEndpointsRequireValidJWT(t *testing.T) {
+	router := newRouter(&fakeTransformer{})
+	for _, path := range []string{exportPath, previewPath, validatePath} {
+		for _, auth := range []string{"", "Bearer invalid-token"} {
+			t.Run(path+"/"+auth, func(t *testing.T) {
+				request := httptest.NewRequest(http.MethodPost, path, strings.NewReader(`{}`))
+				request.Header.Set("Content-Type", "application/json")
+				if auth != "" {
+					request.Header.Set("Authorization", auth)
+				}
+				if path == validatePath {
+					request.Header.Set("SubToken", "handlers-test-key")
+				}
+				response := httptest.NewRecorder()
+				router.ServeHTTP(response, request)
+				if response.Code != http.StatusUnauthorized {
+					t.Errorf("status: got %d, want 401", response.Code)
+				}
+			})
+		}
+	}
+}
+
 func TestEndpointsRejectGET(t *testing.T) {
 	router := newRouter(&fakeTransformer{})
 	for _, path := range []string{exportPath, previewPath, validatePath} {
 		t.Run(path, func(t *testing.T) {
 			req := httptest.NewRequest(http.MethodGet, path, nil)
+			req.Header.Set("Authorization", "Bearer "+testAuthToken)
 			if path == validatePath {
 				req.Header.Set("SubToken", "handlers-test-key")
 			}

@@ -4,6 +4,7 @@ import (
 	"AutoplayX/deploy"
 	"PrintServer/PrintServer/config"
 	"PrintServer/PrintServer/diagnostic"
+	"PrintServer/PrintServer/handlers"
 	"PrintServer/PrintServer/transformer"
 	logging "PrintServer/agent"
 	"context"
@@ -427,6 +428,25 @@ func TestArithmeticAtExactJSONIntegerLimit(t *testing.T) {
 	output, _, err := service.PreviewTemplate(context.Background(), "<#If Value + 1 == 9007199254740992#>ok<#End#>", "news", "rundown")
 	if err != nil || output != "ok" {
 		t.Errorf("exact integer arithmetic: output=%q err=%v", output, err)
+	}
+}
+
+func TestValidationReportsUnclosedField(t *testing.T) {
+	service := newService(t,
+		func(w http.ResponseWriter, r *http.Request) { t.Errorf("unexpected config request: %s", r.URL.Path) },
+		func(w http.ResponseWriter, r *http.Request) {
+			t.Errorf("unexpected printcontent request: %s", r.URL.Path)
+		},
+	)
+	const content = "#Monitoring.MonitoringDate"
+	err := service.ValidateTemplate(42, content, "news", "monitoring", hash(content), map[string]any{})
+	var templateErr *diagnostic.TemplateError
+	if !errors.As(err, &templateErr) || len(templateErr.Diagnostics) != 1 || templateErr.Diagnostics[0].Code != diagnostic.CodeUnclosedField {
+		t.Fatalf("expected unclosed field diagnostic, got %v", err)
+	}
+	status, response := handlers.MapError(err)
+	if status != http.StatusUnprocessableEntity || response.Code != diagnostic.CodeUnclosedField {
+		t.Errorf("HTTP error mapping: status=%d code=%s", status, response.Code)
 	}
 }
 

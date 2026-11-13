@@ -4,6 +4,7 @@ type Code string
 
 const (
 	CodeUnclosedSpecialTag   Code = "UNCLOSED_SPECIAL_TAG"
+	CodeUnclosedField        Code = "UNCLOSED_FIELD"
 	CodeUnexpectedEnd        Code = "UNEXPECTED_END"
 	CodeUnclosedBlock        Code = "UNCLOSED_BLOCK"
 	CodeUnclosedString       Code = "UNCLOSED_STRING"

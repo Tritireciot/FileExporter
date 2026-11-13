@@ -114,6 +114,9 @@ var errorPolicies = map[diagnostic.Code]errorPolicy{
 	diagnostic.CodeUnclosedSpecialTag: {
 		Status: http.StatusUnprocessableEntity, Message: "Специальная конструкция шаблона не закрыта", Field: string(ErrorFieldTemplate),
 	},
+	diagnostic.CodeUnclosedField: {
+		Status: http.StatusUnprocessableEntity, Message: "Поле шаблона не закрыто символом #", Field: string(ErrorFieldTemplate),
+	},
 	diagnostic.CodeUnclosedBlock: {
 		Status:    http.StatusUnprocessableEntity,
 		Message:   "Блок шаблона не закрыт",
