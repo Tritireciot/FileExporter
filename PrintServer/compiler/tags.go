@@ -7,6 +7,125 @@ import (
 	"unicode"
 )
 
+func isHrefFragment(c *cursor) bool {
+	tagStart := -1
+	for i := c.index - 1; i >= 0; i-- {
+		if c.source[i] == '>' {
+			return false
+		}
+		if c.source[i] == '<' {
+			tagStart = i + 1
+			break
+		}
+	}
+	if tagStart < 0 {
+		return false
+	}
+
+	for i := tagStart; i+4 <= c.index; i++ {
+		if i > tagStart && !unicode.IsSpace(c.source[i-1]) {
+			continue
+		}
+		if !strings.EqualFold(string(c.source[i:i+4]), "href") {
+			continue
+		}
+
+		j := i + 4
+		for j < c.index && unicode.IsSpace(c.source[j]) {
+			j++
+		}
+		if j >= c.index || c.source[j] != '=' {
+			continue
+		}
+		j++
+		for j < c.index && unicode.IsSpace(c.source[j]) {
+			j++
+		}
+		quote := rune(0)
+		if j < c.index && (c.source[j] == '"' || c.source[j] == '\'') {
+			quote = c.source[j]
+			j++
+		}
+		for k := j; k < c.index; k++ {
+			if c.source[k] == quote || (quote == 0 && (unicode.IsSpace(c.source[k]) || c.source[k] == '>')) {
+				return false
+			}
+		}
+
+		for k := c.index + 1; k < len(c.source); k++ {
+			r := c.source[k]
+			if r == '#' {
+				return false
+			}
+			if r == quote || (quote == 0 && (unicode.IsSpace(r) || r == '>')) {
+				return true
+			}
+		}
+		return false
+	}
+	return false
+}
+
+func cssIDSelectorLength(c *cursor) int {
+	first, ok := c.peek(1)
+	if !ok || !(unicode.IsLetter(first) || first == '_' || first == '-') {
+		return 0
+	}
+
+	length := 2
+	for {
+		r, ok := c.peek(length)
+		if !ok || !(unicode.IsLetter(r) || unicode.IsDigit(r) || r == '_' || r == '-') {
+			break
+		}
+		length++
+	}
+
+	next, ok := c.peek(length)
+	if !ok {
+		return 0
+	}
+	if next == '#' {
+		afterHash, ok := c.peek(length + 1)
+		if !ok || !(unicode.IsLetter(afterHash) || afterHash == '_' || afterHash == '-') {
+			return 0
+		}
+	} else if !unicode.IsSpace(next) && !strings.ContainsRune("{.,:[]>+~", next) {
+		return 0
+	}
+
+	for offset := length; ; offset++ {
+		r, ok := c.peek(offset)
+		if !ok || r == ';' || r == '}' || r == '<' {
+			return 0
+		}
+		if r == '{' {
+			return length
+		}
+	}
+}
+
+func cssHexColorLength(c *cursor) int {
+	length := 0
+	for {
+		r, ok := c.peek(length + 1)
+		if !ok || !((r >= '0' && r <= '9') || (r >= 'a' && r <= 'f') || (r >= 'A' && r <= 'F')) {
+			break
+		}
+		length++
+	}
+
+	if length != 3 && length != 4 && length != 6 && length != 8 {
+		return 0
+	}
+
+	next, ok := c.peek(length + 1)
+	if ok && !unicode.IsSpace(next) && !strings.ContainsRune(";},)'\"<!", next) {
+		return 0
+	}
+	return length + 1 // leading #
+}
+
 func cleanVarName(path string) string {
 	if idx := strings.LastIndex(path, "."); idx != -1 {
 		path = path[idx+1:]

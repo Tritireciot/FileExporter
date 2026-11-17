@@ -123,6 +123,21 @@ func (s *parseSession) parseNext() *diagnostic.Diagnostic {
 		return s.parseUnknownSpecialTag()
 
 	case s.cursor.startsWith("#"):
+		if isHrefFragment(&s.cursor) {
+			s.output.WriteByte('#')
+			s.cursor.advance(1)
+			return nil
+		}
+		if length := cssIDSelectorLength(&s.cursor); length > 0 {
+			s.output.WriteString(s.cursor.slice(s.cursor.runeIndex(), s.cursor.runeIndex()+length))
+			s.cursor.advance(length)
+			return nil
+		}
+		if length := cssHexColorLength(&s.cursor); length > 0 {
+			s.output.WriteString(s.cursor.slice(s.cursor.runeIndex(), s.cursor.runeIndex()+length))
+			s.cursor.advance(length)
+			return nil
+		}
 		matched, err := s.tryParseField()
 		if matched || err != nil {
 			return err
