@@ -43,7 +43,7 @@ func DashedYMDtoPrintDate(dateStr string) string {
 }
 
 func ShortWeekday(dateStr string) string {
-	t, err := time.Parse("02.01.2006", dateStr)
+	t, err := time.Parse("2006-01-02", dateStr)
 	if err != nil {
 		return dateStr
 	}
